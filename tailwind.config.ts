@@ -58,6 +58,14 @@ export default {
           border: "hsl(var(--glass-border))",
           glow: "hsl(var(--glass-glow))",
         },
+        category: {
+          study: "hsl(var(--category-study))",
+          "study-foreground": "hsl(var(--category-study-foreground))",
+          personal: "hsl(var(--category-personal))",
+          "personal-foreground": "hsl(var(--category-personal-foreground))",
+          rest: "hsl(var(--category-rest))",
+          "rest-foreground": "hsl(var(--category-rest-foreground))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
