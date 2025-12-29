@@ -44,6 +44,14 @@
 
     --radius: 1rem;
 
+    /* Category colors - pastel palette */
+    --category-study: 262 70% 88%;
+    --category-study-foreground: 262 60% 35%;
+    --category-personal: 25 90% 88%;
+    --category-personal-foreground: 25 70% 35%;
+    --category-rest: 160 50% 85%;
+    --category-rest-foreground: 160 45% 30%;
+
     /* Glassmorphism */
     --glass-bg: 262 60% 98%;
     --glass-border: 262 40% 90%;
@@ -94,6 +102,14 @@
     --input: 230 20% 18%;
     --ring: 262 83% 65%;
 
+    /* Category colors - dark mode */
+    --category-study: 262 50% 25%;
+    --category-study-foreground: 262 70% 80%;
+    --category-personal: 25 60% 25%;
+    --category-personal-foreground: 25 80% 80%;
+    --category-rest: 160 40% 22%;
+    --category-rest-foreground: 160 50% 75%;
+
     --glass-bg: 262 30% 15%;
     --glass-border: 262 30% 25%;
     --glass-glow: 262 83% 60%;
@@ -132,6 +148,13 @@
     border: 1px solid hsl(var(--glass-border) / 0.5);
   }
 
+  .glass-drawer {
+    background: hsl(var(--background) / 0.85);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-top: 1px solid hsl(var(--glass-border) / 0.4);
+  }
+
   .glass-glow {
     box-shadow: var(--shadow-glow);
   }
@@ -160,12 +183,27 @@
   }
 }
 
+@keyframes task-enter {
+  0% {
+    opacity: 0;
+    transform: translateX(12px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
 .animate-pulse-glow {
   animation: pulse-glow 2.5s ease-in-out infinite;
 }
 
 .animate-pulse-line {
   animation: pulse-line 2.5s ease-in-out infinite;
+}
+
+.animate-task-enter {
+  animation: task-enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Smooth scrolling */
