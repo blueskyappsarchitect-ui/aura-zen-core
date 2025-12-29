@@ -194,6 +194,26 @@
   }
 }
 
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes subtask-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .animate-pulse-glow {
   animation: pulse-glow 2.5s ease-in-out infinite;
 }
@@ -204,6 +224,37 @@
 
 .animate-task-enter {
   animation: task-enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--primary) / 0.1) 0%,
+    hsl(var(--primary) / 0.3) 50%,
+    hsl(var(--primary) / 0.1) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+.animate-subtask-enter {
+  animation: subtask-enter 0.3s ease-out forwards;
+}
+
+/* Wand icon glow effect */
+.wand-glow {
+  transition: all 0.2s ease;
+}
+
+.wand-glow:hover {
+  filter: drop-shadow(0 0 6px hsl(var(--primary) / 0.6));
+}
+
+/* Strikethrough animation for completed subtasks */
+.subtask-completed {
+  text-decoration: line-through;
+  opacity: 0.5;
+  transition: all 0.2s ease;
 }
 
 /* Smooth scrolling */

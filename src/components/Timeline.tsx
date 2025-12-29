@@ -10,9 +10,16 @@ const END_HOUR = 23; // 11 PM
 interface TimelineProps {
   tasks: Task[];
   newTaskIds?: string[];
+  onGenerateSubTasks?: (taskId: string) => void;
+  onToggleSubTask?: (taskId: string, subTaskId: string) => void;
 }
 
-const Timeline = ({ tasks, newTaskIds = [] }: TimelineProps) => {
+const Timeline = ({ 
+  tasks, 
+  newTaskIds = [],
+  onGenerateSubTasks,
+  onToggleSubTask
+}: TimelineProps) => {
   // Generate time slots
   const timeSlots = useMemo(() => {
     const slots = [];
@@ -87,9 +94,15 @@ const Timeline = ({ tasks, newTaskIds = [] }: TimelineProps) => {
               left: "50%",
               width: "calc(50% - 1.5rem)",
               marginLeft: "1.5rem",
+              zIndex: 5,
             }}
           >
-            <TaskCard task={task} isNew={newTaskIds.includes(task.id)} />
+            <TaskCard 
+              task={task} 
+              isNew={newTaskIds.includes(task.id)}
+              onGenerateSubTasks={onGenerateSubTasks}
+              onToggleSubTask={onToggleSubTask}
+            />
           </div>
         ))}
 
