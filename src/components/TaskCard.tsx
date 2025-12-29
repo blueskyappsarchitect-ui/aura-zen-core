@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { BookOpen, User, Coffee, WandSparkles, ChevronDown } from "lucide-react";
-import { Task, TaskCategory, SubTask, CATEGORY_CONFIG } from "@/types/task";
+import { BookOpen, User, Coffee, WandSparkles, ChevronDown, Shield } from "lucide-react";
+import { Task, CATEGORY_CONFIG } from "@/types/task";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const HOUR_HEIGHT = 80; // Must match Timeline
@@ -15,15 +16,19 @@ const iconMap = {
 interface TaskCardProps {
   task: Task;
   isNew?: boolean;
+  isCompleted?: boolean;
   onGenerateSubTasks?: (taskId: string) => void;
   onToggleSubTask?: (taskId: string, subTaskId: string) => void;
+  onStartFocus?: (task: Task) => void;
 }
 
 const TaskCard = ({ 
   task, 
-  isNew = false, 
+  isNew = false,
+  isCompleted = false,
   onGenerateSubTasks,
-  onToggleSubTask 
+  onToggleSubTask,
+  onStartFocus
 }: TaskCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const config = CATEGORY_CONFIG[task.category];
@@ -34,10 +39,9 @@ const TaskCard = ({
   const minHeight = 48;
   const baseHeight = Math.max(baseHeightPx, minHeight);
 
-  // Expanded height includes subtasks
-  const expandedHeight = task.subTasks?.length 
-    ? baseHeight + (task.subTasks.length * 36) + 20 
-    : baseHeight;
+  // Expanded height includes subtasks + focus button
+  const subtaskHeight = task.subTasks?.length ? (task.subTasks.length * 36) + 60 : 0;
+  const expandedHeight = baseHeight + subtaskHeight;
 
   const handleWandClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -56,13 +60,19 @@ const TaskCard = ({
     onToggleSubTask?.(task.id, subTaskId);
   };
 
+  const handleStartFocus = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onStartFocus?.(task);
+  };
+
   return (
     <div
       className={cn(
         "rounded-xl px-3 py-2 shadow-soft transition-all duration-300 cursor-pointer overflow-hidden",
         config.bgClass,
         isNew && "animate-task-enter",
-        isExpanded && "ring-2 ring-primary/20"
+        isExpanded && "ring-2 ring-primary/20",
+        isCompleted && "task-completed-glow"
       )}
       style={{ 
         height: isExpanded ? `${expandedHeight}px` : `${baseHeight}px`,
@@ -125,35 +135,51 @@ const TaskCard = ({
 
       {/* Micro-Steps Section */}
       {isExpanded && task.subTasks?.length ? (
-        <div className="mt-3 pt-2 border-t border-foreground/10 space-y-2">
-          {task.subTasks.map((subTask, index) => (
-            <div
-              key={subTask.id}
-              className="flex items-center gap-2 animate-subtask-enter"
-              style={{ animationDelay: `${index * 0.1}s` }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Checkbox
-                id={subTask.id}
-                checked={subTask.completed}
-                onCheckedChange={() => handleSubTaskToggle(subTask.id)}
-                className={cn(
-                  "border-current",
-                  config.textClass
-                )}
-              />
-              <label
-                htmlFor={subTask.id}
-                className={cn(
-                  "text-xs cursor-pointer transition-all duration-200",
-                  config.textClass,
-                  subTask.completed && "subtask-completed"
-                )}
+        <div className="mt-3 pt-2 border-t border-foreground/10">
+          <div className="space-y-2">
+            {task.subTasks.map((subTask, index) => (
+              <div
+                key={subTask.id}
+                className="flex items-center gap-2 animate-subtask-enter"
+                style={{ animationDelay: `${index * 0.1}s` }}
+                onClick={(e) => e.stopPropagation()}
               >
-                {subTask.text}
-              </label>
-            </div>
-          ))}
+                <Checkbox
+                  id={subTask.id}
+                  checked={subTask.completed}
+                  onCheckedChange={() => handleSubTaskToggle(subTask.id)}
+                  className={cn(
+                    "border-current",
+                    config.textClass
+                  )}
+                />
+                <label
+                  htmlFor={subTask.id}
+                  className={cn(
+                    "text-xs cursor-pointer transition-all duration-200",
+                    config.textClass,
+                    subTask.completed && "subtask-completed"
+                  )}
+                >
+                  {subTask.text}
+                </label>
+              </div>
+            ))}
+          </div>
+
+          {/* Start Focus Button */}
+          <Button
+            onClick={handleStartFocus}
+            size="sm"
+            className={cn(
+              "w-full mt-4 glass border-0",
+              "bg-foreground/10 hover:bg-foreground/20",
+              config.textClass
+            )}
+          >
+            <Shield className="w-4 h-4 mr-2" />
+            Start Focus
+          </Button>
         </div>
       ) : null}
     </div>

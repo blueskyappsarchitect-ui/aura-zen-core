@@ -10,15 +10,19 @@ const END_HOUR = 23; // 11 PM
 interface TimelineProps {
   tasks: Task[];
   newTaskIds?: string[];
+  completedTaskIds?: string[];
   onGenerateSubTasks?: (taskId: string) => void;
   onToggleSubTask?: (taskId: string, subTaskId: string) => void;
+  onStartFocus?: (task: Task) => void;
 }
 
 const Timeline = ({ 
   tasks, 
   newTaskIds = [],
+  completedTaskIds = [],
   onGenerateSubTasks,
-  onToggleSubTask
+  onToggleSubTask,
+  onStartFocus
 }: TimelineProps) => {
   // Generate time slots
   const timeSlots = useMemo(() => {
@@ -100,8 +104,10 @@ const Timeline = ({
             <TaskCard 
               task={task} 
               isNew={newTaskIds.includes(task.id)}
+              isCompleted={completedTaskIds.includes(task.id)}
               onGenerateSubTasks={onGenerateSubTasks}
               onToggleSubTask={onToggleSubTask}
+              onStartFocus={onStartFocus}
             />
           </div>
         ))}
