@@ -1,12 +1,27 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import Header from "@/components/Header";
+import Timeline from "@/components/Timeline";
+import AddTaskButton from "@/components/AddTaskButton";
 
 const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      {/* Fixed Header */}
+      <Header />
+
+      {/* Main scrollable content */}
+      <main className="pt-24 pb-32 hide-scrollbar">
+        {/* Subtle top gradient */}
+        <div className="fixed top-16 left-0 right-0 h-16 bg-gradient-to-b from-background to-transparent pointer-events-none z-10" />
+
+        {/* The Aura Timeline */}
+        <Timeline />
+
+        {/* Subtle bottom gradient */}
+        <div className="fixed bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none z-10" />
+      </main>
+
+      {/* Floating Add Button */}
+      <AddTaskButton />
     </div>
   );
 };
