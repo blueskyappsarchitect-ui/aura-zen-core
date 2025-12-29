@@ -3,6 +3,7 @@ import Header from "@/components/Header";
 import Timeline from "@/components/Timeline";
 import AddTaskButton from "@/components/AddTaskButton";
 import AddTaskDrawer from "@/components/AddTaskDrawer";
+import FocusMode from "@/components/FocusMode";
 import { Task, generateMicroSteps } from "@/types/task";
 
 // Default example tasks
@@ -27,6 +28,8 @@ const Index = () => {
   const [tasks, setTasks] = useState<Task[]>(defaultTasks);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [newTaskIds, setNewTaskIds] = useState<string[]>([]);
+  const [focusTask, setFocusTask] = useState<Task | null>(null);
+  const [completedTaskIds, setCompletedTaskIds] = useState<string[]>([]);
 
   const handleAddTask = useCallback((taskData: Omit<Task, "id">) => {
     const newId = `task-${Date.now()}`;
@@ -74,17 +77,64 @@ const Index = () => {
     setTasks((prev) =>
       prev.map((task) => {
         if (task.id === taskId && task.subTasks) {
+          const updatedSubTasks = task.subTasks.map((st) =>
+            st.id === subTaskId ? { ...st, completed: !st.completed } : st
+          );
+          return { ...task, subTasks: updatedSubTasks };
+        }
+        return task;
+      })
+    );
+
+    // Also update focusTask if it's the one being modified
+    if (focusTask && focusTask.id === taskId) {
+      setFocusTask((prev) => {
+        if (!prev || !prev.subTasks) return prev;
+        return {
+          ...prev,
+          subTasks: prev.subTasks.map((st) =>
+            st.id === subTaskId ? { ...st, completed: !st.completed } : st
+          ),
+        };
+      });
+    }
+  }, [focusTask]);
+
+  const handleStartFocus = useCallback((task: Task) => {
+    setFocusTask(task);
+  }, []);
+
+  const handleCloseFocus = useCallback(() => {
+    setFocusTask(null);
+  }, []);
+
+  const handleCompleteTask = useCallback((taskId: string) => {
+    // Mark all subtasks as completed
+    setTasks((prev) =>
+      prev.map((task) => {
+        if (task.id === taskId && task.subTasks) {
           return {
             ...task,
-            subTasks: task.subTasks.map((st) =>
-              st.id === subTaskId ? { ...st, completed: !st.completed } : st
-            ),
+            subTasks: task.subTasks.map((st) => ({ ...st, completed: true })),
           };
         }
         return task;
       })
     );
+
+    // Add to completed list for glow effect
+    setCompletedTaskIds((prev) => [...prev, taskId]);
+
+    // Remove glow after animation
+    setTimeout(() => {
+      setCompletedTaskIds((prev) => prev.filter((id) => id !== taskId));
+    }, 2000);
   }, []);
+
+  // Keep focusTask in sync with tasks state
+  const currentFocusTask = focusTask 
+    ? tasks.find((t) => t.id === focusTask.id) || focusTask 
+    : null;
 
   return (
     <div className="min-h-screen bg-background">
@@ -100,8 +150,10 @@ const Index = () => {
         <Timeline 
           tasks={tasks} 
           newTaskIds={newTaskIds}
+          completedTaskIds={completedTaskIds}
           onGenerateSubTasks={handleGenerateSubTasks}
           onToggleSubTask={handleToggleSubTask}
+          onStartFocus={handleStartFocus}
         />
 
         {/* Subtle bottom gradient */}
@@ -117,6 +169,16 @@ const Index = () => {
         onOpenChange={setDrawerOpen}
         onAddTask={handleAddTask}
       />
+
+      {/* Focus Mode Overlay */}
+      {currentFocusTask && (
+        <FocusMode
+          task={currentFocusTask}
+          onClose={handleCloseFocus}
+          onComplete={handleCompleteTask}
+          onToggleSubTask={handleToggleSubTask}
+        />
+      )}
     </div>
   );
 };
