@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BookOpen, User, Coffee, WandSparkles, ChevronDown, Shield } from "lucide-react";
 import { Task, CATEGORY_CONFIG } from "@/types/task";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -17,6 +17,7 @@ interface TaskCardProps {
   task: Task;
   isNew?: boolean;
   isCompleted?: boolean;
+  shouldPop?: boolean;
   onGenerateSubTasks?: (taskId: string) => void;
   onToggleSubTask?: (taskId: string, subTaskId: string) => void;
   onStartFocus?: (task: Task) => void;
@@ -26,13 +27,24 @@ const TaskCard = ({
   task, 
   isNew = false,
   isCompleted = false,
+  shouldPop = false,
   onGenerateSubTasks,
   onToggleSubTask,
   onStartFocus
 }: TaskCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isPopping, setIsPopping] = useState(false);
   const config = CATEGORY_CONFIG[task.category];
   const Icon = iconMap[config.icon as keyof typeof iconMap];
+  
+  // Trigger pop animation when shouldPop changes
+  useEffect(() => {
+    if (shouldPop) {
+      setIsPopping(true);
+      const timer = setTimeout(() => setIsPopping(false), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [shouldPop]);
   
   // Calculate height based on duration
   const baseHeightPx = (task.duration / 60) * HOUR_HEIGHT;
@@ -72,7 +84,8 @@ const TaskCard = ({
         config.bgClass,
         isNew && "animate-task-enter",
         isExpanded && "ring-2 ring-primary/20",
-        isCompleted && "task-completed-glow"
+        isCompleted && "task-completed-glow",
+        isPopping && "animate-card-pop"
       )}
       style={{ 
         height: isExpanded ? `${expandedHeight}px` : `${baseHeight}px`,
