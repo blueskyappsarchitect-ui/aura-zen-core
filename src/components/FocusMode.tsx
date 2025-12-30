@@ -102,7 +102,14 @@ const FocusMode = ({ task, onClose, onComplete, onToggleSubTask }: FocusModeProp
 
   // Timer countdown
   useEffect(() => {
-    if (timeRemaining <= 0 || allSubTasksCompleted) {
+    // Complete when timer hits zero
+    if (timeRemaining <= 0) {
+      handleComplete();
+      return;
+    }
+
+    // Complete when all subtasks are done (but don't stop timer countdown)
+    if (allSubTasksCompleted) {
       handleComplete();
       return;
     }

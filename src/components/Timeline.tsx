@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useRef, useImperativeHandle, forwardRef } from "react";
 import NowIndicator from "./NowIndicator";
 import TaskCard from "./TaskCard";
 import { Task } from "@/types/task";
@@ -11,19 +11,37 @@ interface TimelineProps {
   tasks: Task[];
   newTaskIds?: string[];
   completedTaskIds?: string[];
+  poppingTaskId?: string | null;
   onGenerateSubTasks?: (taskId: string) => void;
   onToggleSubTask?: (taskId: string, subTaskId: string) => void;
   onStartFocus?: (task: Task) => void;
 }
 
-const Timeline = ({ 
+export interface TimelineRef {
+  scrollToTask: (taskId: string) => void;
+}
+
+const Timeline = forwardRef<TimelineRef, TimelineProps>(({ 
   tasks, 
   newTaskIds = [],
   completedTaskIds = [],
+  poppingTaskId,
   onGenerateSubTasks,
   onToggleSubTask,
   onStartFocus
-}: TimelineProps) => {
+}, ref) => {
+  const taskRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  // Expose scrollToTask method to parent
+  useImperativeHandle(ref, () => ({
+    scrollToTask: (taskId: string) => {
+      const taskElement = taskRefs.current[taskId];
+      if (taskElement) {
+        taskElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  }));
+
   // Generate time slots
   const timeSlots = useMemo(() => {
     const slots = [];
@@ -92,6 +110,7 @@ const Timeline = ({
         {tasks.map((task) => (
           <div
             key={task.id}
+            ref={(el) => { taskRefs.current[task.id] = el; }}
             className="absolute right-0 pl-6"
             style={{
               top: `${getTaskPosition(task.startTime)}px`,
@@ -105,6 +124,7 @@ const Timeline = ({
               task={task} 
               isNew={newTaskIds.includes(task.id)}
               isCompleted={completedTaskIds.includes(task.id)}
+              shouldPop={poppingTaskId === task.id}
               onGenerateSubTasks={onGenerateSubTasks}
               onToggleSubTask={onToggleSubTask}
               onStartFocus={onStartFocus}
@@ -117,6 +137,8 @@ const Timeline = ({
       </div>
     </div>
   );
-};
+});
+
+Timeline.displayName = "Timeline";
 
 export default Timeline;

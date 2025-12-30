@@ -1,10 +1,12 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
 import Header from "@/components/Header";
-import Timeline from "@/components/Timeline";
+import Timeline, { TimelineRef } from "@/components/Timeline";
 import AddTaskButton from "@/components/AddTaskButton";
 import AddTaskDrawer from "@/components/AddTaskDrawer";
 import FocusMode from "@/components/FocusMode";
 import AuraDashboard from "@/components/AuraDashboard";
+import UpNextCard from "@/components/UpNextCard";
+import { useTimeOfDay } from "@/hooks/useTimeOfDay";
 import { Task, generateMicroSteps } from "@/types/task";
 
 // Default example tasks
@@ -31,9 +33,13 @@ const Index = () => {
   const [newTaskIds, setNewTaskIds] = useState<string[]>([]);
   const [focusTask, setFocusTask] = useState<Task | null>(null);
   const [completedTaskIds, setCompletedTaskIds] = useState<string[]>([]);
+  const [poppingTaskId, setPoppingTaskId] = useState<string | null>(null);
   const [auraScore, setAuraScore] = useState(100);
   const [streak] = useState(5);
   const [shouldAnimateScore, setShouldAnimateScore] = useState(false);
+  
+  const timelineRef = useRef<TimelineRef>(null);
+  const timeTheme = useTimeOfDay();
 
   // Calculate completed tasks count
   const { completedCount, totalSubTasks } = useMemo(() => {
@@ -110,8 +116,13 @@ const Index = () => {
       })
     );
 
-    // Increment aura score when completing a subtask
+    // Trigger haptic-style pop animation and mini-bounce on score
     if (wasCompleting) {
+      // Pop the task card
+      setPoppingTaskId(taskId);
+      setTimeout(() => setPoppingTaskId(null), 300);
+      
+      // Increment aura score with animation
       setAuraScore((prev) => prev + 10);
       setShouldAnimateScore(true);
       setTimeout(() => setShouldAnimateScore(false), 100);
@@ -162,13 +173,17 @@ const Index = () => {
     }, 2000);
   }, []);
 
+  const handleScrollToTask = useCallback((taskId: string) => {
+    timelineRef.current?.scrollToTask(taskId);
+  }, []);
+
   // Keep focusTask in sync with tasks state
   const currentFocusTask = focusTask 
     ? tasks.find((t) => t.id === focusTask.id) || focusTask 
     : null;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className={`min-h-screen transition-colors duration-1000 ${timeTheme.gradientClass}`}>
       {/* Fixed Header */}
       <Header />
 
@@ -188,9 +203,11 @@ const Index = () => {
 
         {/* The Aura Timeline */}
         <Timeline 
+          ref={timelineRef}
           tasks={tasks} 
           newTaskIds={newTaskIds}
           completedTaskIds={completedTaskIds}
+          poppingTaskId={poppingTaskId}
           onGenerateSubTasks={handleGenerateSubTasks}
           onToggleSubTask={handleToggleSubTask}
           onStartFocus={handleStartFocus}
@@ -199,6 +216,9 @@ const Index = () => {
         {/* Subtle bottom gradient */}
         <div className="fixed bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none z-10" />
       </main>
+
+      {/* Up Next Nudge Card */}
+      <UpNextCard tasks={tasks} onScrollToTask={handleScrollToTask} />
 
       {/* Floating Add Button */}
       <AddTaskButton onClick={() => setDrawerOpen(true)} />
