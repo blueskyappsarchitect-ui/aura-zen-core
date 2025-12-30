@@ -1,9 +1,10 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import Header from "@/components/Header";
 import Timeline from "@/components/Timeline";
 import AddTaskButton from "@/components/AddTaskButton";
 import AddTaskDrawer from "@/components/AddTaskDrawer";
 import FocusMode from "@/components/FocusMode";
+import AuraDashboard from "@/components/AuraDashboard";
 import { Task, generateMicroSteps } from "@/types/task";
 
 // Default example tasks
@@ -30,7 +31,24 @@ const Index = () => {
   const [newTaskIds, setNewTaskIds] = useState<string[]>([]);
   const [focusTask, setFocusTask] = useState<Task | null>(null);
   const [completedTaskIds, setCompletedTaskIds] = useState<string[]>([]);
+  const [auraScore, setAuraScore] = useState(100);
+  const [streak] = useState(5);
+  const [shouldAnimateScore, setShouldAnimateScore] = useState(false);
 
+  // Calculate completed tasks count
+  const { completedCount, totalSubTasks } = useMemo(() => {
+    let completed = 0;
+    let total = 0;
+    tasks.forEach((task) => {
+      if (task.subTasks) {
+        task.subTasks.forEach((st) => {
+          total++;
+          if (st.completed) completed++;
+        });
+      }
+    });
+    return { completedCount: completed, totalSubTasks: total };
+  }, [tasks]);
   const handleAddTask = useCallback((taskData: Omit<Task, "id">) => {
     const newId = `task-${Date.now()}`;
     const newTask: Task = {
@@ -74,9 +92,15 @@ const Index = () => {
   }, []);
 
   const handleToggleSubTask = useCallback((taskId: string, subTaskId: string) => {
+    let wasCompleting = false;
+    
     setTasks((prev) =>
       prev.map((task) => {
         if (task.id === taskId && task.subTasks) {
+          const targetSubTask = task.subTasks.find((st) => st.id === subTaskId);
+          if (targetSubTask && !targetSubTask.completed) {
+            wasCompleting = true;
+          }
           const updatedSubTasks = task.subTasks.map((st) =>
             st.id === subTaskId ? { ...st, completed: !st.completed } : st
           );
@@ -85,6 +109,13 @@ const Index = () => {
         return task;
       })
     );
+
+    // Increment aura score when completing a subtask
+    if (wasCompleting) {
+      setAuraScore((prev) => prev + 10);
+      setShouldAnimateScore(true);
+      setTimeout(() => setShouldAnimateScore(false), 100);
+    }
 
     // Also update focusTask if it's the one being modified
     if (focusTask && focusTask.id === taskId) {
@@ -145,6 +176,15 @@ const Index = () => {
       <main className="pt-24 pb-32 hide-scrollbar">
         {/* Subtle top gradient */}
         <div className="fixed top-16 left-0 right-0 h-16 bg-gradient-to-b from-background to-transparent pointer-events-none z-10" />
+
+        {/* Aura Dashboard */}
+        <AuraDashboard
+          auraScore={auraScore}
+          streak={streak}
+          completedTasks={completedCount}
+          totalTasks={totalSubTasks || tasks.length}
+          shouldAnimate={shouldAnimateScore}
+        />
 
         {/* The Aura Timeline */}
         <Timeline 
