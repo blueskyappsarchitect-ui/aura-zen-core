@@ -6,6 +6,9 @@ import AddTaskDrawer from "@/components/AddTaskDrawer";
 import FocusMode from "@/components/FocusMode";
 import AuraDashboard from "@/components/AuraDashboard";
 import UpNextCard from "@/components/UpNextCard";
+import TransitionBridge from "@/components/TransitionBridge";
+import DoneEarlyDialog from "@/components/DoneEarlyDialog";
+import AuraResetTimer from "@/components/AuraResetTimer";
 import { useTimeOfDay } from "@/hooks/useTimeOfDay";
 import { Task, generateMicroSteps } from "@/types/task";
 
@@ -37,6 +40,8 @@ const Index = () => {
   const [auraScore, setAuraScore] = useState(100);
   const [streak] = useState(5);
   const [shouldAnimateScore, setShouldAnimateScore] = useState(false);
+  const [doneEarlyTask, setDoneEarlyTask] = useState<Task | null>(null);
+  const [showAuraReset, setShowAuraReset] = useState(false);
   
   const timelineRef = useRef<TimelineRef>(null);
   const timeTheme = useTimeOfDay();
@@ -177,6 +182,42 @@ const Index = () => {
     timelineRef.current?.scrollToTask(taskId);
   }, []);
 
+  // Find next task for "Done Early" dialog
+  const nextTask = useMemo(() => {
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    const sortedTasks = [...tasks]
+      .map((task) => {
+        const [hours, minutes] = task.startTime.split(":").map(Number);
+        const taskMinutes = hours * 60 + minutes;
+        return { ...task, taskMinutes };
+      })
+      .sort((a, b) => a.taskMinutes - b.taskMinutes);
+
+    return sortedTasks.find((task) => task.taskMinutes > currentMinutes) || null;
+  }, [tasks]);
+
+  const handleFinishedEarly = useCallback((task: Task) => {
+    setDoneEarlyTask(task);
+  }, []);
+
+  const handleStartNextTask = useCallback(() => {
+    if (nextTask) {
+      setDoneEarlyTask(null);
+      setFocusTask(nextTask);
+    }
+  }, [nextTask]);
+
+  const handleTakeBreak = useCallback(() => {
+    setDoneEarlyTask(null);
+    setShowAuraReset(true);
+  }, []);
+
+  const handleBreakComplete = useCallback(() => {
+    setShowAuraReset(false);
+  }, []);
+
   // Keep focusTask in sync with tasks state
   const currentFocusTask = focusTask 
     ? tasks.find((t) => t.id === focusTask.id) || focusTask 
@@ -211,6 +252,7 @@ const Index = () => {
           onGenerateSubTasks={handleGenerateSubTasks}
           onToggleSubTask={handleToggleSubTask}
           onStartFocus={handleStartFocus}
+          onFinishedEarly={handleFinishedEarly}
         />
 
         {/* Subtle bottom gradient */}
@@ -230,6 +272,9 @@ const Index = () => {
         onAddTask={handleAddTask}
       />
 
+      {/* Transition Bridge Alert */}
+      <TransitionBridge tasks={tasks} />
+
       {/* Focus Mode Overlay */}
       {currentFocusTask && (
         <FocusMode
@@ -237,6 +282,23 @@ const Index = () => {
           onClose={handleCloseFocus}
           onComplete={handleCompleteTask}
           onToggleSubTask={handleToggleSubTask}
+        />
+      )}
+
+      {/* Done Early Dialog */}
+      <DoneEarlyDialog
+        open={!!doneEarlyTask}
+        onOpenChange={(open) => !open && setDoneEarlyTask(null)}
+        nextTask={nextTask}
+        onStartNextTask={handleStartNextTask}
+        onTakeBreak={handleTakeBreak}
+      />
+
+      {/* Aura Reset Timer */}
+      {showAuraReset && (
+        <AuraResetTimer
+          onComplete={handleBreakComplete}
+          onClose={handleBreakComplete}
         />
       )}
     </div>

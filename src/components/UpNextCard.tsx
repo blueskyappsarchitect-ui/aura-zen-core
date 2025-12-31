@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Clock, ChevronUp } from "lucide-react";
 import { Task, CATEGORY_CONFIG } from "@/types/task";
 import { cn } from "@/lib/utils";
@@ -9,9 +9,18 @@ interface UpNextCardProps {
 }
 
 const UpNextCard = ({ tasks, onScrollToTask }: UpNextCardProps) => {
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Update every minute for live countdown
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   const nextTask = useMemo(() => {
-    const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const currentMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
 
     // Find the next upcoming task
     const upcomingTasks = tasks
@@ -24,7 +33,7 @@ const UpNextCard = ({ tasks, onScrollToTask }: UpNextCardProps) => {
       .sort((a, b) => a.minutesUntil - b.minutesUntil);
 
     return upcomingTasks[0] || null;
-  }, [tasks]);
+  }, [tasks, currentTime]);
 
   if (!nextTask) return null;
 

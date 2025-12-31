@@ -21,6 +21,7 @@ interface TaskCardProps {
   onGenerateSubTasks?: (taskId: string) => void;
   onToggleSubTask?: (taskId: string, subTaskId: string) => void;
   onStartFocus?: (task: Task) => void;
+  onFinishedEarly?: (task: Task) => void;
 }
 
 const TaskCard = ({ 
@@ -30,7 +31,8 @@ const TaskCard = ({
   shouldPop = false,
   onGenerateSubTasks,
   onToggleSubTask,
-  onStartFocus
+  onStartFocus,
+  onFinishedEarly
 }: TaskCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isPopping, setIsPopping] = useState(false);
@@ -75,6 +77,11 @@ const TaskCard = ({
   const handleStartFocus = (e: React.MouseEvent) => {
     e.stopPropagation();
     onStartFocus?.(task);
+  };
+
+  const handleFinishedEarly = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onFinishedEarly?.(task);
   };
 
   return (
@@ -180,19 +187,32 @@ const TaskCard = ({
             ))}
           </div>
 
-          {/* Start Focus Button */}
-          <Button
-            onClick={handleStartFocus}
-            size="sm"
-            className={cn(
-              "w-full mt-4 glass border-0",
-              "bg-foreground/10 hover:bg-foreground/20",
-              config.textClass
-            )}
-          >
-            <Shield className="w-4 h-4 mr-2" />
-            Start Focus
-          </Button>
+          {/* Action Buttons */}
+          <div className="flex gap-2 mt-4">
+            <Button
+              onClick={handleFinishedEarly}
+              size="sm"
+              variant="outline"
+              className={cn(
+                "flex-1 border-muted-foreground/20",
+                config.textClass
+              )}
+            >
+              I'm Finished Early
+            </Button>
+            <Button
+              onClick={handleStartFocus}
+              size="sm"
+              className={cn(
+                "flex-1 glass border-0",
+                "bg-foreground/10 hover:bg-foreground/20",
+                config.textClass
+              )}
+            >
+              <Shield className="w-4 h-4 mr-2" />
+              Start Focus
+            </Button>
+          </div>
         </div>
       ) : null}
     </div>
