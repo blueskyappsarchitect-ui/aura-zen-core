@@ -1,6 +1,7 @@
 import { useMemo, useRef, useImperativeHandle, forwardRef } from "react";
 import NowIndicator from "./NowIndicator";
 import TaskCard from "./TaskCard";
+import RestAuraBlock from "./RestAuraBlock";
 import { Task } from "@/types/task";
 
 const HOUR_HEIGHT = 80; // pixels per hour
@@ -15,6 +16,7 @@ interface TimelineProps {
   onGenerateSubTasks?: (taskId: string) => void;
   onToggleSubTask?: (taskId: string, subTaskId: string) => void;
   onStartFocus?: (task: Task) => void;
+  onFinishedEarly?: (task: Task) => void;
 }
 
 export interface TimelineRef {
@@ -28,7 +30,8 @@ const Timeline = forwardRef<TimelineRef, TimelineProps>(({
   poppingTaskId,
   onGenerateSubTasks,
   onToggleSubTask,
-  onStartFocus
+  onStartFocus,
+  onFinishedEarly
 }, ref) => {
   const taskRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
@@ -74,6 +77,41 @@ const Timeline = forwardRef<TimelineRef, TimelineProps>(({
     const hoursFromStart = hours - START_HOUR + minutes / 60;
     return Math.max(0, hoursFromStart * HOUR_HEIGHT);
   };
+
+  // Find gaps > 15 minutes between tasks for Rest Aura blocks
+  const gaps = useMemo(() => {
+    const sortedTasks = [...tasks]
+      .map((task) => {
+        const [hours, minutes] = task.startTime.split(":").map(Number);
+        const taskStartMinutes = hours * 60 + minutes;
+        const taskEndMinutes = taskStartMinutes + task.duration;
+        return { ...task, taskStartMinutes, taskEndMinutes };
+      })
+      .sort((a, b) => a.taskStartMinutes - b.taskStartMinutes);
+
+    const gapBlocks: { startTime: string; duration: number; topPosition: number }[] = [];
+
+    for (let i = 0; i < sortedTasks.length - 1; i++) {
+      const currentEnd = sortedTasks[i].taskEndMinutes;
+      const nextStart = sortedTasks[i + 1].taskStartMinutes;
+      const gapMinutes = nextStart - currentEnd;
+
+      if (gapMinutes > 15) {
+        const gapHours = Math.floor(currentEnd / 60);
+        const gapMins = currentEnd % 60;
+        const startTime = `${gapHours.toString().padStart(2, "0")}:${gapMins.toString().padStart(2, "0")}`;
+        const topPosition = getTaskPosition(startTime);
+        
+        gapBlocks.push({
+          startTime,
+          duration: gapMinutes,
+          topPosition,
+        });
+      }
+    }
+
+    return gapBlocks;
+  }, [tasks]);
 
   const totalHeight = (END_HOUR - START_HOUR) * HOUR_HEIGHT;
 
@@ -128,8 +166,19 @@ const Timeline = forwardRef<TimelineRef, TimelineProps>(({
               onGenerateSubTasks={onGenerateSubTasks}
               onToggleSubTask={onToggleSubTask}
               onStartFocus={onStartFocus}
+              onFinishedEarly={onFinishedEarly}
             />
           </div>
+        ))}
+
+        {/* Rest Aura Blocks for gaps > 15 min */}
+        {gaps.map((gap, index) => (
+          <RestAuraBlock
+            key={`gap-${index}`}
+            startTime={gap.startTime}
+            duration={gap.duration}
+            topPosition={gap.topPosition}
+          />
         ))}
 
         {/* The NOW indicator */}
