@@ -9,6 +9,7 @@ import UpNextCard from "@/components/UpNextCard";
 import TransitionBridge from "@/components/TransitionBridge";
 import DoneEarlyDialog from "@/components/DoneEarlyDialog";
 import AuraResetTimer from "@/components/AuraResetTimer";
+import StartNowDialog from "@/components/StartNowDialog";
 import { useTimeOfDay } from "@/hooks/useTimeOfDay";
 import { Task, generateMicroSteps } from "@/types/task";
 
@@ -42,6 +43,9 @@ const Index = () => {
   const [shouldAnimateScore, setShouldAnimateScore] = useState(false);
   const [doneEarlyTask, setDoneEarlyTask] = useState<Task | null>(null);
   const [showAuraReset, setShowAuraReset] = useState(false);
+  const [startNowTask, setStartNowTask] = useState<Task | null>(null);
+  const [pendingMoveTaskId, setPendingMoveTaskId] = useState<string | null>(null);
+  const [pendingMoveTime, setPendingMoveTime] = useState<string | null>(null);
   
   const timelineRef = useRef<TimelineRef>(null);
   const timeTheme = useTimeOfDay();
@@ -218,6 +222,52 @@ const Index = () => {
     setShowAuraReset(false);
   }, []);
 
+  // Drag and drop handlers
+  const handleTaskMove = useCallback((taskId: string, newStartTime: string) => {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === taskId ? { ...task, startTime: newStartTime } : task
+      )
+    );
+  }, []);
+
+  const handleTaskResize = useCallback((taskId: string, newDuration: number) => {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === taskId ? { ...task, duration: newDuration } : task
+      )
+    );
+  }, []);
+
+  const handleStartNowPrompt = useCallback((task: Task) => {
+    setStartNowTask(task);
+    // Get current time for the move
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, "0");
+    const minutes = (Math.floor(now.getMinutes() / 15) * 15).toString().padStart(2, "0");
+    setPendingMoveTaskId(task.id);
+    setPendingMoveTime(`${hours}:${minutes}`);
+  }, []);
+
+  const handleStartNowConfirm = useCallback(() => {
+    if (startNowTask && pendingMoveTaskId && pendingMoveTime) {
+      handleTaskMove(pendingMoveTaskId, pendingMoveTime);
+      setFocusTask(startNowTask);
+    }
+    setStartNowTask(null);
+    setPendingMoveTaskId(null);
+    setPendingMoveTime(null);
+  }, [startNowTask, pendingMoveTaskId, pendingMoveTime, handleTaskMove]);
+
+  const handleStartNowCancel = useCallback(() => {
+    if (pendingMoveTaskId && pendingMoveTime) {
+      handleTaskMove(pendingMoveTaskId, pendingMoveTime);
+    }
+    setStartNowTask(null);
+    setPendingMoveTaskId(null);
+    setPendingMoveTime(null);
+  }, [pendingMoveTaskId, pendingMoveTime, handleTaskMove]);
+
   // Keep focusTask in sync with tasks state
   const currentFocusTask = focusTask 
     ? tasks.find((t) => t.id === focusTask.id) || focusTask 
@@ -253,6 +303,9 @@ const Index = () => {
           onToggleSubTask={handleToggleSubTask}
           onStartFocus={handleStartFocus}
           onFinishedEarly={handleFinishedEarly}
+          onTaskMove={handleTaskMove}
+          onTaskResize={handleTaskResize}
+          onStartNowPrompt={handleStartNowPrompt}
         />
 
         {/* Subtle bottom gradient */}
@@ -301,6 +354,15 @@ const Index = () => {
           onClose={handleBreakComplete}
         />
       )}
+
+      {/* Start Now Dialog */}
+      <StartNowDialog
+        open={!!startNowTask}
+        onOpenChange={(open) => !open && setStartNowTask(null)}
+        task={startNowTask}
+        onStartNow={handleStartNowConfirm}
+        onCancel={handleStartNowCancel}
+      />
     </div>
   );
 };

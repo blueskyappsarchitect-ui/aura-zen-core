@@ -1,8 +1,10 @@
-import { useMemo, useRef, useImperativeHandle, forwardRef } from "react";
+import { useMemo, useRef, useImperativeHandle, forwardRef, useEffect, useCallback } from "react";
 import NowIndicator from "./NowIndicator";
-import TaskCard from "./TaskCard";
+import DraggableTaskCard from "./DraggableTaskCard";
 import RestAuraBlock from "./RestAuraBlock";
-import { Task } from "@/types/task";
+import { Task, CATEGORY_CONFIG } from "@/types/task";
+import { useTaskDrag } from "@/hooks/useTaskDrag";
+import { cn } from "@/lib/utils";
 
 const HOUR_HEIGHT = 80; // pixels per hour
 const START_HOUR = 6; // 6 AM
@@ -17,6 +19,9 @@ interface TimelineProps {
   onToggleSubTask?: (taskId: string, subTaskId: string) => void;
   onStartFocus?: (task: Task) => void;
   onFinishedEarly?: (task: Task) => void;
+  onTaskMove?: (taskId: string, newStartTime: string) => void;
+  onTaskResize?: (taskId: string, newDuration: number) => void;
+  onStartNowPrompt?: (task: Task) => void;
 }
 
 export interface TimelineRef {
@@ -31,9 +36,59 @@ const Timeline = forwardRef<TimelineRef, TimelineProps>(({
   onGenerateSubTasks,
   onToggleSubTask,
   onStartFocus,
-  onFinishedEarly
+  onFinishedEarly,
+  onTaskMove,
+  onTaskResize,
+  onStartNowPrompt,
 }, ref) => {
   const taskRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleTaskMove = useCallback((taskId: string, newStartTime: string) => {
+    onTaskMove?.(taskId, newStartTime);
+  }, [onTaskMove]);
+
+  const handleTaskResize = useCallback((taskId: string, newDuration: number) => {
+    onTaskResize?.(taskId, newDuration);
+  }, [onTaskResize]);
+
+  const handleStartNowPrompt = useCallback((task: Task) => {
+    onStartNowPrompt?.(task);
+  }, [onStartNowPrompt]);
+
+  const { dragState, startDrag, startResize, updateDrag, endDrag, timeToPosition } = useTaskDrag({
+    tasks,
+    onTaskMove: handleTaskMove,
+    onTaskResize: handleTaskResize,
+    onStartNowPrompt: handleStartNowPrompt,
+    containerRef,
+  });
+
+  // Global mouse/touch move and up handlers
+  useEffect(() => {
+    if (!dragState) return;
+
+    const handleMove = (e: MouseEvent | TouchEvent) => {
+      const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+      updateDrag(clientY);
+    };
+
+    const handleUp = () => {
+      endDrag();
+    };
+
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleUp);
+    window.addEventListener('touchmove', handleMove);
+    window.addEventListener('touchend', handleUp);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mouseup', handleUp);
+      window.removeEventListener('touchmove', handleMove);
+      window.removeEventListener('touchend', handleUp);
+    };
+  }, [dragState, updateDrag, endDrag]);
 
   // Expose scrollToTask method to parent
   useImperativeHandle(ref, () => ({
@@ -63,7 +118,6 @@ const Timeline = forwardRef<TimelineRef, TimelineProps>(({
     const currentHour = now.getHours();
     const currentMinutes = now.getMinutes();
 
-    // If before start or after end, clamp to bounds
     if (currentHour < START_HOUR) return 0;
     if (currentHour > END_HOUR) return (END_HOUR - START_HOUR) * HOUR_HEIGHT;
 
@@ -116,7 +170,7 @@ const Timeline = forwardRef<TimelineRef, TimelineProps>(({
   const totalHeight = (END_HOUR - START_HOUR) * HOUR_HEIGHT;
 
   return (
-    <div className="relative w-full max-w-2xl mx-auto px-6">
+    <div className="relative w-full max-w-2xl mx-auto px-6" ref={containerRef}>
       {/* Timeline container */}
       <div className="relative" style={{ height: `${totalHeight}px` }}>
         {/* The vertical timeline line */}
@@ -144,32 +198,73 @@ const Timeline = forwardRef<TimelineRef, TimelineProps>(({
           </div>
         ))}
 
-        {/* Task Cards */}
-        {tasks.map((task) => (
+        {/* Ghost outline for drag preview */}
+        {dragState && dragState.isDragging && (
           <div
-            key={task.id}
-            ref={(el) => { taskRefs.current[task.id] = el; }}
-            className="absolute right-0 pl-6"
+            className="absolute right-0 pl-6 pointer-events-none"
             style={{
-              top: `${getTaskPosition(task.startTime)}px`,
+              top: `${getTaskPosition(tasks.find(t => t.id === dragState.taskId)?.startTime || "09:00")}px`,
               left: "50%",
               width: "calc(50% - 1.5rem)",
               marginLeft: "1.5rem",
-              zIndex: 5,
+              zIndex: 4,
             }}
           >
-            <TaskCard 
-              task={task} 
-              isNew={newTaskIds.includes(task.id)}
-              isCompleted={completedTaskIds.includes(task.id)}
-              shouldPop={poppingTaskId === task.id}
-              onGenerateSubTasks={onGenerateSubTasks}
-              onToggleSubTask={onToggleSubTask}
-              onStartFocus={onStartFocus}
-              onFinishedEarly={onFinishedEarly}
+            <div 
+              className={cn(
+                "rounded-xl border-2 border-dashed border-primary/40",
+                "bg-primary/5"
+              )}
+              style={{
+                height: `${Math.max(48, (tasks.find(t => t.id === dragState.taskId)?.duration || 30) / 60 * HOUR_HEIGHT)}px`,
+              }}
             />
           </div>
-        ))}
+        )}
+
+        {/* Task Cards */}
+        {tasks.map((task) => {
+          const isDragging = dragState?.taskId === task.id && dragState.isDragging;
+          const isResizing = dragState?.taskId === task.id && dragState.isResizing;
+          const taskTop = isDragging ? dragState.currentTop : getTaskPosition(task.startTime);
+          const taskDuration = isResizing ? dragState.currentDuration : task.duration;
+
+          return (
+            <div
+              key={task.id}
+              ref={(el) => { taskRefs.current[task.id] = el; }}
+              className={cn(
+                "absolute right-0 pl-6",
+                isDragging && "z-50"
+              )}
+              style={{
+                top: `${taskTop}px`,
+                left: "50%",
+                width: "calc(50% - 1.5rem)",
+                marginLeft: "1.5rem",
+                zIndex: isDragging ? 50 : 5,
+                transition: isDragging ? "none" : "top 0.2s ease-out",
+              }}
+            >
+              <DraggableTaskCard 
+                task={task} 
+                isNew={newTaskIds.includes(task.id)}
+                isCompleted={completedTaskIds.includes(task.id)}
+                shouldPop={poppingTaskId === task.id}
+                isDragging={isDragging}
+                isResizing={isResizing}
+                dragTop={isDragging ? dragState.currentTop : undefined}
+                dragDuration={isResizing ? dragState.currentDuration : undefined}
+                onGenerateSubTasks={onGenerateSubTasks}
+                onToggleSubTask={onToggleSubTask}
+                onStartFocus={onStartFocus}
+                onFinishedEarly={onFinishedEarly}
+                onDragStart={(clientY) => startDrag(task.id, clientY, taskTop, task.duration)}
+                onResizeStart={(clientY) => startResize(task.id, clientY, taskTop, task.duration)}
+              />
+            </div>
+          );
+        })}
 
         {/* Rest Aura Blocks for gaps > 15 min */}
         {gaps.map((gap, index) => (
