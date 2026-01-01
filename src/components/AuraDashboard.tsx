@@ -115,20 +115,18 @@ const AuraDashboard = ({
             </div>
           </div>
 
-          {/* Daily Vibe Section */}
+          {/* Aura Insight Section */}
           <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-4 border border-white/30">
             <p className="text-xs font-semibold text-purple-600 uppercase tracking-wider mb-2 flex items-center gap-2">
               <span className="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-pulse" />
-              Today's Vibe
+              Aura Insight
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              {progress === 0 
-                ? "Ready to start your day? Your first task awaits. Let's build that momentum! ✨"
-                : progress < 50 
-                ? "You're warming up nicely! Keep the flow going and watch your Aura grow. 🌟"
-                : progress < 100
-                ? "You're in a flow state! Most of your deep work is done. Time for a peaceful evening. 🌙"
-                : "Amazing! You've completed all your tasks. Your Aura is absolutely radiant today! 🎉"
+              {auraScore < 50 
+                ? "Great start! Let's pick one small thing to do next. Every step counts. ✨"
+                : auraScore < 150 
+                ? "You're in the flow! Keep that momentum going—your Aura is growing beautifully. 🌟"
+                : "Aura Legend status! You've been crushing it. Remember to take a break soon. 👑"
               }
             </p>
           </div>

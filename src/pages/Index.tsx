@@ -52,6 +52,7 @@ const Index = () => {
   const [focusTask, setFocusTask] = useState<Task | null>(null);
   const [completedTaskIds, setCompletedTaskIds] = useState<string[]>([]);
   const [poppingTaskId, setPoppingTaskId] = useState<string | null>(null);
+  const [goldenPulseTaskId, setGoldenPulseTaskId] = useState<string | null>(null);
   const [auraScore, setAuraScore] = useState(100);
   const [streak] = useState(5);
   const [shouldAnimateScore, setShouldAnimateScore] = useState(false);
@@ -133,7 +134,7 @@ const Index = () => {
       setTasks((prev) =>
         prev.map((task) => {
           if (task.id === taskId) {
-            const subTasks = generateMicroSteps(task.name);
+            const subTasks = generateMicroSteps(task.name, task.category);
             return { 
               ...task, 
               isGeneratingSubTasks: false, 
@@ -146,8 +147,30 @@ const Index = () => {
     }, 1500);
   }, []);
 
+  // Play a completion chime sound
+  const playChime = useCallback(() => {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    
+    // Create a harmonious chime with multiple frequencies
+    const frequencies = [523.25, 659.25, 783.99]; // C5, E5, G5 - major chord
+    
+    frequencies.forEach((freq, i) => {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+      oscillator.type = "sine";
+      gainNode.gain.setValueAtTime(0.15, audioContext.currentTime + i * 0.05);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
+      oscillator.start(audioContext.currentTime + i * 0.05);
+      oscillator.stop(audioContext.currentTime + 0.8);
+    });
+  }, []);
+
   const handleToggleSubTask = useCallback((taskId: string, subTaskId: string) => {
     let wasCompleting = false;
+    let isLastSubTask = false;
     
     setTasks((prev) =>
       prev.map((task) => {
@@ -155,6 +178,9 @@ const Index = () => {
           const targetSubTask = task.subTasks.find((st) => st.id === subTaskId);
           if (targetSubTask && !targetSubTask.completed) {
             wasCompleting = true;
+            // Check if this is the last uncompleted subtask
+            const uncompletedCount = task.subTasks.filter((st) => !st.completed).length;
+            isLastSubTask = uncompletedCount === 1;
           }
           const updatedSubTasks = task.subTasks.map((st) =>
             st.id === subTaskId ? { ...st, completed: !st.completed } : st
@@ -167,9 +193,16 @@ const Index = () => {
 
     // Trigger haptic-style pop animation and mini-bounce on score
     if (wasCompleting) {
-      // Pop the task card
-      setPoppingTaskId(taskId);
-      setTimeout(() => setPoppingTaskId(null), 300);
+      if (isLastSubTask) {
+        // Trigger golden pulse for final subtask
+        setGoldenPulseTaskId(taskId);
+        playChime();
+        setTimeout(() => setGoldenPulseTaskId(null), 1000);
+      } else {
+        // Regular pop animation
+        setPoppingTaskId(taskId);
+        setTimeout(() => setPoppingTaskId(null), 300);
+      }
       
       // Increment aura score with animation
       setAuraScore((prev) => prev + 10);
@@ -189,7 +222,7 @@ const Index = () => {
         };
       });
     }
-  }, [focusTask]);
+  }, [focusTask, playChime]);
 
   const handleStartFocus = useCallback((task: Task) => {
     setFocusTask(task);
@@ -347,6 +380,7 @@ const Index = () => {
           newTaskIds={newTaskIds}
           completedTaskIds={completedTaskIds}
           poppingTaskId={poppingTaskId}
+          goldenPulseTaskId={goldenPulseTaskId}
           onGenerateSubTasks={handleGenerateSubTasks}
           onToggleSubTask={handleToggleSubTask}
           onStartFocus={handleStartFocus}

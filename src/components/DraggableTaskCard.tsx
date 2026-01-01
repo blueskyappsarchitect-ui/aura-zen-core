@@ -18,6 +18,7 @@ interface DraggableTaskCardProps {
   isNew?: boolean;
   isCompleted?: boolean;
   shouldPop?: boolean;
+  shouldGoldenPulse?: boolean;
   isDragging?: boolean;
   isResizing?: boolean;
   dragTop?: number;
@@ -35,6 +36,7 @@ const DraggableTaskCard = ({
   isNew = false,
   isCompleted = false,
   shouldPop = false,
+  shouldGoldenPulse = false,
   isDragging = false,
   isResizing = false,
   dragTop,
@@ -48,6 +50,7 @@ const DraggableTaskCard = ({
 }: DraggableTaskCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isPopping, setIsPopping] = useState(false);
+  const [isGoldenPulsing, setIsGoldenPulsing] = useState(false);
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
   const config = CATEGORY_CONFIG[task.category];
   const Icon = iconMap[config.icon as keyof typeof iconMap];
@@ -61,6 +64,14 @@ const DraggableTaskCard = ({
       return () => clearTimeout(timer);
     }
   }, [shouldPop]);
+
+  useEffect(() => {
+    if (shouldGoldenPulse) {
+      setIsGoldenPulsing(true);
+      const timer = setTimeout(() => setIsGoldenPulsing(false), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [shouldGoldenPulse]);
   
   const baseHeightPx = (displayDuration / 60) * HOUR_HEIGHT;
   const minHeight = 48;
@@ -137,6 +148,7 @@ const DraggableTaskCard = ({
         isExpanded && "ring-2 ring-primary/20",
         isCompleted && "task-completed-glow",
         isPopping && "animate-card-pop",
+        isGoldenPulsing && "animate-golden-pulse",
         isDragging && "opacity-80 shadow-2xl scale-[1.02] z-50",
         isResizing && "ring-2 ring-primary/40"
       )}

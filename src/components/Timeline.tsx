@@ -15,6 +15,7 @@ interface TimelineProps {
   newTaskIds?: string[];
   completedTaskIds?: string[];
   poppingTaskId?: string | null;
+  goldenPulseTaskId?: string | null;
   onGenerateSubTasks?: (taskId: string) => void;
   onToggleSubTask?: (taskId: string, subTaskId: string) => void;
   onStartFocus?: (task: Task) => void;
@@ -33,6 +34,7 @@ const Timeline = forwardRef<TimelineRef, TimelineProps>(({
   newTaskIds = [],
   completedTaskIds = [],
   poppingTaskId,
+  goldenPulseTaskId,
   onGenerateSubTasks,
   onToggleSubTask,
   onStartFocus,
@@ -251,6 +253,7 @@ const Timeline = forwardRef<TimelineRef, TimelineProps>(({
                 isNew={newTaskIds.includes(task.id)}
                 isCompleted={completedTaskIds.includes(task.id)}
                 shouldPop={poppingTaskId === task.id}
+                shouldGoldenPulse={goldenPulseTaskId === task.id}
                 isDragging={isDragging}
                 isResizing={isResizing}
                 dragTop={isDragging ? dragState.currentTop : undefined}
