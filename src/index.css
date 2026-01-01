@@ -218,6 +218,148 @@
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
+  /* Midnight Theme */
+  [data-theme="midnight"] {
+    --background: 220 50% 97%;
+    --foreground: 220 40% 15%;
+    --card: 220 45% 95%;
+    --card-foreground: 220 40% 15%;
+    --primary: 180 90% 40%;
+    --primary-foreground: 220 60% 10%;
+    --primary-glow: 180 90% 50%;
+    --secondary: 220 30% 92%;
+    --secondary-foreground: 220 40% 20%;
+    --muted: 220 25% 90%;
+    --muted-foreground: 220 20% 45%;
+    --accent: 180 60% 90%;
+    --accent-foreground: 180 90% 30%;
+    --border: 220 25% 88%;
+    --ring: 180 90% 40%;
+    --category-study: 180 70% 85%;
+    --category-study-foreground: 180 60% 30%;
+    --category-personal: 220 60% 85%;
+    --category-personal-foreground: 220 50% 35%;
+    --category-rest: 200 50% 85%;
+    --category-rest-foreground: 200 45% 30%;
+    --glass-bg: 220 50% 96%;
+    --glass-border: 180 40% 85%;
+    --glass-glow: 180 90% 60%;
+    --gradient-morning: linear-gradient(135deg, hsl(200 40% 95%) 0%, hsl(210 45% 92%) 50%, hsl(220 50% 94%) 100%);
+    --gradient-afternoon: linear-gradient(135deg, hsl(180 50% 94%) 0%, hsl(190 45% 92%) 50%, hsl(200 40% 95%) 100%);
+    --gradient-evening: linear-gradient(135deg, hsl(220 50% 92%) 0%, hsl(230 45% 88%) 50%, hsl(240 40% 90%) 100%);
+  }
+
+  [data-theme="midnight"].dark {
+    --background: 220 60% 8%;
+    --foreground: 200 30% 92%;
+    --card: 220 55% 10%;
+    --card-foreground: 200 30% 92%;
+    --primary: 180 90% 50%;
+    --primary-foreground: 220 60% 8%;
+    --primary-glow: 180 90% 60%;
+    --secondary: 220 40% 15%;
+    --secondary-foreground: 200 30% 85%;
+    --muted: 220 35% 18%;
+    --muted-foreground: 200 20% 50%;
+    --accent: 180 50% 20%;
+    --accent-foreground: 180 90% 65%;
+    --border: 220 35% 18%;
+    --ring: 180 90% 50%;
+    --category-study: 180 50% 22%;
+    --category-study-foreground: 180 70% 75%;
+    --category-personal: 220 45% 22%;
+    --category-personal-foreground: 220 60% 75%;
+    --category-rest: 200 40% 20%;
+    --category-rest-foreground: 200 50% 70%;
+    --glass-bg: 220 50% 12%;
+    --glass-border: 180 40% 25%;
+    --glass-glow: 180 90% 45%;
+    --gradient-morning: linear-gradient(135deg, hsl(200 30% 10%) 0%, hsl(210 35% 8%) 50%, hsl(220 40% 6%) 100%);
+    --gradient-afternoon: linear-gradient(135deg, hsl(180 30% 10%) 0%, hsl(190 35% 8%) 50%, hsl(200 30% 6%) 100%);
+    --gradient-evening: linear-gradient(135deg, hsl(220 40% 8%) 0%, hsl(230 35% 6%) 50%, hsl(240 30% 5%) 100%);
+  }
+
+  /* Forest Theme */
+  [data-theme="forest"] {
+    --background: 80 30% 97%;
+    --foreground: 80 25% 15%;
+    --card: 80 25% 95%;
+    --card-foreground: 80 25% 15%;
+    --primary: 120 35% 40%;
+    --primary-foreground: 45 40% 95%;
+    --primary-glow: 120 40% 50%;
+    --secondary: 45 25% 92%;
+    --secondary-foreground: 80 25% 20%;
+    --muted: 45 20% 90%;
+    --muted-foreground: 80 15% 45%;
+    --accent: 120 30% 90%;
+    --accent-foreground: 120 35% 35%;
+    --border: 45 20% 88%;
+    --ring: 120 35% 40%;
+    --category-study: 120 40% 85%;
+    --category-study-foreground: 120 35% 30%;
+    --category-personal: 30 50% 85%;
+    --category-personal-foreground: 30 45% 30%;
+    --category-rest: 45 40% 88%;
+    --category-rest-foreground: 45 35% 30%;
+    --glass-bg: 80 25% 96%;
+    --glass-border: 120 25% 85%;
+    --glass-glow: 120 40% 55%;
+    --gradient-morning: linear-gradient(135deg, hsl(45 40% 95%) 0%, hsl(50 35% 92%) 50%, hsl(60 30% 94%) 100%);
+    --gradient-afternoon: linear-gradient(135deg, hsl(120 30% 94%) 0%, hsl(100 25% 92%) 50%, hsl(80 20% 95%) 100%);
+    --gradient-evening: linear-gradient(135deg, hsl(80 25% 92%) 0%, hsl(60 20% 88%) 50%, hsl(45 25% 90%) 100%);
+  }
+
+  [data-theme="forest"].dark {
+    --background: 80 25% 8%;
+    --foreground: 45 25% 90%;
+    --card: 80 20% 10%;
+    --card-foreground: 45 25% 90%;
+    --primary: 120 40% 45%;
+    --primary-foreground: 80 25% 8%;
+    --primary-glow: 120 45% 55%;
+    --secondary: 45 20% 15%;
+    --secondary-foreground: 45 25% 85%;
+    --muted: 45 15% 18%;
+    --muted-foreground: 45 15% 50%;
+    --accent: 120 30% 20%;
+    --accent-foreground: 120 45% 65%;
+    --border: 45 15% 18%;
+    --ring: 120 40% 45%;
+    --category-study: 120 35% 22%;
+    --category-study-foreground: 120 50% 70%;
+    --category-personal: 30 40% 22%;
+    --category-personal-foreground: 30 55% 70%;
+    --category-rest: 45 30% 20%;
+    --category-rest-foreground: 45 45% 70%;
+    --glass-bg: 80 20% 12%;
+    --glass-border: 120 25% 25%;
+    --glass-glow: 120 45% 40%;
+    --gradient-morning: linear-gradient(135deg, hsl(45 25% 10%) 0%, hsl(50 20% 8%) 50%, hsl(60 15% 6%) 100%);
+    --gradient-afternoon: linear-gradient(135deg, hsl(120 20% 10%) 0%, hsl(100 15% 8%) 50%, hsl(80 10% 6%) 100%);
+    --gradient-evening: linear-gradient(135deg, hsl(80 15% 8%) 0%, hsl(60 10% 6%) 50%, hsl(45 15% 5%) 100%);
+  }
+
+  /* High Contrast Mode */
+  .high-contrast {
+    --border: 220 30% 70%;
+  }
+
+  .high-contrast.dark {
+    --border: 220 20% 40%;
+  }
+
+  .high-contrast [class*="border"] {
+    border-width: 2px !important;
+  }
+
+  /* Reduced Motion */
+  .reduced-motion,
+  .reduced-motion * {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 @layer base {
