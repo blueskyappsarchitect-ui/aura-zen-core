@@ -40,36 +40,35 @@ export const CATEGORY_CONFIG: Record<
   },
 };
 
-// Simulated AI task slicer - generates dopamine-sized micro-steps
-export const generateMicroSteps = (taskName: string): SubTask[] => {
-  const templates: Record<string, string[]> = {
-    study: [
-      `Open your notes for ${taskName}`,
-      "Read the first paragraph slowly",
-      "Highlight one key concept",
+// Category-aware AI task slicer - generates dopamine-sized micro-steps
+export const generateMicroSteps = (taskName: string, category: TaskCategory): SubTask[] => {
+  const templates: Record<TaskCategory, (name: string) => string[]> = {
+    // Pomodoro-style steps for study tasks
+    study: (name) => [
+      `Set a 25-minute timer for focused ${name}`,
+      "Clear your desk and put phone on DND",
+      "Work through the first section without breaks",
+      "5-min review: summarize what you learned",
+      "Reward yourself with a quick stretch",
     ],
-    work: [
-      `Set up your workspace for ${taskName}`,
-      "Complete the first small section",
-      "Take a 30-second stretch break",
+    // Low-friction steps for personal tasks
+    personal: (name) => [
+      `Just get your materials ready for ${name}`,
+      "Take one small action (no pressure)",
+      "If it feels good, keep going for 5 more minutes",
+      "Celebrate that you showed up today",
     ],
-    default: [
-      `Begin ${taskName} with a deep breath`,
-      "Focus on just the first step",
-      "Celebrate small progress",
+    // Unplugging-focused steps for rest
+    rest: (name) => [
+      "Set your phone to Do Not Disturb",
+      "Dim the lights or find a cozy spot",
+      `Begin ${name} with three slow breaths`,
+      "Let your mind wander freely",
+      "When ready, gently return to the present",
     ],
   };
 
-  const category = taskName.toLowerCase().includes("study") || 
-                   taskName.toLowerCase().includes("work") || 
-                   taskName.toLowerCase().includes("deep") 
-                   ? "study" 
-                   : taskName.toLowerCase().includes("break") || 
-                     taskName.toLowerCase().includes("rest")
-                     ? "default"
-                     : "work";
-
-  const steps = templates[category] || templates.default;
+  const steps = templates[category](taskName);
   
   return steps.map((text, index) => ({
     id: `subtask-${Date.now()}-${index}`,
