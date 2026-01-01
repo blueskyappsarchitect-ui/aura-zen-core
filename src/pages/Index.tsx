@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import Header from "@/components/Header";
 import Timeline, { TimelineRef } from "@/components/Timeline";
 import AddTaskButton from "@/components/AddTaskButton";
@@ -10,8 +10,22 @@ import TransitionBridge from "@/components/TransitionBridge";
 import DoneEarlyDialog from "@/components/DoneEarlyDialog";
 import AuraResetTimer from "@/components/AuraResetTimer";
 import StartNowDialog from "@/components/StartNowDialog";
+import MorningBriefing from "@/components/MorningBriefing";
+import NorthStar from "@/components/NorthStar";
 import { useTimeOfDay } from "@/hooks/useTimeOfDay";
 import { Task, generateMicroSteps } from "@/types/task";
+
+// Check if morning briefing was shown today
+const getMorningBriefingKey = () => {
+  const today = new Date().toDateString();
+  return `aura-morning-briefing-${today}`;
+};
+
+const getSavedIntention = (): string => {
+  const today = new Date().toDateString();
+  const saved = localStorage.getItem(`aura-intention-${today}`);
+  return saved || "";
+};
 
 // Default example tasks
 const defaultTasks: Task[] = [
@@ -46,9 +60,35 @@ const Index = () => {
   const [startNowTask, setStartNowTask] = useState<Task | null>(null);
   const [pendingMoveTaskId, setPendingMoveTaskId] = useState<string | null>(null);
   const [pendingMoveTime, setPendingMoveTime] = useState<string | null>(null);
+  const [showMorningBriefing, setShowMorningBriefing] = useState(false);
+  const [dailyIntention, setDailyIntention] = useState(getSavedIntention);
   
   const timelineRef = useRef<TimelineRef>(null);
   const timeTheme = useTimeOfDay();
+
+  // Check if we should show morning briefing on first load of the day
+  useEffect(() => {
+    const briefingKey = getMorningBriefingKey();
+    const wasShown = localStorage.getItem(briefingKey);
+    if (!wasShown) {
+      setShowMorningBriefing(true);
+    }
+  }, []);
+
+  const handleMorningBriefingComplete = useCallback((energy: "high" | "medium" | "low" | null, intention: string) => {
+    const briefingKey = getMorningBriefingKey();
+    localStorage.setItem(briefingKey, "true");
+    
+    // Save intention for today
+    const today = new Date().toDateString();
+    localStorage.setItem(`aura-intention-${today}`, intention);
+    setDailyIntention(intention);
+    
+    // Could use energy level to adjust task recommendations in the future
+    console.log("Energy level:", energy);
+    
+    setShowMorningBriefing(false);
+  }, []);
 
   // Calculate completed tasks count
   const { completedCount, totalSubTasks } = useMemo(() => {
@@ -275,6 +315,11 @@ const Index = () => {
 
   return (
     <div className={`min-h-screen transition-colors duration-1000 ${timeTheme.gradientClass}`}>
+      {/* Morning Briefing Modal */}
+      {showMorningBriefing && (
+        <MorningBriefing onComplete={handleMorningBriefingComplete} />
+      )}
+
       {/* Fixed Header */}
       <Header />
 
@@ -282,6 +327,9 @@ const Index = () => {
       <main className="pt-24 pb-32 hide-scrollbar">
         {/* Subtle top gradient */}
         <div className="fixed top-16 left-0 right-0 h-16 bg-gradient-to-b from-background to-transparent pointer-events-none z-10" />
+
+        {/* North Star Intention */}
+        {dailyIntention && <NorthStar intention={dailyIntention} />}
 
         {/* Aura Dashboard */}
         <AuraDashboard
