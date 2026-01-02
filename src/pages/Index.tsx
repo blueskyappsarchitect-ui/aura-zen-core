@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
+import { format, isToday, subDays, isSameDay } from "date-fns";
 import Header from "@/components/Header";
 import Timeline, { TimelineRef } from "@/components/Timeline";
 import AddTaskButton from "@/components/AddTaskButton";
@@ -12,8 +13,13 @@ import AuraResetTimer from "@/components/AuraResetTimer";
 import StartNowDialog from "@/components/StartNowDialog";
 import MorningBriefing from "@/components/MorningBriefing";
 import NorthStar from "@/components/NorthStar";
+import WeeklyDayPicker from "@/components/WeeklyDayPicker";
+import DeepWorkForecast from "@/components/DeepWorkForecast";
 import { useTimeOfDay } from "@/hooks/useTimeOfDay";
 import { Task, generateMicroSteps } from "@/types/task";
+
+// Helper to get date key for localStorage
+const getDateKey = (date: Date) => format(date, "yyyy-MM-dd");
 
 // Check if morning briefing was shown today
 const getMorningBriefingKey = () => {
@@ -27,8 +33,8 @@ const getSavedIntention = (): string => {
   return saved || "";
 };
 
-// Default example tasks
-const defaultTasks: Task[] = [
+// Default example tasks for today
+const getDefaultTasks = (): Task[] => [
   {
     id: "1",
     name: "Morning Deep Work",
@@ -45,8 +51,30 @@ const defaultTasks: Task[] = [
   },
 ];
 
+// Load tasks for a specific date from localStorage
+const loadTasksForDate = (date: Date): Task[] => {
+  const key = `aura-tasks-${getDateKey(date)}`;
+  const saved = localStorage.getItem(key);
+  if (saved) {
+    return JSON.parse(saved);
+  }
+  // Only return default tasks for today if nothing saved
+  if (isToday(date)) {
+    return getDefaultTasks();
+  }
+  return [];
+};
+
+// Save tasks for a specific date to localStorage
+const saveTasksForDate = (date: Date, tasks: Task[]) => {
+  const key = `aura-tasks-${getDateKey(date)}`;
+  localStorage.setItem(key, JSON.stringify(tasks));
+};
+
 const Index = () => {
-  const [tasks, setTasks] = useState<Task[]>(defaultTasks);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [tasks, setTasks] = useState<Task[]>(() => loadTasksForDate(new Date()));
+  const [timelineFading, setTimelineFading] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [newTaskIds, setNewTaskIds] = useState<string[]>([]);
   const [focusTask, setFocusTask] = useState<Task | null>(null);
@@ -75,6 +103,87 @@ const Index = () => {
       setShowMorningBriefing(true);
     }
   }, []);
+
+  // Save tasks to localStorage whenever they change
+  useEffect(() => {
+    saveTasksForDate(selectedDate, tasks);
+  }, [tasks, selectedDate]);
+
+  // Load tasks when selected date changes
+  const handleSelectDate = useCallback((date: Date) => {
+    setTimelineFading(true);
+    setTimeout(() => {
+      setSelectedDate(date);
+      setTasks(loadTasksForDate(date));
+      setTimelineFading(false);
+    }, 300);
+  }, []);
+
+  // Calculate unfinished tasks from yesterday
+  const unfinishedTasksFromYesterday = useMemo(() => {
+    const yesterday = subDays(new Date(), 1);
+    const yesterdayTasks = loadTasksForDate(yesterday);
+    
+    return yesterdayTasks.filter((task) => {
+      // Task is incomplete if it has subtasks and not all are completed
+      if (task.subTasks && task.subTasks.length > 0) {
+        return task.subTasks.some((st) => !st.completed);
+      }
+      // If no subtasks, consider it incomplete
+      return true;
+    });
+  }, []);
+
+  // Handle migrating unfinished tasks to today
+  const handleMigrateUnfinished = useCallback(() => {
+    if (unfinishedTasksFromYesterday.length === 0) return;
+
+    // Find gaps in today's schedule
+    const sortedTasks = [...tasks]
+      .map((task) => {
+        const [hours, minutes] = task.startTime.split(":").map(Number);
+        const taskStartMinutes = hours * 60 + minutes;
+        const taskEndMinutes = taskStartMinutes + task.duration;
+        return { ...task, taskStartMinutes, taskEndMinutes };
+      })
+      .sort((a, b) => a.taskStartMinutes - b.taskStartMinutes);
+
+    // Find gaps and migrate tasks
+    const migratedTasks: Task[] = [];
+    let currentGapStart = 9 * 60; // Start at 9 AM
+
+    for (const task of unfinishedTasksFromYesterday) {
+      // Find a gap that fits this task
+      for (let i = 0; i <= sortedTasks.length; i++) {
+        const gapEnd = i < sortedTasks.length ? sortedTasks[i].taskStartMinutes : 18 * 60;
+        const gapDuration = gapEnd - currentGapStart;
+
+        if (gapDuration >= task.duration) {
+          // Place task in this gap
+          const hours = Math.floor(currentGapStart / 60);
+          const mins = currentGapStart % 60;
+          const newStartTime = `${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
+
+          migratedTasks.push({
+            ...task,
+            id: `migrated-${Date.now()}-${task.id}`,
+            startTime: newStartTime,
+            subTasks: task.subTasks?.map((st) => ({ ...st, completed: false })),
+          });
+          currentGapStart = currentGapStart + task.duration + 15; // Add 15 min buffer
+          break;
+        }
+
+        if (i < sortedTasks.length) {
+          currentGapStart = sortedTasks[i].taskEndMinutes;
+        }
+      }
+    }
+
+    if (migratedTasks.length > 0) {
+      setTasks((prev) => [...prev, ...migratedTasks]);
+    }
+  }, [unfinishedTasksFromYesterday, tasks]);
 
   const handleMorningBriefingComplete = useCallback((energy: "high" | "medium" | "low" | null, intention: string) => {
     const briefingKey = getMorningBriefingKey();
@@ -362,7 +471,7 @@ const Index = () => {
         <div className="fixed top-16 left-0 right-0 h-16 bg-gradient-to-b from-background to-transparent pointer-events-none z-10" />
 
         {/* North Star Intention */}
-        {dailyIntention && <NorthStar intention={dailyIntention} />}
+        {dailyIntention && isToday(selectedDate) && <NorthStar intention={dailyIntention} />}
 
         {/* Aura Dashboard */}
         <AuraDashboard
@@ -373,22 +482,35 @@ const Index = () => {
           shouldAnimate={shouldAnimateScore}
         />
 
-        {/* The Aura Timeline */}
-        <Timeline 
-          ref={timelineRef}
-          tasks={tasks} 
-          newTaskIds={newTaskIds}
-          completedTaskIds={completedTaskIds}
-          poppingTaskId={poppingTaskId}
-          goldenPulseTaskId={goldenPulseTaskId}
-          onGenerateSubTasks={handleGenerateSubTasks}
-          onToggleSubTask={handleToggleSubTask}
-          onStartFocus={handleStartFocus}
-          onFinishedEarly={handleFinishedEarly}
-          onTaskMove={handleTaskMove}
-          onTaskResize={handleTaskResize}
-          onStartNowPrompt={handleStartNowPrompt}
+        {/* Weekly Day Picker */}
+        <WeeklyDayPicker
+          selectedDate={selectedDate}
+          onSelectDate={handleSelectDate}
+          unfinishedCount={unfinishedTasksFromYesterday.length}
+          onMigrateUnfinished={handleMigrateUnfinished}
         />
+
+        {/* Deep Work Forecast for future days */}
+        <DeepWorkForecast tasks={tasks} selectedDate={selectedDate} />
+
+        {/* The Aura Timeline */}
+        <div className={`transition-opacity duration-300 ${timelineFading ? "opacity-0" : "opacity-100"}`}>
+          <Timeline 
+            ref={timelineRef}
+            tasks={tasks} 
+            newTaskIds={newTaskIds}
+            completedTaskIds={completedTaskIds}
+            poppingTaskId={poppingTaskId}
+            goldenPulseTaskId={goldenPulseTaskId}
+            onGenerateSubTasks={handleGenerateSubTasks}
+            onToggleSubTask={handleToggleSubTask}
+            onStartFocus={handleStartFocus}
+            onFinishedEarly={handleFinishedEarly}
+            onTaskMove={handleTaskMove}
+            onTaskResize={handleTaskResize}
+            onStartNowPrompt={handleStartNowPrompt}
+          />
+        </div>
 
         {/* Subtle bottom gradient */}
         <div className="fixed bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none z-10" />
