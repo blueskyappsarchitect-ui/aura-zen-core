@@ -5,6 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import confetti from "canvas-confetti";
+import FocusSoundscape from "./FocusSoundscape";
 
 // Category gradient backgrounds for lava lamp effect
 const CATEGORY_GRADIENTS: Record<TaskCategory, string> = {
@@ -25,6 +26,7 @@ const FocusMode = ({ task, onClose, onComplete, onToggleSubTask }: FocusModeProp
   const [isExiting, setIsExiting] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [showReward, setShowReward] = useState(false);
+  const [isTimerComplete, setIsTimerComplete] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const config = CATEGORY_CONFIG[task.category];
@@ -89,6 +91,7 @@ const FocusMode = ({ task, onClose, onComplete, onToggleSubTask }: FocusModeProp
 
   // Handle completion
   const handleComplete = useCallback(() => {
+    setIsTimerComplete(true);
     setShowReward(true);
     fireConfetti();
     playZenBell();
@@ -97,7 +100,7 @@ const FocusMode = ({ task, onClose, onComplete, onToggleSubTask }: FocusModeProp
       onComplete(task.id);
       setIsExiting(true);
       setTimeout(onClose, 300);
-    }, 2500);
+    }, 3500); // Extended to allow for sound fade
   }, [fireConfetti, playZenBell, onComplete, task.id, onClose]);
 
   // Timer countdown
@@ -250,12 +253,18 @@ const FocusMode = ({ task, onClose, onComplete, onToggleSubTask }: FocusModeProp
         </>
       )}
 
+      {/* Focus Soundscape */}
+      <FocusSoundscape 
+        category={task.category} 
+        isTimerComplete={isTimerComplete} 
+      />
+
       {/* Minimize Button - Bottom */}
       {!showReward && (
         <Button
           variant="ghost"
           onClick={handleMinimize}
-          className="absolute bottom-8 glass rounded-full px-6 py-3 text-foreground/70 hover:text-foreground hover:bg-foreground/10"
+          className="absolute bottom-8 right-6 glass rounded-full px-6 py-3 text-foreground/70 hover:text-foreground hover:bg-foreground/10"
         >
           <Minimize2 className="w-4 h-4 mr-2" />
           Minimize Shield
