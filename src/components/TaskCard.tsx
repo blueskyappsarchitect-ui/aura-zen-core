@@ -203,6 +203,7 @@ const TaskCard = ({
             <Button
               onClick={handleStartFocus}
               size="sm"
+              data-tour="shield-mode"
               className={cn(
                 "flex-1 glass border-0",
                 "bg-foreground/10 hover:bg-foreground/20",

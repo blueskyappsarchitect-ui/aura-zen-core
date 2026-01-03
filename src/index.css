@@ -69,6 +69,19 @@
 }
 
 /* Golden Pulse animation for final subtask completion */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
 @keyframes golden-pulse {
   0% {
     box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7);
