@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
-import { format, isToday, subDays, isSameDay } from "date-fns";
+import { format, isToday, subDays } from "date-fns";
 import Header from "@/components/Header";
 import Timeline, { TimelineRef } from "@/components/Timeline";
 import AddTaskButton from "@/components/AddTaskButton";
@@ -17,11 +17,10 @@ import WeeklyDayPicker from "@/components/WeeklyDayPicker";
 import DeepWorkForecast from "@/components/DeepWorkForecast";
 import EmptyTimelineState from "@/components/EmptyTimelineState";
 import GuidedTour, { shouldShowTour } from "@/components/GuidedTour";
+import LoadingScreen from "@/components/LoadingScreen";
 import { useTimeOfDay } from "@/hooks/useTimeOfDay";
+import { useSupabaseSync } from "@/hooks/useSupabaseSync";
 import { Task, generateMicroSteps } from "@/types/task";
-
-// Helper to get date key for localStorage
-const getDateKey = (date: Date) => format(date, "yyyy-MM-dd");
 
 // Check if morning briefing was shown today
 const getMorningBriefingKey = () => {
@@ -35,54 +34,21 @@ const getSavedIntention = (): string => {
   return saved || "";
 };
 
-// Default example tasks for today - empty for new users to see onboarding
-const getDefaultTasks = (): Task[] => {
-  // Check if this is a first-time user
-  const hasSeenTour = localStorage.getItem("aura-guided-tour-completed");
-  if (!hasSeenTour) {
-    return []; // Empty for new users to see empty state
-  }
-  return [
-    {
-      id: "1",
-      name: "Morning Deep Work",
-      category: "study",
-      startTime: "09:00",
-      duration: 90,
-    },
-    {
-      id: "2",
-      name: "Coffee Break",
-      category: "rest",
-      startTime: "11:00",
-      duration: 30,
-    },
-  ];
-};
-
-// Load tasks for a specific date from localStorage
-const loadTasksForDate = (date: Date): Task[] => {
-  const key = `aura-tasks-${getDateKey(date)}`;
-  const saved = localStorage.getItem(key);
-  if (saved) {
-    return JSON.parse(saved);
-  }
-  // Only return default tasks for today if nothing saved
-  if (isToday(date)) {
-    return getDefaultTasks();
-  }
-  return [];
-};
-
-// Save tasks for a specific date to localStorage
-const saveTasksForDate = (date: Date, tasks: Task[]) => {
-  const key = `aura-tasks-${getDateKey(date)}`;
-  localStorage.setItem(key, JSON.stringify(tasks));
-};
-
 const Index = () => {
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [tasks, setTasks] = useState<Task[]>(() => loadTasksForDate(new Date()));
+  // Supabase sync hook
+  const {
+    tasks,
+    setTasks,
+    auraScore,
+    setAuraScore: incrementAuraScore,
+    streak,
+    selectedDate,
+    setSelectedDate,
+    isLoading,
+    addTask,
+    updateTask,
+  } = useSupabaseSync();
+
   const [timelineFading, setTimelineFading] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [newTaskIds, setNewTaskIds] = useState<string[]>([]);
@@ -90,8 +56,6 @@ const Index = () => {
   const [completedTaskIds, setCompletedTaskIds] = useState<string[]>([]);
   const [poppingTaskId, setPoppingTaskId] = useState<string | null>(null);
   const [goldenPulseTaskId, setGoldenPulseTaskId] = useState<string | null>(null);
-  const [auraScore, setAuraScore] = useState(100);
-  const [streak] = useState(5);
   const [shouldAnimateScore, setShouldAnimateScore] = useState(false);
   const [doneEarlyTask, setDoneEarlyTask] = useState<Task | null>(null);
   const [showAuraReset, setShowAuraReset] = useState(false);
@@ -109,41 +73,37 @@ const Index = () => {
   useEffect(() => {
     const briefingKey = getMorningBriefingKey();
     const wasShown = localStorage.getItem(briefingKey);
-    if (!wasShown) {
+    if (!wasShown && !isLoading) {
       setShowMorningBriefing(true);
     }
     // Check if we should show guided tour (after adding first task)
     if (shouldShowTour() && tasks.length > 0) {
       setShowGuidedTour(true);
     }
-  }, [tasks.length]);
-
-  // Save tasks to localStorage whenever they change
-  useEffect(() => {
-    saveTasksForDate(selectedDate, tasks);
-  }, [tasks, selectedDate]);
+  }, [tasks.length, isLoading]);
 
   // Load tasks when selected date changes
   const handleSelectDate = useCallback((date: Date) => {
     setTimelineFading(true);
     setTimeout(() => {
       setSelectedDate(date);
-      setTasks(loadTasksForDate(date));
       setTimelineFading(false);
     }, 300);
-  }, []);
+  }, [setSelectedDate]);
 
-  // Calculate unfinished tasks from yesterday
+  // Calculate unfinished tasks from yesterday (from local storage for migration)
   const unfinishedTasksFromYesterday = useMemo(() => {
+    // For migration logic, we use localStorage as a fallback
     const yesterday = subDays(new Date(), 1);
-    const yesterdayTasks = loadTasksForDate(yesterday);
+    const key = `aura-tasks-${format(yesterday, "yyyy-MM-dd")}`;
+    const saved = localStorage.getItem(key);
+    if (!saved) return [];
     
+    const yesterdayTasks: Task[] = JSON.parse(saved);
     return yesterdayTasks.filter((task) => {
-      // Task is incomplete if it has subtasks and not all are completed
       if (task.subTasks && task.subTasks.length > 0) {
         return task.subTasks.some((st) => !st.completed);
       }
-      // If no subtasks, consider it incomplete
       return true;
     });
   }, []);
@@ -152,7 +112,6 @@ const Index = () => {
   const handleMigrateUnfinished = useCallback(() => {
     if (unfinishedTasksFromYesterday.length === 0) return;
 
-    // Find gaps in today's schedule
     const sortedTasks = [...tasks]
       .map((task) => {
         const [hours, minutes] = task.startTime.split(":").map(Number);
@@ -162,29 +121,26 @@ const Index = () => {
       })
       .sort((a, b) => a.taskStartMinutes - b.taskStartMinutes);
 
-    // Find gaps and migrate tasks
-    const migratedTasks: Task[] = [];
-    let currentGapStart = 9 * 60; // Start at 9 AM
+    let currentGapStart = 9 * 60;
 
     for (const task of unfinishedTasksFromYesterday) {
-      // Find a gap that fits this task
       for (let i = 0; i <= sortedTasks.length; i++) {
         const gapEnd = i < sortedTasks.length ? sortedTasks[i].taskStartMinutes : 18 * 60;
         const gapDuration = gapEnd - currentGapStart;
 
         if (gapDuration >= task.duration) {
-          // Place task in this gap
           const hours = Math.floor(currentGapStart / 60);
           const mins = currentGapStart % 60;
           const newStartTime = `${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
 
-          migratedTasks.push({
-            ...task,
-            id: `migrated-${Date.now()}-${task.id}`,
+          addTask({
+            name: task.name,
+            category: task.category,
+            duration: task.duration,
             startTime: newStartTime,
             subTasks: task.subTasks?.map((st) => ({ ...st, completed: false })),
           });
-          currentGapStart = currentGapStart + task.duration + 15; // Add 15 min buffer
+          currentGapStart = currentGapStart + task.duration + 15;
           break;
         }
 
@@ -193,22 +149,16 @@ const Index = () => {
         }
       }
     }
-
-    if (migratedTasks.length > 0) {
-      setTasks((prev) => [...prev, ...migratedTasks]);
-    }
-  }, [unfinishedTasksFromYesterday, tasks]);
+  }, [unfinishedTasksFromYesterday, tasks, addTask]);
 
   const handleMorningBriefingComplete = useCallback((energy: "high" | "medium" | "low" | null, intention: string) => {
     const briefingKey = getMorningBriefingKey();
     localStorage.setItem(briefingKey, "true");
     
-    // Save intention for today
     const today = new Date().toDateString();
     localStorage.setItem(`aura-intention-${today}`, intention);
     setDailyIntention(intention);
     
-    // Could use energy level to adjust task recommendations in the future
     console.log("Energy level:", energy);
     
     setShowMorningBriefing(false);
@@ -228,24 +178,19 @@ const Index = () => {
     });
     return { completedCount: completed, totalSubTasks: total };
   }, [tasks]);
-  const handleAddTask = useCallback((taskData: Omit<Task, "id">) => {
-    const newId = `task-${Date.now()}`;
-    const newTask: Task = {
-      ...taskData,
-      id: newId,
-    };
 
-    setTasks((prev) => [...prev, newTask]);
-    setNewTaskIds((prev) => [...prev, newId]);
-
-    // Remove from "new" list after animation completes
-    setTimeout(() => {
-      setNewTaskIds((prev) => prev.filter((id) => id !== newId));
-    }, 500);
-  }, []);
+  const handleAddTask = useCallback(async (taskData: Omit<Task, "id">) => {
+    const newId = await addTask(taskData);
+    if (newId) {
+      setNewTaskIds((prev) => [...prev, newId]);
+      setTimeout(() => {
+        setNewTaskIds((prev) => prev.filter((id) => id !== newId));
+      }, 500);
+    }
+  }, [addTask]);
 
   const handleGenerateSubTasks = useCallback((taskId: string) => {
-    // Set loading state
+    // Set loading state locally
     setTasks((prev) =>
       prev.map((task) =>
         task.id === taskId ? { ...task, isGeneratingSubTasks: true } : task
@@ -254,28 +199,19 @@ const Index = () => {
 
     // Simulate AI thinking for 1.5 seconds
     setTimeout(() => {
-      setTasks((prev) =>
-        prev.map((task) => {
-          if (task.id === taskId) {
-            const subTasks = generateMicroSteps(task.name, task.category);
-            return { 
-              ...task, 
-              isGeneratingSubTasks: false, 
-              subTasks 
-            };
-          }
-          return task;
-        })
-      );
+      const task = tasks.find((t) => t.id === taskId);
+      if (task) {
+        const subTasks = generateMicroSteps(task.name, task.category);
+        updateTask(taskId, { subTasks, isGeneratingSubTasks: false });
+      }
     }, 1500);
-  }, []);
+  }, [tasks, updateTask, setTasks]);
 
   // Play a completion chime sound
   const playChime = useCallback(() => {
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
     
-    // Create a harmonious chime with multiple frequencies
-    const frequencies = [523.25, 659.25, 783.99]; // C5, E5, G5 - major chord
+    const frequencies = [523.25, 659.25, 783.99];
     
     frequencies.forEach((freq, i) => {
       const oscillator = audioContext.createOscillator();
@@ -292,43 +228,31 @@ const Index = () => {
   }, []);
 
   const handleToggleSubTask = useCallback((taskId: string, subTaskId: string) => {
-    let wasCompleting = false;
-    let isLastSubTask = false;
-    
-    setTasks((prev) =>
-      prev.map((task) => {
-        if (task.id === taskId && task.subTasks) {
-          const targetSubTask = task.subTasks.find((st) => st.id === subTaskId);
-          if (targetSubTask && !targetSubTask.completed) {
-            wasCompleting = true;
-            // Check if this is the last uncompleted subtask
-            const uncompletedCount = task.subTasks.filter((st) => !st.completed).length;
-            isLastSubTask = uncompletedCount === 1;
-          }
-          const updatedSubTasks = task.subTasks.map((st) =>
-            st.id === subTaskId ? { ...st, completed: !st.completed } : st
-          );
-          return { ...task, subTasks: updatedSubTasks };
-        }
-        return task;
-      })
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task || !task.subTasks) return;
+
+    const targetSubTask = task.subTasks.find((st) => st.id === subTaskId);
+    const wasCompleting = targetSubTask && !targetSubTask.completed;
+    const uncompletedCount = task.subTasks.filter((st) => !st.completed).length;
+    const isLastSubTask = uncompletedCount === 1 && wasCompleting;
+
+    const updatedSubTasks = task.subTasks.map((st) =>
+      st.id === subTaskId ? { ...st, completed: !st.completed } : st
     );
 
-    // Trigger haptic-style pop animation and mini-bounce on score
+    updateTask(taskId, { subTasks: updatedSubTasks });
+
     if (wasCompleting) {
       if (isLastSubTask) {
-        // Trigger golden pulse for final subtask
         setGoldenPulseTaskId(taskId);
         playChime();
         setTimeout(() => setGoldenPulseTaskId(null), 1000);
       } else {
-        // Regular pop animation
         setPoppingTaskId(taskId);
         setTimeout(() => setPoppingTaskId(null), 300);
       }
       
-      // Increment aura score with animation
-      setAuraScore((prev) => prev + 10);
+      incrementAuraScore(10);
       setShouldAnimateScore(true);
       setTimeout(() => setShouldAnimateScore(false), 100);
     }
@@ -345,7 +269,7 @@ const Index = () => {
         };
       });
     }
-  }, [focusTask, playChime]);
+  }, [tasks, focusTask, playChime, updateTask, incrementAuraScore]);
 
   const handleStartFocus = useCallback((task: Task) => {
     setFocusTask(task);
@@ -356,27 +280,18 @@ const Index = () => {
   }, []);
 
   const handleCompleteTask = useCallback((taskId: string) => {
-    // Mark all subtasks as completed
-    setTasks((prev) =>
-      prev.map((task) => {
-        if (task.id === taskId && task.subTasks) {
-          return {
-            ...task,
-            subTasks: task.subTasks.map((st) => ({ ...st, completed: true })),
-          };
-        }
-        return task;
-      })
-    );
+    const task = tasks.find((t) => t.id === taskId);
+    if (task && task.subTasks) {
+      const completedSubTasks = task.subTasks.map((st) => ({ ...st, completed: true }));
+      updateTask(taskId, { subTasks: completedSubTasks });
+    }
 
-    // Add to completed list for glow effect
     setCompletedTaskIds((prev) => [...prev, taskId]);
 
-    // Remove glow after animation
     setTimeout(() => {
       setCompletedTaskIds((prev) => prev.filter((id) => id !== taskId));
     }, 2000);
-  }, []);
+  }, [tasks, updateTask]);
 
   const handleScrollToTask = useCallback((taskId: string) => {
     timelineRef.current?.scrollToTask(taskId);
@@ -420,24 +335,15 @@ const Index = () => {
 
   // Drag and drop handlers
   const handleTaskMove = useCallback((taskId: string, newStartTime: string) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === taskId ? { ...task, startTime: newStartTime } : task
-      )
-    );
-  }, []);
+    updateTask(taskId, { startTime: newStartTime });
+  }, [updateTask]);
 
   const handleTaskResize = useCallback((taskId: string, newDuration: number) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === taskId ? { ...task, duration: newDuration } : task
-      )
-    );
-  }, []);
+    updateTask(taskId, { duration: newDuration });
+  }, [updateTask]);
 
   const handleStartNowPrompt = useCallback((task: Task) => {
     setStartNowTask(task);
-    // Get current time for the move
     const now = new Date();
     const hours = now.getHours().toString().padStart(2, "0");
     const minutes = (Math.floor(now.getMinutes() / 15) * 15).toString().padStart(2, "0");
@@ -468,6 +374,11 @@ const Index = () => {
   const currentFocusTask = focusTask 
     ? tasks.find((t) => t.id === focusTask.id) || focusTask 
     : null;
+
+  // Show loading screen while fetching data
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className={`min-h-screen transition-colors duration-1000 ${timeTheme.gradientClass}`}>
