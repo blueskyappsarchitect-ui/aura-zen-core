@@ -118,6 +118,23 @@
 .animate-mini-bounce {
   animation: mini-bounce 0.4s ease-out;
 }
+
+/* Aura pulse for loading screen */
+@keyframes aura-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 40px 10px rgba(168, 85, 247, 0.2);
+  }
+}
+
+.animate-aura-pulse {
+  animation: aura-pulse 2s ease-in-out infinite;
+}
+
 @tailwind components;
 @tailwind utilities;
 

@@ -1,0 +1,289 @@
+import { useState, useEffect, useCallback } from "react";
+import { format } from "date-fns";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { Task, TaskCategory, SubTask } from "@/types/task";
+import { useSettings, ThemePreset } from "@/contexts/SettingsContext";
+import { useToast } from "@/hooks/use-toast";
+import { Json } from "@/integrations/supabase/types";
+
+interface UserProfile {
+  aura_score: number;
+  daily_streak: number;
+  current_theme: string;
+}
+
+// Convert database task to app Task format
+const dbToTask = (dbTask: {
+  id: string;
+  title: string;
+  duration: number;
+  category: string;
+  subtasks: unknown;
+  start_time: string;
+  is_completed: boolean;
+}): Task => ({
+  id: dbTask.id,
+  name: dbTask.title,
+  duration: dbTask.duration,
+  category: dbTask.category as TaskCategory,
+  subTasks: (dbTask.subtasks as SubTask[]) || [],
+  startTime: dbTask.start_time,
+});
+
+// Convert app Task to database format
+const taskToDb = (task: Task, userId: string, date: Date) => ({
+  id: task.id,
+  user_id: userId,
+  title: task.name,
+  duration: task.duration,
+  category: task.category,
+  subtasks: task.subTasks || [],
+  start_time: task.startTime,
+  is_completed: task.subTasks?.every((st) => st.completed) ?? false,
+  task_date: format(date, "yyyy-MM-dd"),
+});
+
+export const useSupabaseSync = () => {
+  const { user } = useAuth();
+  const { settings, setTheme } = useSettings();
+  const { toast } = useToast();
+  
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [auraScore, setAuraScore] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  // Load user profile
+  const loadProfile = useCallback(async () => {
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from("user_profiles")
+      .select("*")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Error loading profile:", error);
+      return;
+    }
+
+    if (data) {
+      setAuraScore(data.aura_score);
+      setStreak(data.daily_streak);
+      if (data.current_theme) {
+        setTheme(data.current_theme as ThemePreset);
+      }
+    } else {
+      // Create profile if it doesn't exist
+      const { error: insertError } = await supabase
+        .from("user_profiles")
+        .insert({
+          user_id: user.id,
+          aura_score: 0,
+          daily_streak: 0,
+          current_theme: settings.theme,
+        });
+      
+      if (insertError) {
+        console.error("Error creating profile:", insertError);
+      }
+    }
+  }, [user, settings.theme, setTheme]);
+
+  // Load tasks for selected date
+  const loadTasks = useCallback(async () => {
+    if (!user) return;
+
+    const dateStr = format(selectedDate, "yyyy-MM-dd");
+    
+    const { data, error } = await supabase
+      .from("tasks")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("task_date", dateStr)
+      .order("start_time", { ascending: true });
+
+    if (error) {
+      console.error("Error loading tasks:", error);
+      return;
+    }
+
+    setTasks(data ? data.map(dbToTask) : []);
+  }, [user, selectedDate]);
+
+  // Initial load
+  useEffect(() => {
+    const initialize = async () => {
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
+      
+      setIsLoading(true);
+      await Promise.all([loadProfile(), loadTasks()]);
+      setIsLoading(false);
+    };
+
+    initialize();
+  }, [user, loadProfile, loadTasks]);
+
+  // Set up realtime subscription
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel("tasks-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "tasks",
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          // Reload tasks on any change
+          loadTasks();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, loadTasks]);
+
+  // Sync theme to database when it changes
+  useEffect(() => {
+    if (!user || isLoading) return;
+
+    const syncTheme = async () => {
+      await supabase
+        .from("user_profiles")
+        .update({ current_theme: settings.theme })
+        .eq("user_id", user.id);
+    };
+
+    syncTheme();
+  }, [user, settings.theme, isLoading]);
+
+  // Add task
+  const addTask = useCallback(async (taskData: Omit<Task, "id">) => {
+    if (!user) return;
+
+    const newId = `task-${Date.now()}`;
+    const newTask: Task = { ...taskData, id: newId };
+
+    // Optimistic update
+    setTasks((prev) => [...prev, newTask]);
+
+    const dbData = taskToDb(newTask, user.id, selectedDate);
+    const { error } = await supabase
+      .from("tasks")
+      .insert({
+        user_id: dbData.user_id,
+        title: dbData.title,
+        duration: dbData.duration,
+        category: dbData.category,
+        subtasks: JSON.parse(JSON.stringify(dbData.subtasks)) as Json,
+        start_time: dbData.start_time,
+        is_completed: dbData.is_completed,
+        task_date: dbData.task_date,
+      });
+
+    if (error) {
+      console.error("Error adding task:", error);
+      toast({
+        title: "Sync failed",
+        description: "Could not save task. Please try again.",
+        variant: "destructive",
+      });
+      // Revert optimistic update
+      setTasks((prev) => prev.filter((t) => t.id !== newId));
+    }
+
+    return newId;
+  }, [user, selectedDate, toast]);
+
+  // Update task
+  const updateTask = useCallback(async (taskId: string, updates: Partial<Task>) => {
+    if (!user) return;
+
+    // Optimistic update
+    setTasks((prev) =>
+      prev.map((t) => (t.id === taskId ? { ...t, ...updates } : t))
+    );
+
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task) return;
+
+    const updatedTask = { ...task, ...updates };
+    
+    const { error } = await supabase
+      .from("tasks")
+      .update({
+        title: updatedTask.name,
+        duration: updatedTask.duration,
+        category: updatedTask.category,
+        subtasks: JSON.parse(JSON.stringify(updatedTask.subTasks || [])) as Json,
+        start_time: updatedTask.startTime,
+        is_completed: updatedTask.subTasks?.every((st) => st.completed) ?? false,
+      })
+      .eq("id", taskId)
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error("Error updating task:", error);
+      // Revert on error
+      loadTasks();
+    }
+  }, [user, tasks, loadTasks]);
+
+  // Update aura score
+  const incrementAuraScore = useCallback(async (amount: number) => {
+    if (!user) return;
+
+    const newScore = auraScore + amount;
+    setAuraScore(newScore);
+
+    const { error } = await supabase
+      .from("user_profiles")
+      .update({ aura_score: newScore })
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error("Error updating aura score:", error);
+    }
+  }, [user, auraScore]);
+
+  // Handle date change
+  const handleSelectDate = useCallback(async (date: Date) => {
+    setSelectedDate(date);
+  }, []);
+
+  // Reload tasks when date changes
+  useEffect(() => {
+    if (user && !isLoading) {
+      loadTasks();
+    }
+  }, [selectedDate, user, isLoading, loadTasks]);
+
+  return {
+    tasks,
+    setTasks,
+    auraScore,
+    setAuraScore: incrementAuraScore,
+    streak,
+    selectedDate,
+    setSelectedDate: handleSelectDate,
+    isLoading,
+    isSyncing,
+    addTask,
+    updateTask,
+    loadTasks,
+  };
+};

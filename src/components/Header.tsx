@@ -1,9 +1,21 @@
-import { Calendar, Settings } from "lucide-react";
+import { Calendar, Settings, LogOut } from "lucide-react";
 import { useState } from "react";
 import SettingsDrawer from "./SettingsDrawer";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const Header = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const { signOut } = useAuth();
+  const { toast } = useToast();
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast({
+      title: "Signed out",
+      description: "See you next time! ✨",
+    });
+  };
 
   return (
     <>
@@ -28,6 +40,13 @@ const Header = () => {
               aria-label="Settings"
             >
               <Settings className="w-5 h-5" strokeWidth={1.5} />
+            </button>
+            <button
+              onClick={handleSignOut}
+              className="p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-200"
+              aria-label="Sign out"
+            >
+              <LogOut className="w-5 h-5" strokeWidth={1.5} />
             </button>
           </div>
         </div>
