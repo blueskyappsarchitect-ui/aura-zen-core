@@ -10,6 +10,7 @@ const AddTaskButton = ({ onClick }: AddTaskButtonProps) => {
       onClick={onClick}
       className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 group"
       aria-label="Add new task"
+      data-tour="add-button"
     >
       {/* Glow effect */}
       <div className="absolute inset-0 w-16 h-16 rounded-full bg-primary/20 blur-xl group-hover:bg-primary/30 transition-all duration-300" />

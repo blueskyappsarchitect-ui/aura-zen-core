@@ -15,6 +15,8 @@ import MorningBriefing from "@/components/MorningBriefing";
 import NorthStar from "@/components/NorthStar";
 import WeeklyDayPicker from "@/components/WeeklyDayPicker";
 import DeepWorkForecast from "@/components/DeepWorkForecast";
+import EmptyTimelineState from "@/components/EmptyTimelineState";
+import GuidedTour, { shouldShowTour } from "@/components/GuidedTour";
 import { useTimeOfDay } from "@/hooks/useTimeOfDay";
 import { Task, generateMicroSteps } from "@/types/task";
 
@@ -33,23 +35,30 @@ const getSavedIntention = (): string => {
   return saved || "";
 };
 
-// Default example tasks for today
-const getDefaultTasks = (): Task[] => [
-  {
-    id: "1",
-    name: "Morning Deep Work",
-    category: "study",
-    startTime: "09:00",
-    duration: 90,
-  },
-  {
-    id: "2",
-    name: "Coffee Break",
-    category: "rest",
-    startTime: "11:00",
-    duration: 30,
-  },
-];
+// Default example tasks for today - empty for new users to see onboarding
+const getDefaultTasks = (): Task[] => {
+  // Check if this is a first-time user
+  const hasSeenTour = localStorage.getItem("aura-guided-tour-completed");
+  if (!hasSeenTour) {
+    return []; // Empty for new users to see empty state
+  }
+  return [
+    {
+      id: "1",
+      name: "Morning Deep Work",
+      category: "study",
+      startTime: "09:00",
+      duration: 90,
+    },
+    {
+      id: "2",
+      name: "Coffee Break",
+      category: "rest",
+      startTime: "11:00",
+      duration: 30,
+    },
+  ];
+};
 
 // Load tasks for a specific date from localStorage
 const loadTasksForDate = (date: Date): Task[] => {
@@ -91,6 +100,7 @@ const Index = () => {
   const [pendingMoveTime, setPendingMoveTime] = useState<string | null>(null);
   const [showMorningBriefing, setShowMorningBriefing] = useState(false);
   const [dailyIntention, setDailyIntention] = useState(getSavedIntention);
+  const [showGuidedTour, setShowGuidedTour] = useState(false);
   
   const timelineRef = useRef<TimelineRef>(null);
   const timeTheme = useTimeOfDay();
@@ -102,7 +112,11 @@ const Index = () => {
     if (!wasShown) {
       setShowMorningBriefing(true);
     }
-  }, []);
+    // Check if we should show guided tour (after adding first task)
+    if (shouldShowTour() && tasks.length > 0) {
+      setShowGuidedTour(true);
+    }
+  }, [tasks.length]);
 
   // Save tasks to localStorage whenever they change
   useEffect(() => {
@@ -493,23 +507,27 @@ const Index = () => {
         {/* Deep Work Forecast for future days */}
         <DeepWorkForecast tasks={tasks} selectedDate={selectedDate} />
 
-        {/* The Aura Timeline */}
+        {/* The Aura Timeline or Empty State */}
         <div className={`transition-opacity duration-300 ${timelineFading ? "opacity-0" : "opacity-100"}`}>
-          <Timeline 
-            ref={timelineRef}
-            tasks={tasks} 
-            newTaskIds={newTaskIds}
-            completedTaskIds={completedTaskIds}
-            poppingTaskId={poppingTaskId}
-            goldenPulseTaskId={goldenPulseTaskId}
-            onGenerateSubTasks={handleGenerateSubTasks}
-            onToggleSubTask={handleToggleSubTask}
-            onStartFocus={handleStartFocus}
-            onFinishedEarly={handleFinishedEarly}
-            onTaskMove={handleTaskMove}
-            onTaskResize={handleTaskResize}
-            onStartNowPrompt={handleStartNowPrompt}
-          />
+          {tasks.length === 0 ? (
+            <EmptyTimelineState onAddTask={() => setDrawerOpen(true)} />
+          ) : (
+            <Timeline 
+              ref={timelineRef}
+              tasks={tasks} 
+              newTaskIds={newTaskIds}
+              completedTaskIds={completedTaskIds}
+              poppingTaskId={poppingTaskId}
+              goldenPulseTaskId={goldenPulseTaskId}
+              onGenerateSubTasks={handleGenerateSubTasks}
+              onToggleSubTask={handleToggleSubTask}
+              onStartFocus={handleStartFocus}
+              onFinishedEarly={handleFinishedEarly}
+              onTaskMove={handleTaskMove}
+              onTaskResize={handleTaskResize}
+              onStartNowPrompt={handleStartNowPrompt}
+            />
+          )}
         </div>
 
         {/* Subtle bottom gradient */}
@@ -566,6 +584,12 @@ const Index = () => {
         task={startNowTask}
         onStartNow={handleStartNowConfirm}
         onCancel={handleStartNowCancel}
+      />
+
+      {/* Guided Tour for First-Time Users */}
+      <GuidedTour
+        isActive={showGuidedTour}
+        onComplete={() => setShowGuidedTour(false)}
       />
     </div>
   );

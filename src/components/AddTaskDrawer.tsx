@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BookOpen, User, Coffee, Plus, Clock, Timer } from "lucide-react";
+import { BookOpen, User, Coffee, Plus, Clock, Timer, FileText, Sparkles } from "lucide-react";
 import {
   Drawer,
   DrawerClose,
@@ -27,6 +27,13 @@ const categoryIcons = {
 };
 
 const durationOptions = [15, 30, 45, 60, 90, 120];
+
+// Quick-start templates
+const quickStartTemplates: { name: string; icon: string; duration: number; category: TaskCategory }[] = [
+  { name: "Deep Study", icon: "📝", duration: 90, category: "study" },
+  { name: "Quick Reset", icon: "☕", duration: 15, category: "rest" },
+  { name: "Clear Space", icon: "🧹", duration: 30, category: "personal" },
+];
 
 const AddTaskDrawer = ({ open, onOpenChange, onAddTask }: AddTaskDrawerProps) => {
   const [name, setName] = useState("");
@@ -61,7 +68,47 @@ const AddTaskDrawer = ({ open, onOpenChange, onAddTask }: AddTaskDrawerProps) =>
           </DrawerTitle>
         </DrawerHeader>
 
-        <div className="px-6 py-4 space-y-6">
+        <div className="px-6 py-4 space-y-6 overflow-y-auto">
+          {/* Quick-Start Templates */}
+          <div className="space-y-3">
+            <Label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-primary" />
+              Suggested for You
+            </Label>
+            <div className="grid grid-cols-3 gap-2">
+              {quickStartTemplates.map((template) => {
+                const config = CATEGORY_CONFIG[template.category];
+                return (
+                  <button
+                    key={template.name}
+                    onClick={() => {
+                      setName(template.name);
+                      setCategory(template.category);
+                      setDuration(template.duration);
+                    }}
+                    className={cn(
+                      "flex flex-col items-center gap-1.5 p-3 rounded-xl",
+                      "bg-secondary/50 hover:bg-secondary transition-all duration-200",
+                      "hover:scale-105 active:scale-95",
+                      name === template.name && cn(config.bgClass, "scale-105")
+                    )}
+                  >
+                    <span className="text-lg">{template.icon}</span>
+                    <span className="text-xs font-medium text-foreground">{template.name}</span>
+                    <span className="text-[10px] text-muted-foreground">{template.duration}m</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-border/50" />
+            <span className="text-xs text-muted-foreground">or create custom</span>
+            <div className="flex-1 h-px bg-border/50" />
+          </div>
+
           {/* Task Name */}
           <div className="space-y-2">
             <Label htmlFor="task-name" className="text-sm font-medium text-muted-foreground">

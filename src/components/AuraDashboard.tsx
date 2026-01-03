@@ -64,6 +64,7 @@ const AuraDashboard = ({
             {/* Aura Score */}
             <div 
               ref={scoreRef}
+              data-tour="aura-score"
               className={`flex items-center gap-3 ${isAnimating ? 'animate-score-bounce' : ''}`}
             >
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/30">
