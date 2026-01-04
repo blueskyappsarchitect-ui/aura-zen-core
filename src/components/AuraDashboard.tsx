@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { Sparkles, Flame, TrendingUp } from "lucide-react";
+import { Sparkles, Flame } from "lucide-react";
 import confetti from "canvas-confetti";
+import AuraLevelIcon from "@/components/AuraLevelIcon";
+import GrowthVine from "@/components/GrowthVine";
 
 interface AuraDashboardProps {
   auraScore: number;
@@ -19,8 +21,6 @@ const AuraDashboard = ({
 }: AuraDashboardProps) => {
   const scoreRef = useRef<HTMLDivElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
-
-  const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
 
   // Trigger animation and confetti when score increases
   useEffect(() => {
@@ -61,7 +61,7 @@ const AuraDashboard = ({
         <div className="relative z-10">
           {/* Stats Row */}
           <div className="flex items-center justify-between mb-6">
-            {/* Aura Score */}
+            {/* Aura Score with Level Icon */}
             <div 
               ref={scoreRef}
               data-tour="aura-score"
@@ -71,7 +71,10 @@ const AuraDashboard = ({
                 <Sparkles className="w-7 h-7 text-white" />
               </div>
               <div>
-                <p className="text-xs font-medium text-muted-foreground/70 uppercase tracking-wider">Aura Score</p>
+                <p className="text-xs font-medium text-muted-foreground/70 uppercase tracking-wider flex items-center gap-2">
+                  Aura Score
+                  <AuraLevelIcon auraScore={auraScore} showLabel />
+                </p>
                 <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent">
                   ✨ {auraScore}
                 </p>
@@ -92,29 +95,12 @@ const AuraDashboard = ({
             </div>
           </div>
 
-          {/* Progress Bar */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-purple-500" />
-                <span className="text-sm font-medium text-muted-foreground">Daily Progress</span>
-              </div>
-              <span className="text-sm font-semibold text-purple-600">{completedTasks}/{totalTasks} tasks</span>
-            </div>
-            <div className="h-3 bg-white/50 rounded-full overflow-hidden backdrop-blur-sm border border-white/30">
-              <div 
-                className="h-full bg-gradient-to-r from-purple-500 via-purple-400 to-pink-400 rounded-full transition-all duration-700 ease-out relative"
-                style={{ width: `${progress}%` }}
-              >
-                {/* Glow effect on progress bar */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shimmer" />
-                {/* Pulse at the end */}
-                {progress > 0 && (
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-lg shadow-purple-400/50 animate-pulse" />
-                )}
-              </div>
-            </div>
-          </div>
+          {/* Growth Vine Progress Bar */}
+          <GrowthVine
+            auraScore={auraScore}
+            completedTasks={completedTasks}
+            totalTasks={totalTasks}
+          />
 
           {/* Aura Insight Section */}
           <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-4 border border-white/30">
@@ -127,7 +113,11 @@ const AuraDashboard = ({
                 ? "Great start! Let's pick one small thing to do next. Every step counts. ✨"
                 : auraScore < 150 
                 ? "You're in the flow! Keep that momentum going—your Aura is growing beautifully. 🌟"
-                : "Aura Legend status! You've been crushing it. Remember to take a break soon. 👑"
+                : auraScore < 500
+                ? "Seedling stage mastered! Keep nurturing your growth. 🌱"
+                : auraScore < 1500
+                ? "Your Sprout is flourishing! You're building amazing habits. 🌿"
+                : "Aura Legend status! You've reached Bloom—your dedication is inspiring. 🌸"
               }
             </p>
           </div>

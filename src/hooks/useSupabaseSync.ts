@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -6,11 +6,13 @@ import { Task, TaskCategory, SubTask } from "@/types/task";
 import { useSettings, ThemePreset } from "@/contexts/SettingsContext";
 import { useToast } from "@/hooks/use-toast";
 import { Json } from "@/integrations/supabase/types";
+import { Badge, getAuraLevel, AuraLevelInfo } from "@/types/aura";
 
 interface UserProfile {
   aura_score: number;
   daily_streak: number;
   current_theme: string;
+  badges: Badge[];
 }
 
 // Convert database task to app Task format
@@ -52,9 +54,12 @@ export const useSupabaseSync = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [auraScore, setAuraScore] = useState(0);
   const [streak, setStreak] = useState(0);
+  const [badges, setBadges] = useState<Badge[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isLoading, setIsLoading] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [levelUpInfo, setLevelUpInfo] = useState<AuraLevelInfo | null>(null);
+  const previousLevelRef = useRef<AuraLevelInfo | null>(null);
 
   // Load user profile
   const loadProfile = useCallback(async () => {
@@ -74,6 +79,8 @@ export const useSupabaseSync = () => {
     if (data) {
       setAuraScore(data.aura_score);
       setStreak(data.daily_streak);
+      setBadges((data.badges as unknown as Badge[]) || []);
+      previousLevelRef.current = getAuraLevel(data.aura_score);
       if (data.current_theme) {
         setTheme(data.current_theme as ThemePreset);
       }
@@ -86,11 +93,13 @@ export const useSupabaseSync = () => {
           aura_score: 0,
           daily_streak: 0,
           current_theme: settings.theme,
+          badges: [],
         });
       
       if (insertError) {
         console.error("Error creating profile:", insertError);
       }
+      previousLevelRef.current = getAuraLevel(0);
     }
   }, [user, settings.theme, setTheme]);
 
@@ -248,7 +257,16 @@ export const useSupabaseSync = () => {
     if (!user) return;
 
     const newScore = auraScore + amount;
+    const previousLevel = previousLevelRef.current;
+    const newLevel = getAuraLevel(newScore);
+    
+    // Check for level up
+    if (previousLevel && previousLevel.level !== newLevel.level) {
+      setLevelUpInfo(newLevel);
+    }
+    
     setAuraScore(newScore);
+    previousLevelRef.current = newLevel;
 
     const { error } = await supabase
       .from("user_profiles")
@@ -259,6 +277,40 @@ export const useSupabaseSync = () => {
       console.error("Error updating aura score:", error);
     }
   }, [user, auraScore]);
+
+  // Unlock a badge
+  const unlockBadge = useCallback(async (badgeId: string) => {
+    if (!user) return;
+    
+    // Check if already unlocked
+    if (badges.some((b) => b.id === badgeId)) return;
+
+    const newBadge: Badge = {
+      id: badgeId,
+      name: badgeId,
+      description: "",
+      icon: "",
+      unlockedAt: new Date().toISOString(),
+    };
+
+    const updatedBadges = [...badges, newBadge];
+    setBadges(updatedBadges);
+
+    const { error } = await supabase
+      .from("user_profiles")
+      .update({ badges: JSON.parse(JSON.stringify(updatedBadges)) as Json })
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error("Error unlocking badge:", error);
+    }
+    
+    return newBadge;
+  }, [user, badges]);
+
+  const clearLevelUp = useCallback(() => {
+    setLevelUpInfo(null);
+  }, []);
 
   // Handle date change
   const handleSelectDate = useCallback(async (date: Date) => {
@@ -278,6 +330,7 @@ export const useSupabaseSync = () => {
     auraScore,
     setAuraScore: incrementAuraScore,
     streak,
+    badges,
     selectedDate,
     setSelectedDate: handleSelectDate,
     isLoading,
@@ -285,5 +338,8 @@ export const useSupabaseSync = () => {
     addTask,
     updateTask,
     loadTasks,
+    unlockBadge,
+    levelUpInfo,
+    clearLevelUp,
   };
 };

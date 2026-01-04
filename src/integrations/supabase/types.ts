@@ -62,6 +62,7 @@ export type Database = {
       user_profiles: {
         Row: {
           aura_score: number
+          badges: Json | null
           created_at: string
           current_theme: string
           daily_streak: number
@@ -72,6 +73,7 @@ export type Database = {
         }
         Insert: {
           aura_score?: number
+          badges?: Json | null
           created_at?: string
           current_theme?: string
           daily_streak?: number
@@ -82,6 +84,7 @@ export type Database = {
         }
         Update: {
           aura_score?: number
+          badges?: Json | null
           created_at?: string
           current_theme?: string
           daily_streak?: number

@@ -18,6 +18,8 @@ import DeepWorkForecast from "@/components/DeepWorkForecast";
 import EmptyTimelineState from "@/components/EmptyTimelineState";
 import GuidedTour, { shouldShowTour } from "@/components/GuidedTour";
 import LoadingScreen from "@/components/LoadingScreen";
+import LevelUpCelebration from "@/components/LevelUpCelebration";
+import ProfileDrawer from "@/components/ProfileDrawer";
 import { useTimeOfDay } from "@/hooks/useTimeOfDay";
 import { useSupabaseSync } from "@/hooks/useSupabaseSync";
 import { Task, generateMicroSteps } from "@/types/task";
@@ -42,12 +44,18 @@ const Index = () => {
     auraScore,
     setAuraScore: incrementAuraScore,
     streak,
+    badges,
     selectedDate,
     setSelectedDate,
     isLoading,
     addTask,
     updateTask,
+    unlockBadge,
+    levelUpInfo,
+    clearLevelUp,
   } = useSupabaseSync();
+
+  const [profileOpen, setProfileOpen] = useState(false);
 
   const [timelineFading, setTimelineFading] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -247,6 +255,15 @@ const Index = () => {
         setGoldenPulseTaskId(taskId);
         playChime();
         setTimeout(() => setGoldenPulseTaskId(null), 1000);
+        
+        // Check for "Early Bird" badge (task completed before 9 AM)
+        const now = new Date();
+        if (now.getHours() < 9) {
+          unlockBadge("early_bird");
+        }
+        
+        // Check for "First Bloom" badge (first task completed)
+        unlockBadge("first_bloom");
       } else {
         setPoppingTaskId(taskId);
         setTimeout(() => setPoppingTaskId(null), 300);
@@ -388,7 +405,7 @@ const Index = () => {
       )}
 
       {/* Fixed Header */}
-      <Header />
+      <Header onProfileOpen={() => setProfileOpen(true)} />
 
       {/* Main scrollable content */}
       <main className="pt-24 pb-32 hide-scrollbar">
@@ -501,6 +518,24 @@ const Index = () => {
       <GuidedTour
         isActive={showGuidedTour}
         onComplete={() => setShowGuidedTour(false)}
+      />
+
+      {/* Level Up Celebration Modal */}
+      {levelUpInfo && (
+        <LevelUpCelebration
+          open={!!levelUpInfo}
+          onClose={clearLevelUp}
+          newLevel={levelUpInfo}
+        />
+      )}
+
+      {/* Profile Drawer with Badges */}
+      <ProfileDrawer
+        open={profileOpen}
+        onOpenChange={setProfileOpen}
+        auraScore={auraScore}
+        streak={streak}
+        badges={badges}
       />
     </div>
   );

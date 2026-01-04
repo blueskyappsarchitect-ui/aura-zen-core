@@ -135,6 +135,40 @@
   animation: aura-pulse 2s ease-in-out infinite;
 }
 
+/* Level up glow animation */
+@keyframes level-up-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px hsl(38 92% 50% / 0.5);
+  }
+  50% {
+    box-shadow: 0 0 40px hsl(38 92% 60% / 0.7);
+  }
+}
+
+.animate-level-up-glow {
+  animation: level-up-glow 1.5s ease-in-out infinite;
+}
+
+/* Leaf grow animation */
+@keyframes leaf-grow {
+  0% {
+    opacity: 0;
+    transform: scale(0) translateY(-50%);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) translateY(-50%);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(-50%);
+  }
+}
+
+.animate-leaf-grow {
+  animation: leaf-grow 0.5s ease-out forwards;
+}
+
 @tailwind components;
 @tailwind utilities;
 
