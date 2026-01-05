@@ -1,5 +1,54 @@
 @tailwind base;
 
+/* Shimmer sparkle for Bloom level cards */
+@keyframes shimmer-sparkle {
+  0%, 100% {
+    background: linear-gradient(
+      -45deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 70%
+    );
+    background-size: 200% 200%;
+    background-position: 100% 100%;
+  }
+  50% {
+    background-position: 0% 0%;
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bloom-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 8px rgba(255, 200, 100, 0.6));
+  }
+  50% {
+    filter: drop-shadow(0 0 16px rgba(255, 200, 100, 0.9));
+  }
+}
+
+.animate-shimmer-sparkle {
+  animation: shimmer-sparkle 3s ease-in-out infinite;
+}
+
+.animate-sparkle {
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+.animate-bloom-glow {
+  animation: bloom-glow 2s ease-in-out infinite;
+}
+
 /* Transition Bridge breathe animation */
 @keyframes breathe {
   0%, 100% {
