@@ -6,7 +6,7 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { useAuth } from "@/contexts/AuthContext";
-import { getAuraLevel, getProgressToNextLevel, Badge } from "@/types/aura";
+import { getAuraLevel, getProgressToNextLevel, Badge, HABITAT_THEMES, getStreakMultiplier, STREAK_THRESHOLD } from "@/types/aura";
 import AuraLevelIcon from "@/components/AuraLevelIcon";
 import BadgesPanel from "@/components/BadgesPanel";
 
@@ -28,64 +28,83 @@ const ProfileDrawer = ({
   const { user } = useAuth();
   const level = getAuraLevel(auraScore);
   const progressToNext = getProgressToNextLevel(auraScore);
+  const habitat = HABITAT_THEMES[level.level];
+  const multiplier = getStreakMultiplier(streak);
+  const hasMultiplier = streak >= STREAK_THRESHOLD;
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-[85vh]">
-        <DrawerHeader className="border-b border-border/50 pb-4">
+      <DrawerContent 
+        className="max-h-[85vh] overflow-hidden"
+        style={{ background: habitat.gradient }}
+      >
+        <DrawerHeader className="border-b border-white/20 pb-4 backdrop-blur-sm bg-white/10">
           <DrawerTitle className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center shadow-lg">
               <User className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="text-lg font-semibold">Your Profile</p>
-              <p className="text-sm text-muted-foreground font-normal">
+              <p className="text-lg font-semibold text-white drop-shadow-md">Your Profile</p>
+              <p className="text-sm text-white/80 font-normal drop-shadow">
                 {user?.email}
               </p>
             </div>
           </DrawerTitle>
+          <p className="text-xs text-white/70 mt-2 font-medium">
+            🌿 {habitat.name} Habitat
+          </p>
         </DrawerHeader>
 
-        <div className="p-6 space-y-6 overflow-y-auto">
+        <div className="p-6 space-y-6 overflow-y-auto backdrop-blur-sm bg-white/10">
           {/* Aura Stats */}
           <div className="grid grid-cols-2 gap-4">
             {/* Aura Score Card */}
-            <div className="p-4 rounded-2xl bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950/30 dark:to-purple-900/30 border border-purple-200/50 dark:border-purple-800/50">
+            <div className="p-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg">
               <div className="flex items-center gap-2 mb-2">
                 <Sparkles className="w-4 h-4 text-purple-500" />
-                <span className="text-xs font-medium text-purple-600 dark:text-purple-400 uppercase">
+                <span className="text-xs font-medium text-purple-600 uppercase">
                   Aura Score
                 </span>
               </div>
-              <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">
+              <p className="text-3xl font-bold text-purple-600">
                 {auraScore}
               </p>
             </div>
 
             {/* Streak Card */}
-            <div className="p-4 rounded-2xl bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-950/30 dark:to-red-900/30 border border-orange-200/50 dark:border-orange-800/50">
+            <div className="p-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg">
               <div className="flex items-center gap-2 mb-2">
                 <Flame className="w-4 h-4 text-orange-500" />
-                <span className="text-xs font-medium text-orange-600 dark:text-orange-400 uppercase">
+                <span className="text-xs font-medium text-orange-600 uppercase">
                   Streak
                 </span>
               </div>
-              <p className="text-3xl font-bold text-orange-600 dark:text-orange-400">
-                {streak} Days
-              </p>
+              <div className="flex items-center gap-2">
+                <p className="text-3xl font-bold text-orange-600">
+                  {streak} Days
+                </p>
+                {hasMultiplier && (
+                  <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-orange-400 to-amber-500 text-white text-xs font-bold">
+                    🔥 {multiplier}x
+                  </span>
+                )}
+              </div>
+              {hasMultiplier && (
+                <p className="text-xs text-orange-500 mt-1">Sunshine Multiplier Active!</p>
+              )}
             </div>
           </div>
 
           {/* Level Progress */}
-          <div className="p-4 rounded-2xl bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-950/30 dark:to-green-900/30 border border-emerald-200/50 dark:border-emerald-800/50">
+          <div className="p-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <AuraLevelIcon auraScore={auraScore} />
                 <div>
-                  <p className="font-semibold text-emerald-700 dark:text-emerald-300">
+                  <p className="font-semibold text-emerald-700">
                     {level.name}
                   </p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-emerald-600/70">
                     Level {level.level === "seedling" ? 1 : level.level === "sprout" ? 2 : 3}
                   </p>
                 </div>
@@ -95,18 +114,18 @@ const ProfileDrawer = ({
 
             {/* Progress to next level */}
             <div className="space-y-2">
-              <div className="flex justify-between text-xs text-muted-foreground">
+              <div className="flex justify-between text-xs text-emerald-700">
                 <span>Progress to next level</span>
                 <span>{Math.round(progressToNext)}%</span>
               </div>
-              <div className="h-2 bg-emerald-200/50 dark:bg-emerald-800/50 rounded-full overflow-hidden">
+              <div className="h-2 bg-emerald-200/50 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-emerald-500 to-green-400 rounded-full transition-all duration-500"
                   style={{ width: `${progressToNext}%` }}
                 />
               </div>
               {level.level !== "bloom" && (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-emerald-600/70">
                   {level.maxScore - auraScore + 1} points to{" "}
                   {level.level === "seedling" ? "Sprout" : "Bloom"}
                 </p>
@@ -115,7 +134,9 @@ const ProfileDrawer = ({
           </div>
 
           {/* Badges Section */}
-          <BadgesPanel unlockedBadges={badges} />
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-white/50 shadow-lg">
+            <BadgesPanel unlockedBadges={badges} />
+          </div>
         </div>
       </DrawerContent>
     </Drawer>
