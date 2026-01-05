@@ -3,6 +3,7 @@ import { Sparkles, Flame } from "lucide-react";
 import confetti from "canvas-confetti";
 import AuraLevelIcon from "@/components/AuraLevelIcon";
 import GrowthVine from "@/components/GrowthVine";
+import { getStreakMultiplier, STREAK_THRESHOLD } from "@/types/aura";
 
 interface AuraDashboardProps {
   auraScore: number;
@@ -21,11 +22,15 @@ const AuraDashboard = ({
 }: AuraDashboardProps) => {
   const scoreRef = useRef<HTMLDivElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isPulsing, setIsPulsing] = useState(false);
+  const multiplier = getStreakMultiplier(streak);
+  const hasMultiplier = streak >= STREAK_THRESHOLD;
 
   // Trigger animation and confetti when score increases
   useEffect(() => {
     if (shouldAnimate && scoreRef.current) {
       setIsAnimating(true);
+      setIsPulsing(true);
       
       // Get the position of the score element for confetti
       const rect = scoreRef.current.getBoundingClientRect();
@@ -45,6 +50,7 @@ const AuraDashboard = ({
 
       // Reset animation state
       setTimeout(() => setIsAnimating(false), 600);
+      setTimeout(() => setIsPulsing(false), 800);
     }
   }, [shouldAnimate, auraScore]);
 
@@ -75,9 +81,16 @@ const AuraDashboard = ({
                   Aura Score
                   <AuraLevelIcon auraScore={auraScore} showLabel />
                 </p>
-                <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent">
-                  ✨ {auraScore}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent">
+                    ✨ {auraScore}
+                  </p>
+                  {hasMultiplier && (
+                    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-orange-400 to-amber-500 text-white text-xs font-bold animate-pulse">
+                      🔥 {multiplier}x
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -100,6 +113,7 @@ const AuraDashboard = ({
             auraScore={auraScore}
             completedTasks={completedTasks}
             totalTasks={totalTasks}
+            isPulsing={isPulsing}
           />
 
           {/* Aura Insight Section */}

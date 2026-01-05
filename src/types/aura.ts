@@ -71,4 +71,39 @@ export const AVAILABLE_BADGES: Badge[] = [
     description: "Reached 1000 Aura points",
     icon: "⚔️",
   },
+  {
+    id: "consistent_cultivator",
+    name: "Consistent Cultivator",
+    description: "Reached a 7-day activity streak",
+    icon: "🌻",
+  },
 ];
+
+// Streak multiplier logic
+export const STREAK_THRESHOLD = 3;
+export const STREAK_MULTIPLIER = 1.2;
+
+export const getStreakMultiplier = (streak: number): number => {
+  return streak >= STREAK_THRESHOLD ? STREAK_MULTIPLIER : 1;
+};
+
+// Habitat gradients based on level
+export type HabitatTheme = {
+  gradient: string;
+  name: string;
+};
+
+export const HABITAT_THEMES: Record<AuraLevel, HabitatTheme> = {
+  seedling: {
+    name: "Deep Earth",
+    gradient: "linear-gradient(135deg, hsl(30 40% 25%) 0%, hsl(120 30% 20%) 50%, hsl(80 35% 18%) 100%)",
+  },
+  sprout: {
+    name: "Morning Meadow",
+    gradient: "linear-gradient(135deg, hsl(200 60% 85%) 0%, hsl(150 50% 80%) 50%, hsl(120 45% 75%) 100%)",
+  },
+  bloom: {
+    name: "Golden Hour",
+    gradient: "linear-gradient(135deg, hsl(35 90% 60%) 0%, hsl(20 80% 55%) 50%, hsl(280 50% 50%) 100%)",
+  },
+};

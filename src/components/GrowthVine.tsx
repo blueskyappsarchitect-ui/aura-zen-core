@@ -1,16 +1,27 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { getAuraLevel, getProgressToNextLevel } from "@/types/aura";
 
 interface GrowthVineProps {
   auraScore: number;
   completedTasks: number;
   totalTasks: number;
+  isPulsing?: boolean;
 }
 
-const GrowthVine = ({ auraScore, completedTasks, totalTasks }: GrowthVineProps) => {
+const GrowthVine = ({ auraScore, completedTasks, totalTasks, isPulsing = false }: GrowthVineProps) => {
   const taskProgress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
   const levelProgress = getProgressToNextLevel(auraScore);
   const currentLevel = getAuraLevel(auraScore);
+  const [showPulse, setShowPulse] = useState(false);
+
+  // Trigger pulse animation when isPulsing changes to true
+  useEffect(() => {
+    if (isPulsing) {
+      setShowPulse(true);
+      const timer = setTimeout(() => setShowPulse(false), 800);
+      return () => clearTimeout(timer);
+    }
+  }, [isPulsing, auraScore]);
 
   // Generate leaf positions based on progress
   const leaves = useMemo(() => {
@@ -41,10 +52,16 @@ const GrowthVine = ({ auraScore, completedTasks, totalTasks }: GrowthVineProps) 
       </div>
 
       {/* Vine Container */}
-      <div className="relative h-6 bg-emerald-100/50 dark:bg-emerald-900/30 rounded-full overflow-hidden border border-emerald-200/50 dark:border-emerald-800/50">
+      <div 
+        className={`relative h-6 bg-emerald-100/50 dark:bg-emerald-900/30 rounded-full overflow-hidden border border-emerald-200/50 dark:border-emerald-800/50 transition-all duration-300 ${
+          showPulse ? 'animate-vine-pulse' : ''
+        }`}
+      >
         {/* Main Vine Stem */}
         <div
-          className="absolute left-0 top-1/2 h-1 bg-gradient-to-r from-emerald-600 via-green-500 to-lime-400 rounded-full transition-all duration-1000 ease-out transform -translate-y-1/2"
+          className={`absolute left-0 top-1/2 h-1 bg-gradient-to-r from-emerald-600 via-green-500 to-lime-400 rounded-full transition-all duration-1000 ease-out transform -translate-y-1/2 ${
+            showPulse ? 'animate-vine-glow' : ''
+          }`}
           style={{ width: `${taskProgress}%` }}
         >
           {/* Vine glow effect */}

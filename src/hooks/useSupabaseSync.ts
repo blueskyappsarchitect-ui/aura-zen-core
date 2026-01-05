@@ -6,7 +6,7 @@ import { Task, TaskCategory, SubTask } from "@/types/task";
 import { useSettings, ThemePreset } from "@/contexts/SettingsContext";
 import { useToast } from "@/hooks/use-toast";
 import { Json } from "@/integrations/supabase/types";
-import { Badge, getAuraLevel, AuraLevelInfo } from "@/types/aura";
+import { Badge, getAuraLevel, AuraLevelInfo, getStreakMultiplier } from "@/types/aura";
 
 interface UserProfile {
   aura_score: number;
@@ -252,32 +252,6 @@ export const useSupabaseSync = () => {
     }
   }, [user, tasks, loadTasks]);
 
-  // Update aura score
-  const incrementAuraScore = useCallback(async (amount: number) => {
-    if (!user) return;
-
-    const newScore = auraScore + amount;
-    const previousLevel = previousLevelRef.current;
-    const newLevel = getAuraLevel(newScore);
-    
-    // Check for level up
-    if (previousLevel && previousLevel.level !== newLevel.level) {
-      setLevelUpInfo(newLevel);
-    }
-    
-    setAuraScore(newScore);
-    previousLevelRef.current = newLevel;
-
-    const { error } = await supabase
-      .from("user_profiles")
-      .update({ aura_score: newScore })
-      .eq("user_id", user.id);
-
-    if (error) {
-      console.error("Error updating aura score:", error);
-    }
-  }, [user, auraScore]);
-
   // Unlock a badge
   const unlockBadge = useCallback(async (badgeId: string) => {
     if (!user) return;
@@ -307,6 +281,43 @@ export const useSupabaseSync = () => {
     
     return newBadge;
   }, [user, badges]);
+
+  // Update aura score with streak multiplier
+  const incrementAuraScore = useCallback(async (amount: number) => {
+    if (!user) return;
+
+    // Apply streak multiplier
+    const multiplier = getStreakMultiplier(streak);
+    const adjustedAmount = Math.round(amount * multiplier);
+    
+    const newScore = auraScore + adjustedAmount;
+    const previousLevel = previousLevelRef.current;
+    const newLevel = getAuraLevel(newScore);
+    
+    // Check for level up
+    if (previousLevel && previousLevel.level !== newLevel.level) {
+      setLevelUpInfo(newLevel);
+    }
+    
+    setAuraScore(newScore);
+    previousLevelRef.current = newLevel;
+
+    const { error } = await supabase
+      .from("user_profiles")
+      .update({ aura_score: newScore })
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error("Error updating aura score:", error);
+    }
+  }, [user, auraScore, streak]);
+
+  // Check for Consistent Cultivator badge when streak changes
+  useEffect(() => {
+    if (streak >= 7 && !badges.some((b) => b.id === "consistent_cultivator")) {
+      unlockBadge("consistent_cultivator");
+    }
+  }, [streak, badges, unlockBadge]);
 
   const clearLevelUp = useCallback(() => {
     setLevelUpInfo(null);
