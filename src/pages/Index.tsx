@@ -536,6 +536,8 @@ const Index = () => {
         auraScore={auraScore}
         streak={streak}
         badges={badges}
+        completedTasks={completedCount}
+        totalTasks={totalSubTasks || tasks.length}
       />
     </div>
   );
