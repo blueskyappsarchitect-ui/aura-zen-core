@@ -53,6 +53,10 @@ const Index = () => {
     unlockBadge,
     levelUpInfo,
     clearLevelUp,
+    hasWateredToday,
+    isStreakFrozen,
+    isWithered,
+    waterVine,
   } = useSupabaseSync();
 
   const [profileOpen, setProfileOpen] = useState(false);
@@ -422,6 +426,10 @@ const Index = () => {
           completedTasks={completedCount}
           totalTasks={totalSubTasks || tasks.length}
           shouldAnimate={shouldAnimateScore}
+          hasWateredToday={hasWateredToday}
+          isStreakFrozen={isStreakFrozen}
+          isWithered={isWithered}
+          onWater={waterVine}
         />
 
         {/* Weekly Day Picker */}
@@ -538,6 +546,8 @@ const Index = () => {
         badges={badges}
         completedTasks={completedCount}
         totalTasks={totalSubTasks || tasks.length}
+        isStreakFrozen={isStreakFrozen}
+        hasWateredToday={hasWateredToday}
       />
     </div>
   );

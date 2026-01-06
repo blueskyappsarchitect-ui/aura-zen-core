@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { format } from "date-fns";
+import { format, differenceInHours, isToday, parseISO } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Task, TaskCategory, SubTask } from "@/types/task";
@@ -13,6 +13,9 @@ interface UserProfile {
   daily_streak: number;
   current_theme: string;
   badges: Badge[];
+  last_watered_date: string | null;
+  streak_frozen: boolean;
+  last_active_date: string | null;
 }
 
 // Convert database task to app Task format
@@ -60,6 +63,12 @@ export const useSupabaseSync = () => {
   const [isSyncing, setIsSyncing] = useState(false);
   const [levelUpInfo, setLevelUpInfo] = useState<AuraLevelInfo | null>(null);
   const previousLevelRef = useRef<AuraLevelInfo | null>(null);
+  
+  // New state for watering and wither
+  const [hasWateredToday, setHasWateredToday] = useState(false);
+  const [isStreakFrozen, setIsStreakFrozen] = useState(false);
+  const [isWithered, setIsWithered] = useState(false);
+  const [lastActiveDate, setLastActiveDate] = useState<string | null>(null);
 
   // Load user profile
   const loadProfile = useCallback(async () => {
@@ -81,6 +90,22 @@ export const useSupabaseSync = () => {
       setStreak(data.daily_streak);
       setBadges((data.badges as unknown as Badge[]) || []);
       previousLevelRef.current = getAuraLevel(data.aura_score);
+      setLastActiveDate(data.last_active_date);
+      setIsStreakFrozen(data.streak_frozen || false);
+      
+      // Check if watered today
+      if (data.last_watered_date) {
+        const wateredDate = parseISO(data.last_watered_date);
+        setHasWateredToday(isToday(wateredDate));
+      }
+      
+      // Check for wither state (no activity for 24+ hours)
+      if (data.last_active_date) {
+        const lastActive = parseISO(data.last_active_date);
+        const hoursSinceActive = differenceInHours(new Date(), lastActive);
+        setIsWithered(hoursSinceActive >= 24 && !isToday(lastActive));
+      }
+      
       if (data.current_theme) {
         setTheme(data.current_theme as ThemePreset);
       }
@@ -323,6 +348,61 @@ export const useSupabaseSync = () => {
     setLevelUpInfo(null);
   }, []);
 
+  // Water the vine - grants +25 XP and protects streak
+  const waterVine = useCallback(async () => {
+    if (!user || hasWateredToday) return;
+
+    const today = format(new Date(), "yyyy-MM-dd");
+    
+    // Update local state
+    setHasWateredToday(true);
+    setIsWithered(false);
+    setIsStreakFrozen(true); // Streak is now protected
+    
+    // Grant XP bonus
+    await incrementAuraScore(25);
+    
+    // Update database
+    const { error } = await supabase
+      .from("user_profiles")
+      .update({
+        last_watered_date: today,
+        streak_frozen: true,
+        last_active_date: today,
+      })
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error("Error watering vine:", error);
+    }
+
+    // Check for Lifeguard badge (save 10+ day streak with freeze)
+    if (streak >= 10 && !badges.some((b) => b.id === "lifeguard")) {
+      unlockBadge("lifeguard");
+    }
+
+    toast({
+      title: "🌊 Vine Watered!",
+      description: "+25 XP bonus! Your streak is protected for today.",
+    });
+  }, [user, hasWateredToday, incrementAuraScore, streak, badges, unlockBadge, toast]);
+
+  // Unfreeze streak when tasks are completed
+  const unfreezeStreak = useCallback(async () => {
+    if (!user || !isStreakFrozen) return;
+
+    setIsStreakFrozen(false);
+    
+    const { error } = await supabase
+      .from("user_profiles")
+      .update({ streak_frozen: false })
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error("Error unfreezing streak:", error);
+    }
+  }, [user, isStreakFrozen]);
+
   // Handle date change
   const handleSelectDate = useCallback(async (date: Date) => {
     setSelectedDate(date);
@@ -352,5 +432,11 @@ export const useSupabaseSync = () => {
     unlockBadge,
     levelUpInfo,
     clearLevelUp,
+    // New watering/freeze exports
+    hasWateredToday,
+    isStreakFrozen,
+    isWithered,
+    waterVine,
+    unfreezeStreak,
   };
 };

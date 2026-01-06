@@ -68,6 +68,8 @@ export type Database = {
           daily_streak: number
           id: string
           last_active_date: string | null
+          last_watered_date: string | null
+          streak_frozen: boolean | null
           updated_at: string
           user_id: string
         }
@@ -79,6 +81,8 @@ export type Database = {
           daily_streak?: number
           id?: string
           last_active_date?: string | null
+          last_watered_date?: string | null
+          streak_frozen?: boolean | null
           updated_at?: string
           user_id: string
         }
@@ -90,6 +94,8 @@ export type Database = {
           daily_streak?: number
           id?: string
           last_active_date?: string | null
+          last_watered_date?: string | null
+          streak_frozen?: boolean | null
           updated_at?: string
           user_id?: string
         }

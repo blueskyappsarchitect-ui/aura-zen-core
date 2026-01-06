@@ -1,5 +1,59 @@
 @tailwind base;
 
+/* Aura Well Animations */
+@keyframes well-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.4), 0 0 40px rgba(59, 130, 246, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(34, 211, 238, 0.6), 0 0 60px rgba(59, 130, 246, 0.3);
+  }
+}
+
+@keyframes well-glow-thirsty {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(234, 88, 12, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(217, 119, 6, 0.6), 0 0 60px rgba(234, 88, 12, 0.3);
+  }
+}
+
+@keyframes water-ripple {
+  0% {
+    width: 20px;
+    height: 20px;
+    opacity: 1;
+  }
+  100% {
+    width: 200px;
+    height: 200px;
+    opacity: 0;
+  }
+}
+
+@keyframes water-drop {
+  0% {
+    transform: translate(-50%, -50%) rotate(var(--drop-angle)) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(var(--drop-angle)) translateY(-80px);
+    opacity: 0;
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /* Shimmer sparkle for Bloom level cards */
 @keyframes shimmer-sparkle {
   0%, 100% {
