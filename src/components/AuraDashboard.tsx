@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { Sparkles, Flame } from "lucide-react";
+import { Sparkles, Flame, Snowflake } from "lucide-react";
 import confetti from "canvas-confetti";
 import AuraLevelIcon from "@/components/AuraLevelIcon";
 import GrowthVine from "@/components/GrowthVine";
+import AuraWell from "@/components/AuraWell";
 import { getStreakMultiplier, STREAK_THRESHOLD } from "@/types/aura";
 
 interface AuraDashboardProps {
@@ -11,6 +12,10 @@ interface AuraDashboardProps {
   completedTasks: number;
   totalTasks: number;
   shouldAnimate?: boolean;
+  hasWateredToday: boolean;
+  isStreakFrozen: boolean;
+  isWithered: boolean;
+  onWater: () => void;
 }
 
 const AuraDashboard = ({
@@ -19,6 +24,10 @@ const AuraDashboard = ({
   completedTasks,
   totalTasks,
   shouldAnimate = false,
+  hasWateredToday,
+  isStreakFrozen,
+  isWithered,
+  onWater,
 }: AuraDashboardProps) => {
   const scoreRef = useRef<HTMLDivElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -56,7 +65,11 @@ const AuraDashboard = ({
 
   return (
     <div className="w-full max-w-2xl mx-auto px-6 mb-8">
-      <div className="aura-dashboard-card relative overflow-hidden rounded-3xl p-6 border border-white/20">
+      <div 
+        className={`aura-dashboard-card relative overflow-hidden rounded-3xl p-6 border border-white/20 transition-all duration-500 ${
+          isWithered ? 'grayscale-[50%]' : ''
+        }`}
+      >
         {/* Background gradient layer */}
         <div className="absolute inset-0 bg-gradient-to-br from-white/80 via-category-study/30 to-category-study/50 backdrop-blur-xl" />
         
@@ -94,15 +107,36 @@ const AuraDashboard = ({
               </div>
             </div>
 
+            {/* Aura Well */}
+            <AuraWell 
+              hasWateredToday={hasWateredToday}
+              onWater={onWater}
+              isWithered={isWithered}
+            />
+
             {/* Streak */}
             <div className="flex items-center gap-3">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-lg shadow-orange-500/30">
-                <Flame className="w-7 h-7 text-white" />
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${
+                isStreakFrozen 
+                  ? 'bg-gradient-to-br from-cyan-400 to-blue-500 shadow-cyan-500/30' 
+                  : 'bg-gradient-to-br from-orange-400 to-red-500 shadow-orange-500/30'
+              }`}>
+                {isStreakFrozen ? (
+                  <Snowflake className="w-7 h-7 text-white" />
+                ) : (
+                  <Flame className="w-7 h-7 text-white" />
+                )}
               </div>
               <div>
-                <p className="text-xs font-medium text-muted-foreground/70 uppercase tracking-wider">Daily Streak</p>
-                <p className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-                  🔥 {streak} Days
+                <p className="text-xs font-medium text-muted-foreground/70 uppercase tracking-wider">
+                  {isStreakFrozen ? 'Streak Frozen' : 'Daily Streak'}
+                </p>
+                <p className={`text-3xl font-bold bg-clip-text text-transparent ${
+                  isStreakFrozen 
+                    ? 'bg-gradient-to-r from-cyan-500 to-blue-500' 
+                    : 'bg-gradient-to-r from-orange-500 to-red-500'
+                }`}>
+                  {isStreakFrozen ? '❄️' : '🔥'} {streak} Days
                 </p>
               </div>
             </div>
@@ -114,6 +148,7 @@ const AuraDashboard = ({
             completedTasks={completedTasks}
             totalTasks={totalTasks}
             isPulsing={isPulsing}
+            isWithered={isWithered}
           />
 
           {/* Aura Insight Section */}
@@ -123,7 +158,9 @@ const AuraDashboard = ({
               Aura Insight
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              {auraScore < 50 
+              {isWithered 
+                ? "Your vine is thirsty! Tap the Aura Well to water it and restore vibrance. 💧"
+                : auraScore < 50 
                 ? "Great start! Let's pick one small thing to do next. Every step counts. ✨"
                 : auraScore < 150 
                 ? "You're in the flow! Keep that momentum going—your Aura is growing beautifully. 🌟"

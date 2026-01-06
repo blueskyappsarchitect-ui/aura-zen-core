@@ -6,9 +6,10 @@ interface GrowthVineProps {
   completedTasks: number;
   totalTasks: number;
   isPulsing?: boolean;
+  isWithered?: boolean;
 }
 
-const GrowthVine = ({ auraScore, completedTasks, totalTasks, isPulsing = false }: GrowthVineProps) => {
+const GrowthVine = ({ auraScore, completedTasks, totalTasks, isPulsing = false, isWithered = false }: GrowthVineProps) => {
   const taskProgress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
   const levelProgress = getProgressToNextLevel(auraScore);
   const currentLevel = getAuraLevel(auraScore);

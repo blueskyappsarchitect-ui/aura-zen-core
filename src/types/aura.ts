@@ -77,6 +77,12 @@ export const AVAILABLE_BADGES: Badge[] = [
     description: "Reached a 7-day activity streak",
     icon: "🌻",
   },
+  {
+    id: "lifeguard",
+    name: "Lifeguard",
+    description: "Used Streak Freeze to save a 10+ day streak",
+    icon: "🛟",
+  },
 ];
 
 // Streak multiplier logic

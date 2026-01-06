@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Sparkles, Flame, TrendingUp, User, Share2, Download } from "lucide-react";
+import { Sparkles, Flame, TrendingUp, User, Share2, Download, Snowflake, Droplet } from "lucide-react";
 import { toPng } from "html-to-image";
 import {
   Drawer,
@@ -29,6 +29,8 @@ interface ProfileDrawerProps {
   badges: Badge[];
   completedTasks?: number;
   totalTasks?: number;
+  isStreakFrozen?: boolean;
+  hasWateredToday?: boolean;
 }
 
 const ProfileDrawer = ({
@@ -39,6 +41,8 @@ const ProfileDrawer = ({
   badges,
   completedTasks = 0,
   totalTasks = 0,
+  isStreakFrozen = false,
+  hasWateredToday = false,
 }: ProfileDrawerProps) => {
   const { user } = useAuth();
   const level = getAuraLevel(auraScore);
@@ -164,24 +168,48 @@ const ProfileDrawer = ({
               {/* Streak Card */}
               <div className="p-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg">
                 <div className="flex items-center gap-2 mb-2">
-                  <Flame className="w-4 h-4 text-orange-500" />
-                  <span className="text-xs font-medium text-orange-600 uppercase">
-                    Streak
+                  {isStreakFrozen ? (
+                    <Snowflake className="w-4 h-4 text-cyan-500" />
+                  ) : (
+                    <Flame className="w-4 h-4 text-orange-500" />
+                  )}
+                  <span className={`text-xs font-medium uppercase ${isStreakFrozen ? 'text-cyan-600' : 'text-orange-600'}`}>
+                    {isStreakFrozen ? 'Frozen Streak' : 'Streak'}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <p className="text-3xl font-bold text-orange-600">
+                  <p className={`text-3xl font-bold ${isStreakFrozen ? 'text-cyan-600' : 'text-orange-600'}`}>
                     {streak} Days
                   </p>
-                  {hasMultiplier && (
+                  {hasMultiplier && !isStreakFrozen && (
                     <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-orange-400 to-amber-500 text-white text-xs font-bold">
                       🔥 {multiplier}x
                     </span>
                   )}
                 </div>
-                {hasMultiplier && (
+                {isStreakFrozen && (
+                  <p className="text-xs text-cyan-500 mt-1">❄️ Protected by watering</p>
+                )}
+                {hasMultiplier && !isStreakFrozen && (
                   <p className="text-xs text-orange-500 mt-1">Sunshine Multiplier Active!</p>
                 )}
+              </div>
+            </div>
+
+            {/* Watering Status */}
+            <div className="p-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Droplet className={`w-5 h-5 ${hasWateredToday ? 'text-cyan-500' : 'text-muted-foreground'}`} />
+                  <span className="text-sm font-medium">Aura Well</span>
+                </div>
+                <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                  hasWateredToday 
+                    ? 'bg-cyan-100 text-cyan-700' 
+                    : 'bg-amber-100 text-amber-700'
+                }`}>
+                  {hasWateredToday ? '✓ Watered Today' : 'Not Watered'}
+                </span>
               </div>
             </div>
 
