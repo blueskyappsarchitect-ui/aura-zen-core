@@ -1,10 +1,13 @@
-import { useState, useEffect } from "react";
-import { format, startOfWeek, addDays, isToday, isSameDay } from "date-fns";
+import { useState, useEffect, useCallback } from "react";
+import { format, startOfWeek, addDays, isToday, isSameDay, startOfDay, subDays } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell } from "recharts";
 import { Flame, Sparkles, CheckCircle2, Calendar, Snowflake } from "lucide-react";
 import { cn } from "@/lib/utils";
+import AuraForecast from "@/components/AuraForecast";
+import ActivityHeatmap from "@/components/ActivityHeatmap";
+import { toast } from "sonner";
 
 interface DayStats {
   date: Date;
@@ -18,12 +21,66 @@ interface DayStats {
 interface WeeklyAuraStatsProps {
   currentStreak: number;
   isStreakFrozen: boolean;
+  currentAuraScore: number;
+  onViewStats?: () => void;
+  unlockBadge?: (badgeId: string) => void;
+  badges?: { id: string }[];
 }
 
-const WeeklyAuraStats = ({ currentStreak, isStreakFrozen }: WeeklyAuraStatsProps) => {
+const STATS_VIEW_KEY = "aura_stats_views";
+
+const WeeklyAuraStats = ({ 
+  currentStreak, 
+  isStreakFrozen, 
+  currentAuraScore,
+  onViewStats,
+  unlockBadge,
+  badges = []
+}: WeeklyAuraStatsProps) => {
   const { user } = useAuth();
   const [weeklyData, setWeeklyData] = useState<DayStats[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [sprintAccepted, setSprintAccepted] = useState(false);
+
+  // Track stats views for Data Scientist badge
+  useEffect(() => {
+    if (!user) return;
+    
+    const trackView = () => {
+      const storageKey = `${STATS_VIEW_KEY}_${user.id}`;
+      const stored = localStorage.getItem(storageKey);
+      const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 }).getTime();
+      
+      let viewData = { weekStart: 0, count: 0 };
+      if (stored) {
+        try {
+          viewData = JSON.parse(stored);
+        } catch (e) {
+          console.error("Error parsing stats view data:", e);
+        }
+      }
+      
+      // Reset if it's a new week
+      if (viewData.weekStart !== weekStart) {
+        viewData = { weekStart, count: 0 };
+      }
+      
+      viewData.count += 1;
+      localStorage.setItem(storageKey, JSON.stringify(viewData));
+      
+      // Check for Data Scientist badge
+      if (viewData.count >= 5 && unlockBadge && !badges.some(b => b.id === "data_scientist")) {
+        unlockBadge("data_scientist");
+        toast.success("🎉 Badge Unlocked: Data Scientist!", {
+          description: "You've viewed your statistics 5 times this week!"
+        });
+      }
+      
+      onViewStats?.();
+    };
+    
+    trackView();
+  }, [user, onViewStats, unlockBadge, badges]);
 
   useEffect(() => {
     const fetchWeeklyData = async () => {
@@ -66,10 +123,20 @@ const WeeklyAuraStats = ({ currentStreak, isStreakFrozen }: WeeklyAuraStatsProps
     fetchWeeklyData();
   }, [user]);
 
+  const handleSprintAccept = useCallback(() => {
+    setSprintAccepted(true);
+    toast.success("🎯 Sprint Challenge Accepted!", {
+      description: "Complete the challenge today for +50 XP!"
+    });
+  }, []);
+
   const totalXP = weeklyData.reduce((sum, d) => sum + d.xpEarned, 0);
   const totalCompleted = weeklyData.reduce((sum, d) => sum + d.tasksCompleted, 0);
   const totalTasks = weeklyData.reduce((sum, d) => sum + d.totalTasks, 0);
   const avgCompletion = totalTasks > 0 ? Math.round((totalCompleted / totalTasks) * 100) : 0;
+  const avgTasksPerDay = weeklyData.length > 0 
+    ? weeklyData.reduce((sum, d) => sum + d.tasksCompleted, 0) / weeklyData.filter(d => d.tasksCompleted > 0).length || 0
+    : 0;
 
   if (isLoading) {
     return (
@@ -82,6 +149,15 @@ const WeeklyAuraStats = ({ currentStreak, isStreakFrozen }: WeeklyAuraStatsProps
 
   return (
     <div className="space-y-4">
+      {/* Forecast Section */}
+      <AuraForecast 
+        weeklyData={weeklyData}
+        currentAuraScore={currentAuraScore}
+        averageTasksPerDay={avgTasksPerDay}
+        sprintAccepted={sprintAccepted}
+        onSprintAccept={handleSprintAccept}
+      />
+
       {/* Summary Cards */}
       <div className="grid grid-cols-3 gap-3">
         <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500/20 to-violet-500/10 border border-purple-300/30 backdrop-blur-sm">
@@ -118,6 +194,9 @@ const WeeklyAuraStats = ({ currentStreak, isStreakFrozen }: WeeklyAuraStatsProps
           )}>{currentStreak}d</p>
         </div>
       </div>
+
+      {/* Activity Heatmap (30 days) */}
+      <ActivityHeatmap />
 
       {/* XP Chart */}
       <div className="p-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg">

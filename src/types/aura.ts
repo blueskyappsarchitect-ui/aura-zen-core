@@ -83,6 +83,12 @@ export const AVAILABLE_BADGES: Badge[] = [
     description: "Used Streak Freeze to save a 10+ day streak",
     icon: "🛟",
   },
+  {
+    id: "data_scientist",
+    name: "Data Scientist",
+    description: "Viewed Statistics dashboard 5 times in a week",
+    icon: "📊",
+  },
 ];
 
 // Streak multiplier logic

@@ -33,6 +33,7 @@ interface ProfileDrawerProps {
   totalTasks?: number;
   isStreakFrozen?: boolean;
   hasWateredToday?: boolean;
+  unlockBadge?: (badgeId: string) => void;
 }
 
 const ProfileDrawer = ({
@@ -45,6 +46,7 @@ const ProfileDrawer = ({
   totalTasks = 0,
   isStreakFrozen = false,
   hasWateredToday = false,
+  unlockBadge,
 }: ProfileDrawerProps) => {
   const { user } = useAuth();
   const level = getAuraLevel(auraScore);
@@ -273,7 +275,13 @@ const ProfileDrawer = ({
               </TabsContent>
 
               <TabsContent value="stats" className="p-6 mt-0">
-                <WeeklyAuraStats currentStreak={streak} isStreakFrozen={isStreakFrozen} />
+                <WeeklyAuraStats 
+                  currentStreak={streak} 
+                  isStreakFrozen={isStreakFrozen} 
+                  currentAuraScore={auraScore}
+                  unlockBadge={unlockBadge}
+                  badges={badges}
+                />
               </TabsContent>
             </Tabs>
           </div>

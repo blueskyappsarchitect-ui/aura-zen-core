@@ -548,6 +548,7 @@ const Index = () => {
         totalTasks={totalSubTasks || tasks.length}
         isStreakFrozen={isStreakFrozen}
         hasWateredToday={hasWateredToday}
+        unlockBadge={unlockBadge}
       />
     </div>
   );
