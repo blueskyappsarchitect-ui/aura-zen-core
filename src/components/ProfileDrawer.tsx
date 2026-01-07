@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Sparkles, Flame, TrendingUp, User, Share2, Download, Snowflake, Droplet } from "lucide-react";
+import { Sparkles, Flame, TrendingUp, User, Share2, Download, Snowflake, Droplet, BarChart3 } from "lucide-react";
 import { toPng } from "html-to-image";
 import {
   Drawer,
@@ -14,11 +14,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { getAuraLevel, getProgressToNextLevel, Badge, HABITAT_THEMES, getStreakMultiplier, STREAK_THRESHOLD } from "@/types/aura";
 import AuraLevelIcon from "@/components/AuraLevelIcon";
 import BadgesPanel from "@/components/BadgesPanel";
 import AuraShareCard from "@/components/AuraShareCard";
+import WeeklyAuraStats from "@/components/WeeklyAuraStats";
 import { toast } from "sonner";
 
 interface ProfileDrawerProps {
@@ -139,122 +141,141 @@ const ProfileDrawer = ({
             </p>
           </DrawerHeader>
 
-          <div className="p-6 space-y-6 overflow-y-auto backdrop-blur-sm bg-white/10">
-            {/* Share Button */}
-            <Button
-              onClick={() => setShareDialogOpen(true)}
-              className="w-full bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-sm"
-              variant="outline"
-            >
-              <Share2 className="w-4 h-4 mr-2" />
-              Share My Growth
-            </Button>
+          <div className="flex-1 overflow-y-auto backdrop-blur-sm bg-white/10">
+            <Tabs defaultValue="overview" className="w-full">
+              <TabsList className="w-full grid grid-cols-2 bg-white/20 mx-4 mt-4" style={{ width: 'calc(100% - 2rem)' }}>
+                <TabsTrigger value="overview" className="data-[state=active]:bg-white/80">
+                  <User className="w-4 h-4 mr-2" />
+                  Overview
+                </TabsTrigger>
+                <TabsTrigger value="stats" className="data-[state=active]:bg-white/80">
+                  <BarChart3 className="w-4 h-4 mr-2" />
+                  Weekly Stats
+                </TabsTrigger>
+              </TabsList>
 
-            {/* Aura Stats */}
-            <div className="grid grid-cols-2 gap-4">
-              {/* Aura Score Card */}
-              <div className="p-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Sparkles className="w-4 h-4 text-purple-500" />
-                  <span className="text-xs font-medium text-purple-600 uppercase">
-                    Aura Score
-                  </span>
-                </div>
-                <p className="text-3xl font-bold text-purple-600">
-                  {auraScore}
-                </p>
-              </div>
+              <TabsContent value="overview" className="p-6 space-y-6 mt-0">
+                {/* Share Button */}
+                <Button
+                  onClick={() => setShareDialogOpen(true)}
+                  className="w-full bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-sm"
+                  variant="outline"
+                >
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Share My Growth
+                </Button>
 
-              {/* Streak Card */}
-              <div className="p-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  {isStreakFrozen ? (
-                    <Snowflake className="w-4 h-4 text-cyan-500" />
-                  ) : (
-                    <Flame className="w-4 h-4 text-orange-500" />
-                  )}
-                  <span className={`text-xs font-medium uppercase ${isStreakFrozen ? 'text-cyan-600' : 'text-orange-600'}`}>
-                    {isStreakFrozen ? 'Frozen Streak' : 'Streak'}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <p className={`text-3xl font-bold ${isStreakFrozen ? 'text-cyan-600' : 'text-orange-600'}`}>
-                    {streak} Days
-                  </p>
-                  {hasMultiplier && !isStreakFrozen && (
-                    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-orange-400 to-amber-500 text-white text-xs font-bold">
-                      🔥 {multiplier}x
-                    </span>
-                  )}
-                </div>
-                {isStreakFrozen && (
-                  <p className="text-xs text-cyan-500 mt-1">❄️ Protected by watering</p>
-                )}
-                {hasMultiplier && !isStreakFrozen && (
-                  <p className="text-xs text-orange-500 mt-1">Sunshine Multiplier Active!</p>
-                )}
-              </div>
-            </div>
-
-            {/* Watering Status */}
-            <div className="p-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Droplet className={`w-5 h-5 ${hasWateredToday ? 'text-cyan-500' : 'text-muted-foreground'}`} />
-                  <span className="text-sm font-medium">Aura Well</span>
-                </div>
-                <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                  hasWateredToday 
-                    ? 'bg-cyan-100 text-cyan-700' 
-                    : 'bg-amber-100 text-amber-700'
-                }`}>
-                  {hasWateredToday ? '✓ Watered Today' : 'Not Watered'}
-                </span>
-              </div>
-            </div>
-
-            {/* Level Progress */}
-            <div className="p-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <AuraLevelIcon auraScore={auraScore} />
-                  <div>
-                    <p className="font-semibold text-emerald-700">
-                      {level.name}
-                    </p>
-                    <p className="text-xs text-emerald-600/70">
-                      Level {level.level === "seedling" ? 1 : level.level === "sprout" ? 2 : 3}
+                {/* Aura Stats */}
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Aura Score Card */}
+                  <div className="p-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Sparkles className="w-4 h-4 text-purple-500" />
+                      <span className="text-xs font-medium text-purple-600 uppercase">
+                        Aura Score
+                      </span>
+                    </div>
+                    <p className="text-3xl font-bold text-purple-600">
+                      {auraScore}
                     </p>
                   </div>
-                </div>
-                <TrendingUp className="w-5 h-5 text-emerald-500" />
-              </div>
 
-              {/* Progress to next level */}
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs text-emerald-700">
-                  <span>Progress to next level</span>
-                  <span>{Math.round(progressToNext)}%</span>
+                  {/* Streak Card */}
+                  <div className="p-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      {isStreakFrozen ? (
+                        <Snowflake className="w-4 h-4 text-cyan-500" />
+                      ) : (
+                        <Flame className="w-4 h-4 text-orange-500" />
+                      )}
+                      <span className={`text-xs font-medium uppercase ${isStreakFrozen ? 'text-cyan-600' : 'text-orange-600'}`}>
+                        {isStreakFrozen ? 'Frozen Streak' : 'Streak'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <p className={`text-3xl font-bold ${isStreakFrozen ? 'text-cyan-600' : 'text-orange-600'}`}>
+                        {streak} Days
+                      </p>
+                      {hasMultiplier && !isStreakFrozen && (
+                        <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-orange-400 to-amber-500 text-white text-xs font-bold">
+                          🔥 {multiplier}x
+                        </span>
+                      )}
+                    </div>
+                    {isStreakFrozen && (
+                      <p className="text-xs text-cyan-500 mt-1">❄️ Protected by watering</p>
+                    )}
+                    {hasMultiplier && !isStreakFrozen && (
+                      <p className="text-xs text-orange-500 mt-1">Sunshine Multiplier Active!</p>
+                    )}
+                  </div>
                 </div>
-                <div className="h-2 bg-emerald-200/50 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-emerald-500 to-green-400 rounded-full transition-all duration-500"
-                    style={{ width: `${progressToNext}%` }}
-                  />
-                </div>
-                {level.level !== "bloom" && (
-                  <p className="text-xs text-emerald-600/70">
-                    {level.maxScore - auraScore + 1} points to{" "}
-                    {level.level === "seedling" ? "Sprout" : "Bloom"}
-                  </p>
-                )}
-              </div>
-            </div>
 
-            {/* Badges Section */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-white/50 shadow-lg">
-              <BadgesPanel unlockedBadges={badges} />
-            </div>
+                {/* Watering Status */}
+                <div className="p-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Droplet className={`w-5 h-5 ${hasWateredToday ? 'text-cyan-500' : 'text-muted-foreground'}`} />
+                      <span className="text-sm font-medium">Aura Well</span>
+                    </div>
+                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                      hasWateredToday 
+                        ? 'bg-cyan-100 text-cyan-700' 
+                        : 'bg-amber-100 text-amber-700'
+                    }`}>
+                      {hasWateredToday ? '✓ Watered Today' : 'Not Watered'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Level Progress */}
+                <div className="p-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <AuraLevelIcon auraScore={auraScore} />
+                      <div>
+                        <p className="font-semibold text-emerald-700">
+                          {level.name}
+                        </p>
+                        <p className="text-xs text-emerald-600/70">
+                          Level {level.level === "seedling" ? 1 : level.level === "sprout" ? 2 : 3}
+                        </p>
+                      </div>
+                    </div>
+                    <TrendingUp className="w-5 h-5 text-emerald-500" />
+                  </div>
+
+                  {/* Progress to next level */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs text-emerald-700">
+                      <span>Progress to next level</span>
+                      <span>{Math.round(progressToNext)}%</span>
+                    </div>
+                    <div className="h-2 bg-emerald-200/50 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-emerald-500 to-green-400 rounded-full transition-all duration-500"
+                        style={{ width: `${progressToNext}%` }}
+                      />
+                    </div>
+                    {level.level !== "bloom" && (
+                      <p className="text-xs text-emerald-600/70">
+                        {level.maxScore - auraScore + 1} points to{" "}
+                        {level.level === "seedling" ? "Sprout" : "Bloom"}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Badges Section */}
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-white/50 shadow-lg">
+                  <BadgesPanel unlockedBadges={badges} />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="stats" className="p-6 mt-0">
+                <WeeklyAuraStats currentStreak={streak} isStreakFrozen={isStreakFrozen} />
+              </TabsContent>
+            </Tabs>
           </div>
         </DrawerContent>
       </Drawer>
