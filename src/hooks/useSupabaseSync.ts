@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { format, differenceInHours, isToday, parseISO } from "date-fns";
+import { format, differenceInHours, isToday, parseISO, addHours } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Task, TaskCategory, SubTask } from "@/types/task";
@@ -7,6 +7,7 @@ import { useSettings, ThemePreset } from "@/contexts/SettingsContext";
 import { useToast } from "@/hooks/use-toast";
 import { Json } from "@/integrations/supabase/types";
 import { Badge, getAuraLevel, AuraLevelInfo, getStreakMultiplier } from "@/types/aura";
+import { VineSpecies } from "@/types/species";
 
 interface UserProfile {
   aura_score: number;
@@ -16,6 +17,8 @@ interface UserProfile {
   last_watered_date: string | null;
   streak_frozen: boolean;
   last_active_date: string | null;
+  vine_species: VineSpecies;
+  glimmer_until: string | null;
 }
 
 // Convert database task to app Task format
@@ -69,6 +72,10 @@ export const useSupabaseSync = () => {
   const [isStreakFrozen, setIsStreakFrozen] = useState(false);
   const [isWithered, setIsWithered] = useState(false);
   const [lastActiveDate, setLastActiveDate] = useState<string | null>(null);
+  
+  // Species and glimmer state
+  const [vineSpecies, setVineSpecies] = useState<VineSpecies>("ivy");
+  const [hasGlimmer, setHasGlimmer] = useState(false);
 
   // Load user profile
   const loadProfile = useCallback(async () => {
@@ -92,6 +99,13 @@ export const useSupabaseSync = () => {
       previousLevelRef.current = getAuraLevel(data.aura_score);
       setLastActiveDate(data.last_active_date);
       setIsStreakFrozen(data.streak_frozen || false);
+      setVineSpecies((data.vine_species as VineSpecies) || "ivy");
+      
+      // Check if glimmer is active
+      if (data.glimmer_until) {
+        const glimmerEnd = parseISO(data.glimmer_until);
+        setHasGlimmer(new Date() < glimmerEnd);
+      }
       
       // Check if watered today
       if (data.last_watered_date) {
@@ -348,16 +362,28 @@ export const useSupabaseSync = () => {
     setLevelUpInfo(null);
   }, []);
 
-  // Water the vine - grants +25 XP and protects streak
+  // Water the vine - grants +25 XP and protects streak, with 5% glimmer chance
   const waterVine = useCallback(async () => {
     if (!user || hasWateredToday) return;
 
     const today = format(new Date(), "yyyy-MM-dd");
     
+    // 5% chance for glimmer effect (24 hours)
+    const gotGlimmer = Math.random() < 0.05;
+    const glimmerUntil = gotGlimmer ? addHours(new Date(), 24).toISOString() : null;
+    
     // Update local state
     setHasWateredToday(true);
     setIsWithered(false);
     setIsStreakFrozen(true); // Streak is now protected
+    
+    if (gotGlimmer) {
+      setHasGlimmer(true);
+      toast({
+        title: "✨ Rare Glimmer!",
+        description: "Your vine sparkles with magical energy for 24 hours!",
+      });
+    }
     
     // Grant XP bonus
     await incrementAuraScore(25);
@@ -369,6 +395,7 @@ export const useSupabaseSync = () => {
         last_watered_date: today,
         streak_frozen: true,
         last_active_date: today,
+        glimmer_until: glimmerUntil,
       })
       .eq("user_id", user.id);
 
@@ -402,6 +429,33 @@ export const useSupabaseSync = () => {
       console.error("Error unfreezing streak:", error);
     }
   }, [user, isStreakFrozen]);
+
+  // Change vine species
+  const changeVineSpecies = useCallback(async (species: VineSpecies) => {
+    if (!user) return;
+    
+    const isFirstAlternative = vineSpecies === "ivy" && species !== "ivy";
+    
+    setVineSpecies(species);
+    
+    const { error } = await supabase
+      .from("user_profiles")
+      .update({ vine_species: species })
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error("Error changing species:", error);
+    }
+    
+    // Unlock Botanist badge for first alternative species
+    if (isFirstAlternative && !badges.some((b) => b.id === "botanist")) {
+      unlockBadge("botanist");
+      toast({
+        title: "🧑‍🌾 Botanist Badge Unlocked!",
+        description: "You've cultivated your first alternative vine species!",
+      });
+    }
+  }, [user, vineSpecies, badges, unlockBadge, toast]);
 
   // Handle date change
   const handleSelectDate = useCallback(async (date: Date) => {
@@ -438,5 +492,9 @@ export const useSupabaseSync = () => {
     isWithered,
     waterVine,
     unfreezeStreak,
+    // Species exports
+    vineSpecies,
+    changeVineSpecies,
+    hasGlimmer,
   };
 };

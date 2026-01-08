@@ -89,6 +89,12 @@ export const AVAILABLE_BADGES: Badge[] = [
     description: "Viewed Statistics dashboard 5 times in a week",
     icon: "📊",
   },
+  {
+    id: "botanist",
+    name: "Botanist",
+    description: "Unlocked and switched to your first alternative vine species",
+    icon: "🧑‍🌾",
+  },
 ];
 
 // Streak multiplier logic

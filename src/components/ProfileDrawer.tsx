@@ -17,10 +17,13 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { getAuraLevel, getProgressToNextLevel, Badge, HABITAT_THEMES, getStreakMultiplier, STREAK_THRESHOLD } from "@/types/aura";
+import { VineSpecies } from "@/types/species";
 import AuraLevelIcon from "@/components/AuraLevelIcon";
 import BadgesPanel from "@/components/BadgesPanel";
 import AuraShareCard from "@/components/AuraShareCard";
 import WeeklyAuraStats from "@/components/WeeklyAuraStats";
+import VineSpeciesSelector from "@/components/VineSpeciesSelector";
+import SeasonalOverlay from "@/components/SeasonalOverlay";
 import { toast } from "sonner";
 
 interface ProfileDrawerProps {
@@ -34,6 +37,8 @@ interface ProfileDrawerProps {
   isStreakFrozen?: boolean;
   hasWateredToday?: boolean;
   unlockBadge?: (badgeId: string) => void;
+  vineSpecies?: VineSpecies;
+  onChangeSpecies?: (species: VineSpecies) => void;
 }
 
 const ProfileDrawer = ({
@@ -47,6 +52,8 @@ const ProfileDrawer = ({
   isStreakFrozen = false,
   hasWateredToday = false,
   unlockBadge,
+  vineSpecies = "ivy",
+  onChangeSpecies,
 }: ProfileDrawerProps) => {
   const { user } = useAuth();
   const level = getAuraLevel(auraScore);
@@ -123,9 +130,11 @@ const ProfileDrawer = ({
     <>
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerContent 
-          className="max-h-[85vh] overflow-hidden"
+          className="max-h-[85vh] overflow-hidden relative"
           style={{ background: habitat.gradient }}
         >
+          {/* Seasonal overlay */}
+          <SeasonalOverlay />
           <DrawerHeader className="border-b border-white/20 pb-4 backdrop-blur-sm bg-white/10">
             <DrawerTitle className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center shadow-lg">
@@ -267,6 +276,18 @@ const ProfileDrawer = ({
                     )}
                   </div>
                 </div>
+
+                {/* Vine Species Selector */}
+                {onChangeSpecies && (
+                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-white/50 shadow-lg">
+                    <VineSpeciesSelector
+                      currentSpecies={vineSpecies}
+                      auraScore={auraScore}
+                      streak={streak}
+                      onSelectSpecies={onChangeSpecies}
+                    />
+                  </div>
+                )}
 
                 {/* Badges Section */}
                 <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-white/50 shadow-lg">

@@ -119,6 +119,20 @@ export default {
           "0%, 100%": { opacity: "0", transform: "scale(0)" },
           "50%": { opacity: "1", transform: "scale(1)" },
         },
+        "seasonal-fall": {
+          "0%": { transform: "translateY(-10vh) rotate(0deg)", opacity: "0" },
+          "10%": { opacity: "1" },
+          "90%": { opacity: "1" },
+          "100%": { transform: "translateY(110vh) rotate(360deg)", opacity: "0" },
+        },
+        "shimmer-slow": {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
+        "glimmer-sparkle": {
+          "0%, 100%": { opacity: "0", transform: "scale(0) rotate(0deg)" },
+          "50%": { opacity: "1", transform: "scale(1) rotate(180deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -129,6 +143,9 @@ export default {
         "water-ripple": "water-ripple 0.8s ease-out forwards",
         "water-drop": "water-drop 0.6s ease-out forwards",
         "sparkle": "sparkle 2s ease-in-out infinite",
+        "seasonal-fall": "seasonal-fall 8s linear infinite",
+        "shimmer-slow": "shimmer-slow 3s ease-in-out infinite",
+        "glimmer-sparkle": "glimmer-sparkle 2s ease-in-out infinite",
       },
     },
   },

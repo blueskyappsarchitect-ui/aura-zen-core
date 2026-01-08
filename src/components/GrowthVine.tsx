@@ -1,5 +1,7 @@
 import { useMemo, useEffect, useState } from "react";
 import { getAuraLevel, getProgressToNextLevel } from "@/types/aura";
+import { VineSpecies, getSpeciesInfo } from "@/types/species";
+import GlimmerOverlay from "./GlimmerOverlay";
 
 interface GrowthVineProps {
   auraScore: number;
@@ -7,12 +9,23 @@ interface GrowthVineProps {
   totalTasks: number;
   isPulsing?: boolean;
   isWithered?: boolean;
+  species?: VineSpecies;
+  hasGlimmer?: boolean;
 }
 
-const GrowthVine = ({ auraScore, completedTasks, totalTasks, isPulsing = false, isWithered = false }: GrowthVineProps) => {
+const GrowthVine = ({ 
+  auraScore, 
+  completedTasks, 
+  totalTasks, 
+  isPulsing = false, 
+  isWithered = false,
+  species = "ivy",
+  hasGlimmer = false,
+}: GrowthVineProps) => {
   const taskProgress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
   const levelProgress = getProgressToNextLevel(auraScore);
   const currentLevel = getAuraLevel(auraScore);
+  const speciesInfo = getSpeciesInfo(species);
   const [showPulse, setShowPulse] = useState(false);
 
   // Trigger pulse animation when isPulsing changes to true
@@ -35,13 +48,21 @@ const GrowthVine = ({ auraScore, completedTasks, totalTasks, isPulsing = false, 
     }));
   }, [taskProgress]);
 
+  // Get species-specific styles
+  const stemGradient = `bg-gradient-to-r ${speciesInfo.colors.stem} ${speciesInfo.colors.stemVia} ${speciesInfo.colors.stemTo}`;
+  const leafColor = speciesInfo.colors.leaf;
+  const tipColor = speciesInfo.colors.tip;
+  const tipGlow = speciesInfo.colors.glow;
+
   return (
-    <div className="mb-6">
+    <div className={`mb-6 relative ${hasGlimmer ? 'glimmer-active' : ''}`}>
+      <GlimmerOverlay active={hasGlimmer} />
+      
       {/* Level Progress Label */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
-            🌱 Growth Vine
+            {speciesInfo.icon} {speciesInfo.name} Vine
           </span>
           <span className="text-xs text-muted-foreground">
             Level: {currentLevel.name}
@@ -60,7 +81,7 @@ const GrowthVine = ({ auraScore, completedTasks, totalTasks, isPulsing = false, 
       >
         {/* Main Vine Stem */}
         <div
-          className={`absolute left-0 top-1/2 h-1 bg-gradient-to-r from-emerald-600 via-green-500 to-lime-400 rounded-full transition-all duration-1000 ease-out transform -translate-y-1/2 ${
+          className={`absolute left-0 top-1/2 h-1 ${stemGradient} rounded-full transition-all duration-1000 ease-out transform -translate-y-1/2 ${
             showPulse ? 'animate-vine-glow' : ''
           }`}
           style={{ width: `${taskProgress}%` }}
@@ -85,7 +106,7 @@ const GrowthVine = ({ auraScore, completedTasks, totalTasks, isPulsing = false, 
               height={leaf.size}
               viewBox="0 0 24 24"
               fill="none"
-              className={`text-emerald-500 dark:text-emerald-400 ${
+              className={`${leafColor} ${
                 leaf.id % 2 === 0 ? "rotate-45" : "-rotate-45"
               }`}
             >
@@ -103,8 +124,8 @@ const GrowthVine = ({ auraScore, completedTasks, totalTasks, isPulsing = false, 
             className="absolute top-1/2 transform -translate-y-1/2 -translate-x-1/2 transition-all duration-1000"
             style={{ left: `${taskProgress}%` }}
           >
-            <div className="w-3 h-3 bg-lime-400 rounded-full shadow-lg shadow-lime-400/50 animate-pulse" />
-            <div className="absolute inset-0 w-3 h-3 bg-lime-300 rounded-full animate-ping opacity-75" />
+            <div className={`w-3 h-3 ${tipColor} rounded-full shadow-lg ${tipGlow} animate-pulse`} />
+            <div className={`absolute inset-0 w-3 h-3 ${tipColor} rounded-full animate-ping opacity-75`} />
           </div>
         )}
 
