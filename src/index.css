@@ -825,3 +825,22 @@ html {
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* Glimmer effect overlay */
+.glimmer-active {
+  position: relative;
+  overflow: hidden;
+}
+
+.glimmer-active::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 215, 0, 0.2),
+    transparent
+  );
+  animation: shimmer-slow 3s ease-in-out infinite;
+}

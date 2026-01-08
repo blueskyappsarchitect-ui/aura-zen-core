@@ -66,12 +66,14 @@ export type Database = {
           created_at: string
           current_theme: string
           daily_streak: number
+          glimmer_until: string | null
           id: string
           last_active_date: string | null
           last_watered_date: string | null
           streak_frozen: boolean | null
           updated_at: string
           user_id: string
+          vine_species: string
         }
         Insert: {
           aura_score?: number
@@ -79,12 +81,14 @@ export type Database = {
           created_at?: string
           current_theme?: string
           daily_streak?: number
+          glimmer_until?: string | null
           id?: string
           last_active_date?: string | null
           last_watered_date?: string | null
           streak_frozen?: boolean | null
           updated_at?: string
           user_id: string
+          vine_species?: string
         }
         Update: {
           aura_score?: number
@@ -92,12 +96,14 @@ export type Database = {
           created_at?: string
           current_theme?: string
           daily_streak?: number
+          glimmer_until?: string | null
           id?: string
           last_active_date?: string | null
           last_watered_date?: string | null
           streak_frozen?: boolean | null
           updated_at?: string
           user_id?: string
+          vine_species?: string
         }
         Relationships: []
       }

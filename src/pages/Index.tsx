@@ -57,6 +57,9 @@ const Index = () => {
     isStreakFrozen,
     isWithered,
     waterVine,
+    vineSpecies,
+    changeVineSpecies,
+    hasGlimmer,
   } = useSupabaseSync();
 
   const [profileOpen, setProfileOpen] = useState(false);
@@ -430,6 +433,8 @@ const Index = () => {
           isStreakFrozen={isStreakFrozen}
           isWithered={isWithered}
           onWater={waterVine}
+          vineSpecies={vineSpecies}
+          hasGlimmer={hasGlimmer}
         />
 
         {/* Weekly Day Picker */}
