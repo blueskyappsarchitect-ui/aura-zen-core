@@ -76,6 +76,7 @@ export const useSupabaseSync = () => {
   // Species and glimmer state
   const [vineSpecies, setVineSpecies] = useState<VineSpecies>("ivy");
   const [hasGlimmer, setHasGlimmer] = useState(false);
+  const [sunshineNudgesSent, setSunshineNudgesSent] = useState(0);
 
   // Load user profile
   const loadProfile = useCallback(async () => {
@@ -100,6 +101,7 @@ export const useSupabaseSync = () => {
       setLastActiveDate(data.last_active_date);
       setIsStreakFrozen(data.streak_frozen || false);
       setVineSpecies((data.vine_species as VineSpecies) || "ivy");
+      setSunshineNudgesSent(data.sunshine_nudges_sent || 0);
       
       // Check if glimmer is active
       if (data.glimmer_until) {
@@ -457,6 +459,23 @@ export const useSupabaseSync = () => {
     }
   }, [user, vineSpecies, badges, unlockBadge, toast]);
 
+  // Increment sunshine nudges sent
+  const incrementSunshineNudges = useCallback(async () => {
+    if (!user) return;
+    
+    const newCount = sunshineNudgesSent + 1;
+    setSunshineNudgesSent(newCount);
+    
+    const { error } = await supabase
+      .from("user_profiles")
+      .update({ sunshine_nudges_sent: newCount })
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error("Error updating sunshine nudges:", error);
+    }
+  }, [user, sunshineNudgesSent]);
+
   // Handle date change
   const handleSelectDate = useCallback(async (date: Date) => {
     setSelectedDate(date);
@@ -496,5 +515,8 @@ export const useSupabaseSync = () => {
     vineSpecies,
     changeVineSpecies,
     hasGlimmer,
+    // Grove exports
+    sunshineNudgesSent,
+    incrementSunshineNudges,
   };
 };

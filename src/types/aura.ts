@@ -95,6 +95,12 @@ export const AVAILABLE_BADGES: Badge[] = [
     description: "Unlocked and switched to your first alternative vine species",
     icon: "🧑‍🌾",
   },
+  {
+    id: "community_caretaker",
+    name: "Community Caretaker",
+    description: "Sent 5 Sunshine Nudges to help fellow gardeners",
+    icon: "☀️",
+  },
 ];
 
 // Streak multiplier logic

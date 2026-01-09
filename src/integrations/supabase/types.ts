@@ -14,6 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
+      global_oxygen: {
+        Row: {
+          bonus_active_until: string | null
+          date: string
+          id: string
+          target_count: number
+          water_count: number
+        }
+        Insert: {
+          bonus_active_until?: string | null
+          date?: string
+          id?: string
+          target_count?: number
+          water_count?: number
+        }
+        Update: {
+          bonus_active_until?: string | null
+          date?: string
+          id?: string
+          target_count?: number
+          water_count?: number
+        }
+        Relationships: []
+      }
+      grove_activities: {
+        Row: {
+          activity_data: Json | null
+          activity_type: string
+          created_at: string
+          display_name: string
+          id: string
+          is_withered: boolean | null
+          user_id: string
+          vine_species: string | null
+        }
+        Insert: {
+          activity_data?: Json | null
+          activity_type: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          is_withered?: boolean | null
+          user_id: string
+          vine_species?: string | null
+        }
+        Update: {
+          activity_data?: Json | null
+          activity_type?: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          is_withered?: boolean | null
+          user_id?: string
+          vine_species?: string | null
+        }
+        Relationships: []
+      }
+      sunshine_nudges: {
+        Row: {
+          created_at: string
+          id: string
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: []
+      }
       tasks: {
         Row: {
           category: string
@@ -71,6 +149,7 @@ export type Database = {
           last_active_date: string | null
           last_watered_date: string | null
           streak_frozen: boolean | null
+          sunshine_nudges_sent: number
           updated_at: string
           user_id: string
           vine_species: string
@@ -86,6 +165,7 @@ export type Database = {
           last_active_date?: string | null
           last_watered_date?: string | null
           streak_frozen?: boolean | null
+          sunshine_nudges_sent?: number
           updated_at?: string
           user_id: string
           vine_species?: string
@@ -101,6 +181,7 @@ export type Database = {
           last_active_date?: string | null
           last_watered_date?: string | null
           streak_frozen?: boolean | null
+          sunshine_nudges_sent?: number
           updated_at?: string
           user_id?: string
           vine_species?: string

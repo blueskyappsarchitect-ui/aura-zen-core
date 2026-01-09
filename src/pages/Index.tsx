@@ -20,9 +20,13 @@ import GuidedTour, { shouldShowTour } from "@/components/GuidedTour";
 import LoadingScreen from "@/components/LoadingScreen";
 import LevelUpCelebration from "@/components/LevelUpCelebration";
 import ProfileDrawer from "@/components/ProfileDrawer";
+import TabNavigation from "@/components/Grove/TabNavigation";
+import GroveTab from "@/components/Grove/GroveTab";
 import { useTimeOfDay } from "@/hooks/useTimeOfDay";
 import { useSupabaseSync } from "@/hooks/useSupabaseSync";
+import { useGroveSync } from "@/hooks/useGroveSync";
 import { Task, generateMicroSteps } from "@/types/task";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Check if morning briefing was shown today
 const getMorningBriefingKey = () => {
@@ -37,6 +41,8 @@ const getSavedIntention = (): string => {
 };
 
 const Index = () => {
+  const { user } = useAuth();
+  
   // Supabase sync hook
   const {
     tasks,
@@ -60,8 +66,14 @@ const Index = () => {
     vineSpecies,
     changeVineSpecies,
     hasGlimmer,
+    sunshineNudgesSent,
+    incrementSunshineNudges,
   } = useSupabaseSync();
 
+  // Grove sync hook
+  const { postActivity, incrementGlobalOxygen } = useGroveSync(user?.id || null);
+
+  const [activeTab, setActiveTab] = useState<'my-vine' | 'grove'>('my-vine');
   const [profileOpen, setProfileOpen] = useState(false);
 
   const [timelineFading, setTimelineFading] = useState(false);
@@ -416,70 +428,85 @@ const Index = () => {
 
       {/* Main scrollable content */}
       <main className="pt-24 pb-32 hide-scrollbar">
-        {/* Subtle top gradient */}
-        <div className="fixed top-16 left-0 right-0 h-16 bg-gradient-to-b from-background to-transparent pointer-events-none z-10" />
+        {activeTab === 'my-vine' ? (
+          <>
+            {/* Subtle top gradient */}
+            <div className="fixed top-16 left-0 right-0 h-16 bg-gradient-to-b from-background to-transparent pointer-events-none z-10" />
 
-        {/* North Star Intention */}
-        {dailyIntention && isToday(selectedDate) && <NorthStar intention={dailyIntention} />}
+            {/* North Star Intention */}
+            {dailyIntention && isToday(selectedDate) && <NorthStar intention={dailyIntention} />}
 
-        {/* Aura Dashboard */}
-        <AuraDashboard
-          auraScore={auraScore}
-          streak={streak}
-          completedTasks={completedCount}
-          totalTasks={totalSubTasks || tasks.length}
-          shouldAnimate={shouldAnimateScore}
-          hasWateredToday={hasWateredToday}
-          isStreakFrozen={isStreakFrozen}
-          isWithered={isWithered}
-          onWater={waterVine}
-          vineSpecies={vineSpecies}
-          hasGlimmer={hasGlimmer}
-        />
-
-        {/* Weekly Day Picker */}
-        <WeeklyDayPicker
-          selectedDate={selectedDate}
-          onSelectDate={handleSelectDate}
-          unfinishedCount={unfinishedTasksFromYesterday.length}
-          onMigrateUnfinished={handleMigrateUnfinished}
-        />
-
-        {/* Deep Work Forecast for future days */}
-        <DeepWorkForecast tasks={tasks} selectedDate={selectedDate} />
-
-        {/* The Aura Timeline or Empty State */}
-        <div className={`transition-opacity duration-300 ${timelineFading ? "opacity-0" : "opacity-100"}`}>
-          {tasks.length === 0 ? (
-            <EmptyTimelineState onAddTask={() => setDrawerOpen(true)} />
-          ) : (
-            <Timeline 
-              ref={timelineRef}
-              tasks={tasks} 
-              newTaskIds={newTaskIds}
-              completedTaskIds={completedTaskIds}
-              poppingTaskId={poppingTaskId}
-              goldenPulseTaskId={goldenPulseTaskId}
-              onGenerateSubTasks={handleGenerateSubTasks}
-              onToggleSubTask={handleToggleSubTask}
-              onStartFocus={handleStartFocus}
-              onFinishedEarly={handleFinishedEarly}
-              onTaskMove={handleTaskMove}
-              onTaskResize={handleTaskResize}
-              onStartNowPrompt={handleStartNowPrompt}
+            {/* Aura Dashboard */}
+            <AuraDashboard
+              auraScore={auraScore}
+              streak={streak}
+              completedTasks={completedCount}
+              totalTasks={totalSubTasks || tasks.length}
+              shouldAnimate={shouldAnimateScore}
+              hasWateredToday={hasWateredToday}
+              isStreakFrozen={isStreakFrozen}
+              isWithered={isWithered}
+              onWater={waterVine}
+              vineSpecies={vineSpecies}
+              hasGlimmer={hasGlimmer}
             />
-          )}
-        </div>
 
-        {/* Subtle bottom gradient */}
-        <div className="fixed bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none z-10" />
+            {/* Weekly Day Picker */}
+            <WeeklyDayPicker
+              selectedDate={selectedDate}
+              onSelectDate={handleSelectDate}
+              unfinishedCount={unfinishedTasksFromYesterday.length}
+              onMigrateUnfinished={handleMigrateUnfinished}
+            />
+
+            {/* Deep Work Forecast for future days */}
+            <DeepWorkForecast tasks={tasks} selectedDate={selectedDate} />
+
+            {/* The Aura Timeline or Empty State */}
+            <div className={`transition-opacity duration-300 ${timelineFading ? "opacity-0" : "opacity-100"}`}>
+              {tasks.length === 0 ? (
+                <EmptyTimelineState onAddTask={() => setDrawerOpen(true)} />
+              ) : (
+                <Timeline 
+                  ref={timelineRef}
+                  tasks={tasks} 
+                  newTaskIds={newTaskIds}
+                  completedTaskIds={completedTaskIds}
+                  poppingTaskId={poppingTaskId}
+                  goldenPulseTaskId={goldenPulseTaskId}
+                  onGenerateSubTasks={handleGenerateSubTasks}
+                  onToggleSubTask={handleToggleSubTask}
+                  onStartFocus={handleStartFocus}
+                  onFinishedEarly={handleFinishedEarly}
+                  onTaskMove={handleTaskMove}
+                  onTaskResize={handleTaskResize}
+                  onStartNowPrompt={handleStartNowPrompt}
+                />
+              )}
+            </div>
+
+            {/* Subtle bottom gradient */}
+            <div className="fixed bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none z-10" />
+          </>
+        ) : (
+          <GroveTab
+            userId={user?.id || null}
+            onXpGain={incrementAuraScore}
+            onUnlockBadge={unlockBadge}
+            sunshineNudgesSent={sunshineNudgesSent}
+            onSunshineSent={incrementSunshineNudges}
+          />
+        )}
       </main>
 
-      {/* Up Next Nudge Card */}
-      <UpNextCard tasks={tasks} onScrollToTask={handleScrollToTask} />
+      {/* Up Next Nudge Card - only show on My Vine tab */}
+      {activeTab === 'my-vine' && <UpNextCard tasks={tasks} onScrollToTask={handleScrollToTask} />}
 
-      {/* Floating Add Button */}
-      <AddTaskButton onClick={() => setDrawerOpen(true)} />
+      {/* Floating Add Button - only show on My Vine tab */}
+      {activeTab === 'my-vine' && <AddTaskButton onClick={() => setDrawerOpen(true)} />}
+
+      {/* Tab Navigation */}
+      <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* Add Task Drawer */}
       <AddTaskDrawer
