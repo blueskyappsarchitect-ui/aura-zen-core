@@ -5,6 +5,7 @@ import AuraLevelIcon from "@/components/AuraLevelIcon";
 import GrowthVine from "@/components/GrowthVine";
 import AuraWell from "@/components/AuraWell";
 import { getStreakMultiplier, STREAK_THRESHOLD } from "@/types/aura";
+import { VineSpecies } from "@/types/species";
 
 interface AuraDashboardProps {
   auraScore: number;
@@ -16,6 +17,8 @@ interface AuraDashboardProps {
   isStreakFrozen: boolean;
   isWithered: boolean;
   onWater: () => void;
+  vineSpecies: VineSpecies;
+  hasGlimmer: boolean;
 }
 
 const AuraDashboard = ({
@@ -28,6 +31,8 @@ const AuraDashboard = ({
   isStreakFrozen,
   isWithered,
   onWater,
+  vineSpecies,
+  hasGlimmer,
 }: AuraDashboardProps) => {
   const scoreRef = useRef<HTMLDivElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -149,6 +154,8 @@ const AuraDashboard = ({
             totalTasks={totalTasks}
             isPulsing={isPulsing}
             isWithered={isWithered}
+            species={vineSpecies}
+            hasGlimmer={hasGlimmer}
           />
 
           {/* Aura Insight Section */}
