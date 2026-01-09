@@ -22,11 +22,15 @@ import LevelUpCelebration from "@/components/LevelUpCelebration";
 import ProfileDrawer from "@/components/ProfileDrawer";
 import TabNavigation from "@/components/Grove/TabNavigation";
 import GroveTab from "@/components/Grove/GroveTab";
+import SeedlingOnboarding from "@/components/SeedlingOnboarding";
+import NatureSoundscape from "@/components/NatureSoundscape";
 import { useTimeOfDay } from "@/hooks/useTimeOfDay";
 import { useSupabaseSync } from "@/hooks/useSupabaseSync";
 import { useGroveSync } from "@/hooks/useGroveSync";
+import { useAudioFeedback } from "@/hooks/useAudioFeedback";
 import { Task, generateMicroSteps } from "@/types/task";
 import { useAuth } from "@/contexts/AuthContext";
+import { getAuraLevel } from "@/types/aura";
 
 // Check if morning briefing was shown today
 const getMorningBriefingKey = () => {
@@ -73,6 +77,9 @@ const Index = () => {
   // Grove sync hook
   const { postActivity, incrementGlobalOxygen } = useGroveSync(user?.id || null);
 
+  // Audio feedback hook
+  const { playTaskComplete, playWaterSplash, playLevelUp } = useAudioFeedback();
+
   const [activeTab, setActiveTab] = useState<'my-vine' | 'grove'>('my-vine');
   const [profileOpen, setProfileOpen] = useState(false);
 
@@ -92,9 +99,19 @@ const Index = () => {
   const [showMorningBriefing, setShowMorningBriefing] = useState(false);
   const [dailyIntention, setDailyIntention] = useState(getSavedIntention);
   const [showGuidedTour, setShowGuidedTour] = useState(false);
+  const [showSeedlingOnboarding, setShowSeedlingOnboarding] = useState(false);
+  const [highlightWell, setHighlightWell] = useState(false);
   
   const timelineRef = useRef<TimelineRef>(null);
   const timeTheme = useTimeOfDay();
+  const habitatLevel = getAuraLevel(auraScore).level;
+
+  // Check for first-time onboarding (0 XP users)
+  useEffect(() => {
+    if (!isLoading && auraScore === 0 && !localStorage.getItem('aura-onboarding-complete')) {
+      setShowSeedlingOnboarding(true);
+    }
+  }, [isLoading, auraScore]);
 
   // Check if we should show morning briefing on first load of the day
   useEffect(() => {
@@ -418,10 +435,29 @@ const Index = () => {
 
   return (
     <div className={`min-h-screen transition-colors duration-1000 ${timeTheme.gradientClass}`}>
+      {/* Seedling Onboarding for new users */}
+      {showSeedlingOnboarding && (
+        <SeedlingOnboarding
+          onComplete={() => {
+            localStorage.setItem('aura-onboarding-complete', 'true');
+            setShowSeedlingOnboarding(false);
+          }}
+          onHighlightWell={() => {
+            setHighlightWell(true);
+            setTimeout(() => setHighlightWell(false), 5000);
+          }}
+        />
+      )}
+
       {/* Morning Briefing Modal */}
       {showMorningBriefing && (
         <MorningBriefing onComplete={handleMorningBriefingComplete} />
       )}
+
+      {/* Nature Soundscape Toggle */}
+      <div className="fixed top-20 right-4 z-40">
+        <NatureSoundscape habitatLevel={habitatLevel} />
+      </div>
 
       {/* Fixed Header */}
       <Header onProfileOpen={() => setProfileOpen(true)} />

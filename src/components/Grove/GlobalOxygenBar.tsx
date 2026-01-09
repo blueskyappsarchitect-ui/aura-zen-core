@@ -89,7 +89,7 @@ const GlobalOxygenBar = () => {
   const isComplete = percentage >= 100;
 
   return (
-    <div className={`relative p-4 rounded-2xl border transition-all ${
+    <div className={`relative p-4 rounded-2xl border transition-all duration-500 ease-in-out ${
       isBonusActive
         ? 'bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200 shadow-lg shadow-amber-500/20'
         : isComplete
@@ -124,9 +124,12 @@ const GlobalOxygenBar = () => {
       </div>
 
       <div className="relative">
+        <div className={`absolute inset-0 rounded-full ${
+          !isComplete && 'animate-breathing-pulse'
+        }`} />
         <Progress 
           value={percentage} 
-          className={`h-3 ${
+          className={`h-3 transition-all duration-500 ease-in-out ${
             isComplete || isBonusActive
               ? '[&>div]:bg-gradient-to-r [&>div]:from-green-400 [&>div]:to-emerald-500'
               : '[&>div]:bg-gradient-to-r [&>div]:from-blue-400 [&>div]:to-cyan-500'
