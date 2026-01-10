@@ -203,8 +203,6 @@ const Index = () => {
     localStorage.setItem(`aura-intention-${today}`, intention);
     setDailyIntention(intention);
     
-    console.log("Energy level:", energy);
-    
     setShowMorningBriefing(false);
   }, []);
 
@@ -289,7 +287,8 @@ const Index = () => {
     if (wasCompleting) {
       if (isLastSubTask) {
         setGoldenPulseTaskId(taskId);
-        playChime();
+        // Sync chime with vine pulse animation peak (400ms into 800ms animation)
+        setTimeout(() => playChime(), 400);
         setTimeout(() => setGoldenPulseTaskId(null), 1000);
         
         // Check for "Early Bird" badge (task completed before 9 AM)
@@ -302,6 +301,8 @@ const Index = () => {
         unlockBadge("first_bloom");
       } else {
         setPoppingTaskId(taskId);
+        // Play task complete chime synced with card pop animation (150ms into 300ms)
+        setTimeout(() => playTaskComplete(), 150);
         setTimeout(() => setPoppingTaskId(null), 300);
       }
       
@@ -322,7 +323,7 @@ const Index = () => {
         };
       });
     }
-  }, [tasks, focusTask, playChime, updateTask, incrementAuraScore]);
+  }, [tasks, focusTask, playChime, playTaskComplete, updateTask, incrementAuraScore, unlockBadge]);
 
   const handleStartFocus = useCallback((task: Task) => {
     setFocusTask(task);

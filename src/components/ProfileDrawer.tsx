@@ -130,12 +130,12 @@ const ProfileDrawer = ({
     <>
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerContent 
-          className="max-h-[85vh] overflow-hidden relative"
-          style={{ background: habitat.gradient }}
+          className="max-h-[85vh] overflow-hidden relative backdrop-blur-lg"
+          style={{ background: habitat.gradient, backdropFilter: 'blur(12px)' }}
         >
           {/* Seasonal overlay */}
           <SeasonalOverlay />
-          <DrawerHeader className="border-b border-white/20 pb-4 backdrop-blur-sm bg-white/10">
+          <DrawerHeader className="border-b border-white/20 pb-4 backdrop-blur-md bg-white/20" style={{ backdropFilter: 'blur(8px)' }}>
             <DrawerTitle className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center shadow-lg">
                 <User className="w-6 h-6 text-white" />
@@ -152,7 +152,7 @@ const ProfileDrawer = ({
             </p>
           </DrawerHeader>
 
-          <div className="flex-1 overflow-y-auto backdrop-blur-sm bg-white/10">
+          <div className="flex-1 overflow-y-auto backdrop-blur-md bg-white/20" style={{ backdropFilter: 'blur(8px)' }}>
             <Tabs defaultValue="overview" className="w-full">
               <TabsList className="w-full grid grid-cols-2 bg-white/20 mx-4 mt-4" style={{ width: 'calc(100% - 2rem)' }}>
                 <TabsTrigger value="overview" className="data-[state=active]:bg-white/80">
@@ -311,7 +311,7 @@ const ProfileDrawer = ({
 
       {/* Share Dialog */}
       <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
-        <DialogContent className="max-w-fit p-6 bg-background/95 backdrop-blur-sm">
+        <DialogContent className="max-w-fit p-6 bg-background/95 backdrop-blur-lg" style={{ backdropFilter: 'blur(12px)' }}>
           <DialogHeader>
             <DialogTitle className="text-center">Share My Growth</DialogTitle>
           </DialogHeader>

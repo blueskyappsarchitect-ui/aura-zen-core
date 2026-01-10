@@ -1,6 +1,7 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Droplet } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAudioFeedback } from "@/hooks/useAudioFeedback";
 
 interface AuraWellProps {
   hasWateredToday: boolean;
@@ -11,11 +12,18 @@ interface AuraWellProps {
 const AuraWell = ({ hasWateredToday, onWater, isWithered }: AuraWellProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const wellRef = useRef<HTMLButtonElement>(null);
+  const { playWaterSplash } = useAudioFeedback();
 
   const handleWater = () => {
     if (hasWateredToday || isAnimating) return;
 
     setIsAnimating(true);
+    
+    // Play water splash at the peak of the ripple animation (400ms into 800ms animation)
+    setTimeout(() => {
+      playWaterSplash();
+    }, 400);
+    
     onWater();
 
     // Reset animation after it completes
