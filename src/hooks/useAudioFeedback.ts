@@ -4,15 +4,28 @@ export const useAudioFeedback = () => {
   const audioContextRef = useRef<AudioContext | null>(null);
 
   const getAudioContext = useCallback(() => {
-    if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    // Only create AudioContext when called (on user interaction) to comply with browser autoplay policies
+    if (!audioContextRef.current && typeof window !== 'undefined') {
+      try {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      } catch (e) {
+        // AudioContext creation failed, likely due to browser restrictions
+        return null;
+      }
     }
+    
+    // Resume if suspended (happens when created before user gesture)
+    if (audioContextRef.current?.state === 'suspended') {
+      audioContextRef.current.resume();
+    }
+    
     return audioContextRef.current;
   }, []);
 
   // Light click sound for task completion
   const playTaskComplete = useCallback(() => {
     const ctx = getAudioContext();
+    if (!ctx) return; // Fail silently if no audio context
     const now = ctx.currentTime;
 
     // Create a pleasant chime with harmonics
@@ -40,6 +53,7 @@ export const useAudioFeedback = () => {
   // Water splash sound for watering the vine
   const playWaterSplash = useCallback(() => {
     const ctx = getAudioContext();
+    if (!ctx) return; // Fail silently if no audio context
     const now = ctx.currentTime;
 
     // Create noise for splash effect
@@ -93,6 +107,7 @@ export const useAudioFeedback = () => {
   // Soft click for button interactions
   const playClick = useCallback(() => {
     const ctx = getAudioContext();
+    if (!ctx) return; // Fail silently if no audio context
     const now = ctx.currentTime;
 
     const osc = ctx.createOscillator();
@@ -114,6 +129,7 @@ export const useAudioFeedback = () => {
   // Level up fanfare
   const playLevelUp = useCallback(() => {
     const ctx = getAudioContext();
+    if (!ctx) return; // Fail silently if no audio context
     const now = ctx.currentTime;
 
     const notes = [
@@ -146,6 +162,7 @@ export const useAudioFeedback = () => {
   // Sunshine send sound
   const playSunshine = useCallback(() => {
     const ctx = getAudioContext();
+    if (!ctx) return; // Fail silently if no audio context
     const now = ctx.currentTime;
 
     // Warm, rising tones

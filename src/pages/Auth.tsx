@@ -65,7 +65,7 @@ const Auth = () => {
           }
         } else {
           toast({
-            title: "Welcome to Aura Flow! ✨",
+            title: "Welcome to Aura Evolution! ✨",
             description: "Your account has been created successfully.",
           });
           navigate("/");
@@ -105,10 +105,10 @@ const Auth = () => {
               <Sparkles className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Aura Flow
+              Aura Evolution
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
-              {isSignUp ? "Create your flow sanctuary" : "Welcome back, creator"}
+              {isSignUp ? "Start your growth journey" : "Welcome back, creator"}
             </p>
           </div>
 

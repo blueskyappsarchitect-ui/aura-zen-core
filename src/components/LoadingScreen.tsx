@@ -25,10 +25,10 @@ const LoadingScreen = () => {
         {/* Brand name */}
         <div className="text-center">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Aura Flow
+            Aura Evolution
           </h1>
           <p className="text-sm text-muted-foreground mt-1 animate-pulse">
-            Loading your flow state...
+            Growing your digital ecosystem...
           </p>
         </div>
 
