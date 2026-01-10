@@ -94,19 +94,19 @@ const ActivityHeatmap = () => {
   }
 
   return (
-    <div className="p-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg">
+    <div className="p-3 sm:p-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <Flame className="w-4 h-4 text-orange-500" />
-          <span className="text-sm font-semibold text-foreground">30-Day Activity</span>
+          <Flame className="w-4 h-4 text-orange-500 flex-shrink-0" />
+          <span className="text-xs sm:text-sm font-semibold text-foreground">30-Day Activity</span>
         </div>
-        <span className="text-xs text-muted-foreground">{activeDays} active days</span>
+        <span className="text-[10px] sm:text-xs text-muted-foreground whitespace-nowrap">{activeDays} active</span>
       </div>
 
-      {/* Heatmap Grid */}
-      <div className="flex gap-1 justify-center mb-3">
+      {/* Heatmap Grid - Mobile optimized */}
+      <div className="flex gap-0.5 sm:gap-1 justify-center mb-3 overflow-x-auto">
         {weeks.map((week, weekIndex) => (
-          <div key={weekIndex} className="flex flex-col gap-1">
+          <div key={weekIndex} className="flex flex-col gap-0.5 sm:gap-1">
             {week.map((day, dayIndex) => {
               const intensity = getIntensity(day.tasksCompleted);
               const isToday = isSameDay(day.date, new Date());
@@ -115,7 +115,7 @@ const ActivityHeatmap = () => {
                 <div
                   key={dayIndex}
                   className={cn(
-                    "w-4 h-4 rounded-sm transition-all cursor-pointer hover:scale-110",
+                    "w-3 h-3 sm:w-4 sm:h-4 rounded-sm transition-all cursor-pointer active:scale-95 touch-manipulation",
                     isToday && "ring-1 ring-offset-1 ring-violet-500",
                     intensity === 0 && "bg-muted",
                     intensity === 1 && "bg-emerald-200",
@@ -131,15 +131,15 @@ const ActivityHeatmap = () => {
         ))}
       </div>
 
-      {/* Legend */}
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
+      {/* Legend - Mobile optimized */}
+      <div className="flex items-center justify-between text-[10px] sm:text-xs text-muted-foreground">
         <span>Less</span>
-        <div className="flex gap-1">
-          <div className="w-3 h-3 rounded-sm bg-muted" />
-          <div className="w-3 h-3 rounded-sm bg-emerald-200" />
-          <div className="w-3 h-3 rounded-sm bg-emerald-300" />
-          <div className="w-3 h-3 rounded-sm bg-emerald-400" />
-          <div className="w-3 h-3 rounded-sm bg-emerald-500" />
+        <div className="flex gap-0.5 sm:gap-1">
+          <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-sm bg-muted" />
+          <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-sm bg-emerald-200" />
+          <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-sm bg-emerald-300" />
+          <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-sm bg-emerald-400" />
+          <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-sm bg-emerald-500" />
         </div>
         <span>More</span>
       </div>

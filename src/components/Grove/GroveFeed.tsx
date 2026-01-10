@@ -126,8 +126,19 @@ const GroveFeed = ({ currentUserId, onSendSunshine, sentSunshineIds }: GroveFeed
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500" />
+      <div className="space-y-3">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="p-3 sm:p-4 rounded-2xl bg-white/60 backdrop-blur-md border border-white/30 animate-pulse">
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-muted flex-shrink-0" />
+              <div className="flex-1 space-y-2 min-w-0">
+                <div className="h-4 bg-muted rounded w-3/4" />
+                <div className="h-3 bg-muted rounded w-1/2" />
+                <div className="h-3 bg-muted rounded w-1/3" />
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
@@ -143,7 +154,7 @@ const GroveFeed = ({ currentUserId, onSendSunshine, sentSunshineIds }: GroveFeed
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 pb-4">
       {activities.map((activity) => {
         const speciesInfo = getSpeciesInfo(activity.vine_species as VineSpecies);
         const hasSentSunshine = sentSunshineIds.includes(activity.user_id);
@@ -159,15 +170,16 @@ const GroveFeed = ({ currentUserId, onSendSunshine, sentSunshineIds }: GroveFeed
         return (
           <div
             key={activity.id}
-            className={`relative p-4 rounded-2xl border transition-all ${
+            className={`relative p-3 sm:p-4 rounded-2xl border transition-all duration-300 ease-in-out touch-manipulation ${
               activity.is_withered
                 ? 'bg-muted/50 border-muted-foreground/20 grayscale-[30%]'
-                : 'bg-white/60 border-white/30 backdrop-blur-sm'
+                : 'bg-white/60 border-white/30 backdrop-blur-md'
             }`}
+            style={{ backdropFilter: 'blur(8px)' }}
           >
             {/* Withered indicator */}
             {activity.is_withered && (
-              <div className="absolute -top-2 -right-2 text-xs px-2 py-0.5 bg-orange-100 text-orange-600 rounded-full">
+              <div className="absolute -top-2 -right-2 text-[10px] sm:text-xs px-2 py-0.5 bg-orange-100 text-orange-600 rounded-full">
                 Needs care
               </div>
             )}
@@ -175,7 +187,7 @@ const GroveFeed = ({ currentUserId, onSendSunshine, sentSunshineIds }: GroveFeed
             <div className="flex items-start gap-3">
               {/* Species icon */}
               <div
-                className="w-10 h-10 rounded-full flex items-center justify-center text-lg"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-base sm:text-lg flex-shrink-0"
                 style={{ background: speciesGradient }}
               >
                 {speciesInfo.icon}
@@ -183,16 +195,16 @@ const GroveFeed = ({ currentUserId, onSendSunshine, sentSunshineIds }: GroveFeed
 
               {/* Content */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
                   {getActivityIcon(activity.activity_type)}
-                  <span className="font-medium text-sm truncate">
+                  <span className="font-medium text-xs sm:text-sm truncate max-w-[120px] sm:max-w-none">
                     {activity.display_name}
                   </span>
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs sm:text-sm text-muted-foreground break-words">
                   {getActivityMessage(activity)}
                 </p>
-                <p className="text-xs text-muted-foreground/60 mt-1">
+                <p className="text-[10px] sm:text-xs text-muted-foreground/60 mt-1">
                   {formatDistanceToNow(new Date(activity.created_at), { addSuffix: true })}
                 </p>
               </div>
@@ -202,16 +214,17 @@ const GroveFeed = ({ currentUserId, onSendSunshine, sentSunshineIds }: GroveFeed
                 <Button
                   size="sm"
                   variant={hasSentSunshine ? "secondary" : "outline"}
-                  className={`shrink-0 ${
+                  className={`shrink-0 min-h-[40px] sm:min-h-0 touch-manipulation ${
                     hasSentSunshine
                       ? 'bg-amber-100 text-amber-600 border-amber-200'
-                      : 'hover:bg-amber-50 hover:border-amber-200'
+                      : 'hover:bg-amber-50 hover:border-amber-200 active:bg-amber-100'
                   }`}
                   onClick={() => handleSendSunshine(activity)}
                   disabled={hasSentSunshine}
                 >
                   <Sun className="w-4 h-4 mr-1" />
-                  {hasSentSunshine ? 'Sent!' : 'Send ☀️'}
+                  <span className="hidden sm:inline">{hasSentSunshine ? 'Sent!' : 'Send ☀️'}</span>
+                  <span className="sm:hidden">{hasSentSunshine ? '✓' : '☀️'}</span>
                 </Button>
               )}
             </div>

@@ -91,11 +91,11 @@ const GlobalOxygenBar = () => {
   return (
     <div className={`relative p-4 rounded-2xl border transition-all duration-500 ease-in-out ${
       isBonusActive
-        ? 'bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200 shadow-lg shadow-amber-500/20'
+        ? 'bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200 shadow-lg shadow-amber-500/20 backdrop-blur-md'
         : isComplete
-        ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200'
-        : 'bg-white/60 border-white/30 backdrop-blur-sm'
-    }`}>
+        ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 backdrop-blur-md'
+        : 'bg-white/70 border-white/40 backdrop-blur-md'
+    }`} style={{ backdropFilter: 'blur(8px)' }}>
       {/* Bonus active indicator */}
       {isBonusActive && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-amber-400 to-yellow-400 text-white text-xs font-bold rounded-full shadow-md animate-pulse">
