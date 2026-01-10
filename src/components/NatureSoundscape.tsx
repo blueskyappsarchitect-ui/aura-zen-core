@@ -42,11 +42,22 @@ const NatureSoundscape = ({ habitatLevel }: NatureSoundscapeProps) => {
   const masterGainRef = useRef<GainNode | null>(null);
 
   const initAudio = useCallback(() => {
-    if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-      masterGainRef.current = audioContextRef.current.createGain();
-      masterGainRef.current.connect(audioContextRef.current.destination);
-      masterGainRef.current.gain.value = volume / 100 * 0.3;
+    // Only create AudioContext on user interaction to comply with browser autoplay policies
+    if (!audioContextRef.current && typeof window !== 'undefined') {
+      try {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+        masterGainRef.current = audioContextRef.current.createGain();
+        masterGainRef.current.connect(audioContextRef.current.destination);
+        masterGainRef.current.gain.value = volume / 100 * 0.3;
+      } catch (e) {
+        // AudioContext creation failed
+        return;
+      }
+    }
+    
+    // Resume if suspended
+    if (audioContextRef.current?.state === 'suspended') {
+      audioContextRef.current.resume();
     }
   }, [volume]);
 
