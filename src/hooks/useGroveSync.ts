@@ -33,52 +33,24 @@ export const useGroveSync = (userId: string | null) => {
     }
   }, [userId]);
 
-  // Update global oxygen when watering
-  const incrementGlobalOxygen = useCallback(async () => {
-    const today = format(new Date(), 'yyyy-MM-dd');
-
+  // Update global oxygen when watering (via secure RPC function)
+  const incrementGlobalOxygen = useCallback(async (): Promise<{ success: boolean; alreadyWatered: boolean }> => {
     try {
-      // Try to get today's record
-      const { data: existing, error: fetchError } = await supabase
-        .from('global_oxygen')
-        .select('*')
-        .eq('date', today)
-        .maybeSingle();
+      const { data, error } = await supabase
+        .rpc('increment_global_oxygen');
 
-      if (fetchError) throw fetchError;
+      if (error) throw error;
 
-      if (existing) {
-        // Update existing record
-        const newCount = existing.water_count + 1;
-        const updates: any = { water_count: newCount };
-
-        // Check if we hit 100% and activate bonus
-        if (newCount >= existing.target_count && !existing.bonus_active_until) {
-          const bonusEnd = new Date();
-          bonusEnd.setHours(bonusEnd.getHours() + 1);
-          updates.bonus_active_until = bonusEnd.toISOString();
-        }
-
-        const { error: updateError } = await supabase
-          .from('global_oxygen')
-          .update(updates)
-          .eq('id', existing.id);
-
-        if (updateError) throw updateError;
-      } else {
-        // Create new record for today
-        const { error: insertError } = await supabase
-          .from('global_oxygen')
-          .insert({
-            date: today,
-            water_count: 1,
-            target_count: 100
-          });
-
-        if (insertError) throw insertError;
-      }
+      // Type assertion for the RPC response
+      const result = data as { success?: boolean; already_watered?: boolean } | null;
+      
+      return {
+        success: result?.success ?? false,
+        alreadyWatered: result?.already_watered ?? false
+      };
     } catch (error) {
       console.error('Error updating global oxygen:', error);
+      return { success: false, alreadyWatered: false };
     }
   }, []);
 
@@ -106,9 +78,24 @@ export const useGroveSync = (userId: string | null) => {
     }
   }, []);
 
+  // Check if user has already watered today
+  const hasWateredToday = useCallback(async (): Promise<boolean> => {
+    try {
+      const { data, error } = await supabase
+        .rpc('has_watered_today');
+
+      if (error) throw error;
+      return data ?? false;
+    } catch (error) {
+      console.error('Error checking watered status:', error);
+      return false;
+    }
+  }, []);
+
   return {
     postActivity,
     incrementGlobalOxygen,
-    checkXpBonus
+    checkXpBonus,
+    hasWateredToday
   };
 };

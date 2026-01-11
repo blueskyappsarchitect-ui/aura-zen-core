@@ -188,12 +188,34 @@ export type Database = {
         }
         Relationships: []
       }
+      user_watering_log: {
+        Row: {
+          created_at: string
+          id: string
+          user_id: string
+          watered_date: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          user_id: string
+          watered_date?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          user_id?: string
+          watered_date?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_watered_today: { Args: never; Returns: boolean }
+      increment_global_oxygen: { Args: never; Returns: Json }
     }
     Enums: {
       [_ in never]: never
