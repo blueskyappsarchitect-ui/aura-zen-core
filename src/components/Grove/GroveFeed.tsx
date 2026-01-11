@@ -77,7 +77,10 @@ const GroveFeed = ({ currentUserId, onSendSunshine, sentSunshineIds }: GroveFeed
     }
   };
 
-  const getActivityIcon = (type: string) => {
+  const getActivityIcon = (type: string, isSystem: boolean = false) => {
+    if (isSystem) {
+      return <Sparkles className="w-4 h-4 text-purple-500 animate-pulse" />;
+    }
     switch (type) {
       case 'level_up':
         return <Sparkles className="w-4 h-4 text-purple-500" />;
@@ -87,6 +90,8 @@ const GroveFeed = ({ currentUserId, onSendSunshine, sentSunshineIds }: GroveFeed
         return <Leaf className="w-4 h-4 text-green-500" />;
       case 'badge_unlocked':
         return <Award className="w-4 h-4 text-amber-500" />;
+      case 'system_message':
+        return <Sparkles className="w-4 h-4 text-purple-500 animate-pulse" />;
       default:
         return <Sparkles className="w-4 h-4 text-purple-500" />;
     }
@@ -107,9 +112,20 @@ const GroveFeed = ({ currentUserId, onSendSunshine, sentSunshineIds }: GroveFeed
       case 'badge_unlocked':
         const badge = data?.badge || 'a badge';
         return `unlocked ${badge}! 🏆`;
+      case 'system_message':
+        return data?.message || 'System notification';
+      case 'global_broadcast':
+        return data?.message || 'Important announcement';
       default:
         return 'made progress on their journey';
     }
+  };
+
+  // Check if this is a system message (for special styling)
+  const isSystemActivity = (activity: GroveActivity) => {
+    return activity.display_name === 'Aura Evolution' || 
+           activity.activity_type === 'system_message' || 
+           activity.activity_type === 'global_broadcast';
   };
 
   const handleSendSunshine = async (activity: GroveActivity) => {
@@ -155,23 +171,51 @@ const GroveFeed = ({ currentUserId, onSendSunshine, sentSunshineIds }: GroveFeed
 
   return (
     <div className="space-y-3 pb-4">
+      {/* System Welcome Message - Always show at top if feed is new */}
+      {activities.length > 0 && !activities.some(a => a.activity_type === 'system_message') && (
+        <div className="relative p-4 rounded-2xl border bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200/50 backdrop-blur-md">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500">
+              <Sparkles className="w-5 h-5 text-white animate-pulse" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <Sparkles className="w-4 h-4 text-purple-500 animate-pulse" />
+                <span className="font-semibold text-sm bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  Aura Evolution
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Welcome to the first generation of Aura Evolution. Let's grow together! 🌱✨
+              </p>
+              <p className="text-xs text-muted-foreground/60 mt-1">System Message</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {activities.map((activity) => {
         const speciesInfo = getSpeciesInfo(activity.vine_species as VineSpecies);
         const hasSentSunshine = sentSunshineIds.includes(activity.user_id);
         const isOwnActivity = activity.user_id === currentUserId;
+        const isSystem = isSystemActivity(activity);
 
-        // Create a simple gradient for species
-        const speciesGradient = `linear-gradient(135deg, ${
-          speciesInfo.id === 'ivy' ? '#10b981, #22c55e' :
-          speciesInfo.id === 'wisteria' ? '#a855f7, #d946ef' :
-          '#f59e0b, #fbbf24'
-        })`;
+        // Create a simple gradient for species or system
+        const speciesGradient = isSystem
+          ? 'linear-gradient(135deg, #a855f7, #ec4899)'
+          : `linear-gradient(135deg, ${
+              speciesInfo.id === 'ivy' ? '#10b981, #22c55e' :
+              speciesInfo.id === 'wisteria' ? '#a855f7, #d946ef' :
+              '#f59e0b, #fbbf24'
+            })`;
 
         return (
           <div
             key={activity.id}
             className={`relative p-3 sm:p-4 rounded-2xl border transition-all duration-300 ease-in-out touch-manipulation ${
-              activity.is_withered
+              isSystem
+                ? 'bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200/50 backdrop-blur-md'
+                : activity.is_withered
                 ? 'bg-muted/50 border-muted-foreground/20 grayscale-[30%]'
                 : 'bg-white/60 border-white/30 backdrop-blur-md'
             }`}
@@ -196,8 +240,10 @@ const GroveFeed = ({ currentUserId, onSendSunshine, sentSunshineIds }: GroveFeed
               {/* Content */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  {getActivityIcon(activity.activity_type)}
-                  <span className="font-medium text-xs sm:text-sm truncate max-w-[120px] sm:max-w-none">
+                  {getActivityIcon(activity.activity_type, isSystem)}
+                  <span className={`font-medium text-xs sm:text-sm truncate max-w-[120px] sm:max-w-none ${
+                    isSystem ? 'font-semibold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent' : ''
+                  }`}>
                     {activity.display_name}
                   </span>
                 </div>
