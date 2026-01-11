@@ -191,11 +191,53 @@ export const useAudioFeedback = () => {
     });
   }, [getAudioContext]);
 
+  // Badge unlock sound - unique per badge type
+  const playBadgeUnlock = useCallback((badgeId: string) => {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    // Define badge-specific sound characteristics
+    const badgeSounds: Record<string, { notes: number[]; type: OscillatorType }> = {
+      botanist: { notes: [392, 493.88, 587.33, 783.99], type: 'sine' }, // G4, B4, D5, G5 (nature chord)
+      community_caretaker: { notes: [440, 554.37, 659.25, 880], type: 'triangle' }, // A4, C#5, E5, A5 (warm)
+      data_scientist: { notes: [523.25, 622.25, 783.99, 932.33], type: 'square' }, // C5, Eb5, G5, Bb5 (digital)
+      early_bird: { notes: [659.25, 783.99, 987.77, 1174.66], type: 'sine' }, // E5, G5, B5, D6 (bright)
+      first_bloom: { notes: [392, 440, 523.25, 659.25], type: 'sine' }, // G4, A4, C5, E5 (gentle)
+      streak_master: { notes: [329.63, 415.30, 523.25, 659.25, 783.99], type: 'sawtooth' }, // Power chord
+      aura_warrior: { notes: [261.63, 329.63, 392, 523.25, 659.25], type: 'sine' }, // Epic arpeggio
+      consistent_cultivator: { notes: [440, 523.25, 659.25, 783.99], type: 'triangle' }, // Harmonious
+      lifeguard: { notes: [523.25, 587.33, 659.25, 783.99, 880], type: 'sine' }, // Triumphant
+    };
+
+    const sound = badgeSounds[badgeId] || { notes: [523.25, 659.25, 783.99, 1046.5], type: 'sine' as OscillatorType };
+
+    sound.notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      
+      osc.type = sound.type;
+      osc.frequency.value = freq;
+      
+      const time = i * 0.08;
+      gain.gain.setValueAtTime(0, now + time);
+      gain.gain.linearRampToValueAtTime(0.12, now + time + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + time + 0.4);
+      
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      
+      osc.start(now + time);
+      osc.stop(now + time + 0.5);
+    });
+  }, [getAudioContext]);
+
   return {
     playTaskComplete,
     playWaterSplash,
     playClick,
     playLevelUp,
     playSunshine,
+    playBadgeUnlock,
   };
 };
