@@ -54,8 +54,10 @@ const SeedlingOnboarding = ({ onComplete, onHighlightWell }: SeedlingOnboardingP
     setIsExiting(true);
     setTimeout(() => {
       onComplete();
-      // Trigger well highlight after onboarding
-      onHighlightWell();
+      // Delay well highlight to ensure UI renders first, then trigger spotlight
+      setTimeout(() => {
+        onHighlightWell();
+      }, 300);
     }, 500);
   };
 

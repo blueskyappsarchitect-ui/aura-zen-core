@@ -249,25 +249,8 @@ const Index = () => {
     }, 1500);
   }, [tasks, updateTask, setTasks]);
 
-  // Play a completion chime sound
-  const playChime = useCallback(() => {
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-    
-    const frequencies = [523.25, 659.25, 783.99];
-    
-    frequencies.forEach((freq, i) => {
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
-      oscillator.type = "sine";
-      gainNode.gain.setValueAtTime(0.15, audioContext.currentTime + i * 0.05);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
-      oscillator.start(audioContext.currentTime + i * 0.05);
-      oscillator.stop(audioContext.currentTime + 0.8);
-    });
-  }, []);
+  // Play chime uses shared audio context for zero latency
+  const playChime = playTaskComplete;
 
   const handleToggleSubTask = useCallback((taskId: string, subTaskId: string) => {
     const task = tasks.find((t) => t.id === taskId);
