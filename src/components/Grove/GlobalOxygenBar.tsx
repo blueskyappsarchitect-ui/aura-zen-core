@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { Wind, Zap } from "lucide-react";
@@ -15,9 +15,43 @@ interface GlobalOxygen {
 const GlobalOxygenBar = () => {
   const [oxygen, setOxygen] = useState<GlobalOxygen | null>(null);
   const [isBonusActive, setIsBonusActive] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
+
+  // Get today's date in UTC for consistent daily reset
+  const getUtcToday = useCallback(() => {
+    const now = new Date();
+    return format(now, 'yyyy-MM-dd');
+  }, []);
+
+  // Check if we need to reset (new day)
+  const checkForDayReset = useCallback((currentData: GlobalOxygen | null) => {
+    const today = getUtcToday();
+    if (currentData && currentData.date !== today) {
+      // Day has changed, trigger graceful reset animation
+      setIsResetting(true);
+      setTimeout(() => {
+        setOxygen({
+          id: '',
+          date: today,
+          water_count: 0,
+          target_count: 100,
+          bonus_active_until: null
+        });
+        setIsBonusActive(false);
+        setIsResetting(false);
+      }, 500);
+      return true;
+    }
+    return false;
+  }, [getUtcToday]);
 
   useEffect(() => {
     fetchOxygen();
+
+    // Check for midnight reset every minute
+    const resetInterval = setInterval(() => {
+      checkForDayReset(oxygen);
+    }, 60000);
 
     // Subscribe to realtime updates
     const channel = supabase
@@ -31,7 +65,8 @@ const GlobalOxygenBar = () => {
         },
         (payload) => {
           const updated = payload.new as GlobalOxygen;
-          if (updated.date === format(new Date(), 'yyyy-MM-dd')) {
+          const today = getUtcToday();
+          if (updated.date === today) {
             setOxygen(updated);
             checkBonusActive(updated);
           }
@@ -40,9 +75,10 @@ const GlobalOxygenBar = () => {
       .subscribe();
 
     return () => {
+      clearInterval(resetInterval);
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [oxygen, checkForDayReset, getUtcToday]);
 
   const fetchOxygen = async () => {
     const today = format(new Date(), 'yyyy-MM-dd');

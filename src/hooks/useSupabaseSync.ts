@@ -65,6 +65,7 @@ export const useSupabaseSync = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
   const [levelUpInfo, setLevelUpInfo] = useState<AuraLevelInfo | null>(null);
+  const [newlyUnlockedBadge, setNewlyUnlockedBadge] = useState<string | null>(null);
   const previousLevelRef = useRef<AuraLevelInfo | null>(null);
   
   // New state for watering and wither
@@ -310,6 +311,9 @@ export const useSupabaseSync = () => {
 
     const updatedBadges = [...badges, newBadge];
     setBadges(updatedBadges);
+    
+    // Set newly unlocked badge for celebration
+    setNewlyUnlockedBadge(badgeId);
 
     const { error } = await supabase
       .from("user_profiles")
@@ -322,6 +326,11 @@ export const useSupabaseSync = () => {
     
     return newBadge;
   }, [user, badges]);
+
+  // Clear newly unlocked badge
+  const clearNewlyUnlockedBadge = useCallback(() => {
+    setNewlyUnlockedBadge(null);
+  }, []);
 
   // Update aura score with streak multiplier
   const incrementAuraScore = useCallback(async (amount: number) => {
@@ -505,6 +514,9 @@ export const useSupabaseSync = () => {
     unlockBadge,
     levelUpInfo,
     clearLevelUp,
+    // Badge celebration exports
+    newlyUnlockedBadge,
+    clearNewlyUnlockedBadge,
     // New watering/freeze exports
     hasWateredToday,
     isStreakFrozen,
