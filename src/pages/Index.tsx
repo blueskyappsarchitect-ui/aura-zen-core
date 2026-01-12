@@ -19,11 +19,13 @@ import EmptyTimelineState from "@/components/EmptyTimelineState";
 import GuidedTour, { shouldShowTour } from "@/components/GuidedTour";
 import LoadingScreen from "@/components/LoadingScreen";
 import LevelUpCelebration from "@/components/LevelUpCelebration";
+import BadgeCelebration from "@/components/BadgeCelebration";
 import ProfileDrawer from "@/components/ProfileDrawer";
 import TabNavigation from "@/components/Grove/TabNavigation";
 import GroveTab from "@/components/Grove/GroveTab";
 import SeedlingOnboarding from "@/components/SeedlingOnboarding";
 import NatureSoundscape from "@/components/NatureSoundscape";
+import AdminPanel from "@/components/AdminPanel";
 import { useTimeOfDay } from "@/hooks/useTimeOfDay";
 import { useSupabaseSync } from "@/hooks/useSupabaseSync";
 import { useGroveSync } from "@/hooks/useGroveSync";
@@ -63,6 +65,8 @@ const Index = () => {
     unlockBadge,
     levelUpInfo,
     clearLevelUp,
+    newlyUnlockedBadge,
+    clearNewlyUnlockedBadge,
     hasWateredToday,
     isStreakFrozen,
     isWithered,
@@ -588,6 +592,18 @@ const Index = () => {
           newLevel={levelUpInfo}
         />
       )}
+
+      {/* Badge Unlock Celebration Modal */}
+      {newlyUnlockedBadge && (
+        <BadgeCelebration
+          open={!!newlyUnlockedBadge}
+          onClose={clearNewlyUnlockedBadge}
+          badgeId={newlyUnlockedBadge}
+        />
+      )}
+
+      {/* Admin Panel (only visible to admins) */}
+      <AdminPanel />
 
       {/* Profile Drawer with Badges */}
       <ProfileDrawer
