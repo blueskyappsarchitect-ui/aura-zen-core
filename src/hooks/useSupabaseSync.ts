@@ -78,6 +78,9 @@ export const useSupabaseSync = () => {
   const [vineSpecies, setVineSpecies] = useState<VineSpecies>("ivy");
   const [hasGlimmer, setHasGlimmer] = useState(false);
   const [sunshineNudgesSent, setSunshineNudgesSent] = useState(0);
+  
+  // Super Bloom celebration for admins
+  const [showSuperBloom, setShowSuperBloom] = useState(false);
 
   // Load user profile
   const loadProfile = useCallback(async () => {
@@ -497,6 +500,34 @@ export const useSupabaseSync = () => {
     }
   }, [selectedDate, user, isLoading, loadTasks]);
 
+  // Check for Super Bloom on admin first login
+  useEffect(() => {
+    const checkSuperBloom = async () => {
+      if (!user) return;
+      
+      const superBloomKey = `aura-super-bloom-shown-${user.id}`;
+      const wasShown = localStorage.getItem(superBloomKey);
+      
+      if (wasShown) return;
+      
+      // Check if user is admin
+      const { data: isAdmin } = await supabase.rpc('is_admin', { _user_id: user.id });
+      
+      if (isAdmin) {
+        localStorage.setItem(superBloomKey, 'true');
+        setShowSuperBloom(true);
+      }
+    };
+    
+    if (!isLoading && user) {
+      checkSuperBloom();
+    }
+  }, [user, isLoading]);
+
+  const clearSuperBloom = useCallback(() => {
+    setShowSuperBloom(false);
+  }, []);
+
   return {
     tasks,
     setTasks,
@@ -530,5 +561,8 @@ export const useSupabaseSync = () => {
     // Grove exports
     sunshineNudgesSent,
     incrementSunshineNudges,
+    // Super Bloom exports
+    showSuperBloom,
+    clearSuperBloom,
   };
 };

@@ -26,6 +26,7 @@ import GroveTab from "@/components/Grove/GroveTab";
 import SeedlingOnboarding from "@/components/SeedlingOnboarding";
 import NatureSoundscape from "@/components/NatureSoundscape";
 import AdminPanel from "@/components/AdminPanel";
+import SuperBloomCelebration from "@/components/SuperBloomCelebration";
 import { useTimeOfDay } from "@/hooks/useTimeOfDay";
 import { useSupabaseSync } from "@/hooks/useSupabaseSync";
 import { useGroveSync } from "@/hooks/useGroveSync";
@@ -76,6 +77,8 @@ const Index = () => {
     hasGlimmer,
     sunshineNudgesSent,
     incrementSunshineNudges,
+    showSuperBloom,
+    clearSuperBloom,
   } = useSupabaseSync();
 
   // Grove sync hook
@@ -601,6 +604,12 @@ const Index = () => {
           badgeId={newlyUnlockedBadge}
         />
       )}
+
+      {/* Super Bloom Celebration for Admin First Login */}
+      <SuperBloomCelebration
+        open={showSuperBloom}
+        onClose={clearSuperBloom}
+      />
 
       {/* Admin Panel (only visible to admins) */}
       <AdminPanel />
