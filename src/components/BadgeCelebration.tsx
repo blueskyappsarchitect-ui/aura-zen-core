@@ -83,7 +83,7 @@ const BadgeCelebration = ({ open, onClose, badgeId }: BadgeCelebrationProps) => 
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-sm text-center border-none bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 dark:from-amber-950/50 dark:via-yellow-950/50 dark:to-orange-950/50">
+      <DialogContent className="max-w-sm text-center border-none bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 dark:from-amber-950/50 dark:via-yellow-950/50 dark:to-orange-950/50 z-[200]">
         <div className="flex flex-col items-center gap-5 py-6">
           {/* Glowing Badge Icon */}
           <div className="relative">
