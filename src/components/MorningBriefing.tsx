@@ -56,13 +56,13 @@ const MorningBriefing = ({ onComplete }: MorningBriefingProps) => {
         isExiting ? "opacity-0" : "opacity-100"
       }`}
     >
-      {/* Morning Sun Glow Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-amber-100/30 via-orange-50/20 to-background dark:from-amber-900/20 dark:via-orange-950/10 dark:to-background" />
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gradient-radial from-amber-300/40 via-orange-200/20 to-transparent dark:from-amber-500/20 dark:via-orange-400/10 blur-3xl animate-pulse-glow" />
+      {/* Morning Sun Glow Background - pointer-events-none to not block clicks */}
+      <div className="absolute inset-0 bg-gradient-to-b from-amber-100/30 via-orange-50/20 to-background dark:from-amber-900/20 dark:via-orange-950/10 dark:to-background pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gradient-radial from-amber-300/40 via-orange-200/20 to-transparent dark:from-amber-500/20 dark:via-orange-400/10 blur-3xl animate-pulse-glow pointer-events-none" />
 
-      {/* Glassmorphism Modal */}
+      {/* Glassmorphism Modal - z-20 ensures buttons are above background effects */}
       <div
-        className={`relative z-10 w-full max-w-lg mx-4 p-8 rounded-3xl glass shadow-2xl transition-all duration-500 ${
+        className={`relative z-20 w-full max-w-lg mx-4 p-8 rounded-3xl glass shadow-2xl transition-all duration-500 ${
           isExiting ? "scale-95 opacity-0" : "scale-100 opacity-100"
         }`}
       >
@@ -88,7 +88,7 @@ const MorningBriefing = ({ onComplete }: MorningBriefingProps) => {
                 <button
                   key={option.level}
                   onClick={() => setSelectedEnergy(option.level)}
-                  className="flex items-center gap-4 p-4 rounded-2xl border-2 border-border/50 bg-card/50 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 group"
+                  className="relative z-30 flex items-center gap-4 p-4 rounded-2xl border-2 border-border/50 bg-card/80 hover:border-primary/50 hover:bg-primary/10 transition-all duration-300 group cursor-pointer"
                 >
                   <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
                     <span className="text-2xl">{option.emoji}</span>

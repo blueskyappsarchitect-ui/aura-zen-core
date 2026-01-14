@@ -70,9 +70,9 @@ const SeedlingOnboarding = ({ onComplete, onHighlightWell }: SeedlingOnboardingP
         isVisible && !isExiting ? 'opacity-100' : 'opacity-0'
       }`}
     >
-      {/* Backdrop */}
+      {/* Backdrop - pointer-events-none to not block clicks */}
       <div 
-        className={`absolute inset-0 bg-black/60 backdrop-blur-md transition-all duration-500 ease-in-out ${
+        className={`absolute inset-0 bg-black/60 backdrop-blur-md transition-all duration-500 ease-in-out pointer-events-none ${
           isVisible && !isExiting ? 'opacity-100' : 'opacity-0'
         }`}
       />
@@ -93,15 +93,15 @@ const SeedlingOnboarding = ({ onComplete, onHighlightWell }: SeedlingOnboardingP
         ))}
       </div>
 
-      {/* Card */}
+      {/* Card - z-10 ensures card is above backdrop */}
       <div 
-        className={`relative max-w-md w-full transition-all duration-500 ease-in-out ${
+        className={`relative z-10 max-w-md w-full transition-all duration-500 ease-in-out ${
           isVisible && !isExiting 
             ? 'opacity-100 scale-100 translate-y-0' 
             : 'opacity-0 scale-95 translate-y-8'
         }`}
       >
-        <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/50">
+        <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/50 dark:border-gray-700/50">
           {/* Header gradient */}
           <div className={`h-2 bg-gradient-to-r ${step.gradient}`} />
 
