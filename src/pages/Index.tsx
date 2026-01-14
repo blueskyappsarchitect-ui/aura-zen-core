@@ -113,25 +113,40 @@ const Index = () => {
   const timeTheme = useTimeOfDay();
   const habitatLevel = getAuraLevel(auraScore).level;
 
-  // Check for first-time onboarding (0 XP users)
+  // Check for first-time onboarding (0 XP users) - runs only once when loading completes
+  const onboardingCheckedRef = useRef(false);
   useEffect(() => {
-    if (!isLoading && auraScore === 0 && !localStorage.getItem('aura-onboarding-complete')) {
-      setShowSeedlingOnboarding(true);
+    if (!isLoading && !onboardingCheckedRef.current) {
+      onboardingCheckedRef.current = true;
+      if (auraScore === 0 && !localStorage.getItem('aura-onboarding-complete')) {
+        setShowSeedlingOnboarding(true);
+      }
     }
   }, [isLoading, auraScore]);
 
-  // Check if we should show morning briefing on first load of the day
+  // Check if we should show morning briefing on first load of the day - runs only once
+  const morningBriefingCheckedRef = useRef(false);
   useEffect(() => {
-    const briefingKey = getMorningBriefingKey();
-    const wasShown = localStorage.getItem(briefingKey);
-    if (!wasShown && !isLoading) {
-      setShowMorningBriefing(true);
+    if (!isLoading && !morningBriefingCheckedRef.current) {
+      morningBriefingCheckedRef.current = true;
+      const briefingKey = getMorningBriefingKey();
+      const wasShown = localStorage.getItem(briefingKey);
+      if (!wasShown && !showSeedlingOnboarding) {
+        setShowMorningBriefing(true);
+      }
     }
-    // Check if we should show guided tour (after adding first task)
-    if (shouldShowTour() && tasks.length > 0) {
-      setShowGuidedTour(true);
+  }, [isLoading, showSeedlingOnboarding]);
+
+  // Check for guided tour separately (after tasks are loaded)
+  const guidedTourCheckedRef = useRef(false);
+  useEffect(() => {
+    if (!isLoading && tasks.length > 0 && !guidedTourCheckedRef.current) {
+      guidedTourCheckedRef.current = true;
+      if (shouldShowTour()) {
+        setShowGuidedTour(true);
+      }
     }
-  }, [tasks.length, isLoading]);
+  }, [isLoading, tasks.length]);
 
   // Load tasks when selected date changes
   const handleSelectDate = useCallback((date: Date) => {

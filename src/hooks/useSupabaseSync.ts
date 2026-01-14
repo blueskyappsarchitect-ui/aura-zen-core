@@ -493,17 +493,22 @@ export const useSupabaseSync = () => {
     setSelectedDate(date);
   }, []);
 
-  // Reload tasks when date changes
+  // Reload tasks when date changes - use a ref to track the previous date
+  const previousDateRef = useRef<string | null>(null);
   useEffect(() => {
-    if (user && !isLoading) {
+    const dateStr = format(selectedDate, "yyyy-MM-dd");
+    if (user && !isLoading && previousDateRef.current !== null && previousDateRef.current !== dateStr) {
       loadTasks();
     }
+    previousDateRef.current = dateStr;
   }, [selectedDate, user, isLoading, loadTasks]);
 
-  // Check for Super Bloom on admin first login
+  // Check for Super Bloom on admin first login - runs only once
+  const superBloomCheckedRef = useRef(false);
   useEffect(() => {
     const checkSuperBloom = async () => {
-      if (!user) return;
+      if (!user || superBloomCheckedRef.current) return;
+      superBloomCheckedRef.current = true;
       
       const superBloomKey = `aura-super-bloom-shown-${user.id}`;
       const wasShown = localStorage.getItem(superBloomKey);

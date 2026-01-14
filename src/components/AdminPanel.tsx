@@ -18,6 +18,7 @@ import { toast } from "sonner";
 const AdminPanel = () => {
   const { 
     isAdmin, 
+    isLoading,
     maintenanceMode, 
     globalBroadcast,
     toggleMaintenanceMode, 
@@ -29,7 +30,8 @@ const AdminPanel = () => {
   const [broadcastMessage, setBroadcastMessage] = useState("");
   const [broadcastDuration, setBroadcastDuration] = useState("24");
 
-  if (!isAdmin) return null;
+  // Don't render anything while checking admin status or if not admin
+  if (isLoading || !isAdmin) return null;
 
   const handleMaintenanceToggle = async (enabled: boolean) => {
     const success = await toggleMaintenanceMode(enabled, maintenanceMessage);
