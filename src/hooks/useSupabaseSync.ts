@@ -19,6 +19,7 @@ interface UserProfile {
   last_active_date: string | null;
   vine_species: VineSpecies;
   glimmer_until: string | null;
+  has_completed_onboarding: boolean;
 }
 
 // Convert database task to app Task format
@@ -81,6 +82,10 @@ export const useSupabaseSync = () => {
   
   // Super Bloom celebration for admins
   const [showSuperBloom, setShowSuperBloom] = useState(false);
+  
+  // Track onboarding status from database
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(true); // Default true to prevent flash
+  const [isProfileLoaded, setIsProfileLoaded] = useState(false);
 
   // Load user profile
   const loadProfile = useCallback(async () => {
@@ -106,6 +111,7 @@ export const useSupabaseSync = () => {
       setIsStreakFrozen(data.streak_frozen || false);
       setVineSpecies((data.vine_species as VineSpecies) || "ivy");
       setSunshineNudgesSent(data.sunshine_nudges_sent || 0);
+      setHasCompletedOnboarding(data.has_completed_onboarding ?? false);
       
       // Check if glimmer is active
       if (data.glimmer_until) {
@@ -129,8 +135,10 @@ export const useSupabaseSync = () => {
       if (data.current_theme) {
         setTheme(data.current_theme as ThemePreset);
       }
+      
+      setIsProfileLoaded(true);
     } else {
-      // Create profile if it doesn't exist
+      // Create profile if it doesn't exist - new user needs onboarding
       const { error: insertError } = await supabase
         .from("user_profiles")
         .insert({
@@ -139,12 +147,15 @@ export const useSupabaseSync = () => {
           daily_streak: 0,
           current_theme: settings.theme,
           badges: [],
+          has_completed_onboarding: false,
         });
       
       if (insertError) {
         console.error("Error creating profile:", insertError);
       }
       previousLevelRef.current = getAuraLevel(0);
+      setHasCompletedOnboarding(false);
+      setIsProfileLoaded(true);
     }
   }, [user, settings.theme, setTheme]);
 
@@ -488,6 +499,22 @@ export const useSupabaseSync = () => {
     }
   }, [user, sunshineNudgesSent]);
 
+  // Mark onboarding as complete in database
+  const completeOnboarding = useCallback(async () => {
+    if (!user) return;
+    
+    setHasCompletedOnboarding(true);
+    
+    const { error } = await supabase
+      .from("user_profiles")
+      .update({ has_completed_onboarding: true })
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error("Error completing onboarding:", error);
+    }
+  }, [user]);
+
   // Handle date change
   const handleSelectDate = useCallback(async (date: Date) => {
     setSelectedDate(date);
@@ -569,5 +596,9 @@ export const useSupabaseSync = () => {
     // Super Bloom exports
     showSuperBloom,
     clearSuperBloom,
+    // Onboarding exports
+    hasCompletedOnboarding,
+    isProfileLoaded,
+    completeOnboarding,
   };
 };

@@ -79,6 +79,9 @@ const Index = () => {
     incrementSunshineNudges,
     showSuperBloom,
     clearSuperBloom,
+    hasCompletedOnboarding,
+    isProfileLoaded,
+    completeOnboarding,
   } = useSupabaseSync();
 
   // Grove sync hook
@@ -106,47 +109,53 @@ const Index = () => {
   const [showMorningBriefing, setShowMorningBriefing] = useState(false);
   const [dailyIntention, setDailyIntention] = useState(getSavedIntention);
   const [showGuidedTour, setShowGuidedTour] = useState(false);
-  const [showSeedlingOnboarding, setShowSeedlingOnboarding] = useState(false);
   const [highlightWell, setHighlightWell] = useState(false);
   
   const timelineRef = useRef<TimelineRef>(null);
   const timeTheme = useTimeOfDay();
   const habitatLevel = getAuraLevel(auraScore).level;
 
-  // Check for first-time onboarding (0 XP users) - runs only once when loading completes
-  const onboardingCheckedRef = useRef(false);
+  // Check for first-time onboarding based on database flag - only show once per session
+  const onboardingShownRef = useRef(false);
+  const [showSeedlingOnboarding, setShowSeedlingOnboarding] = useState(false);
+  
   useEffect(() => {
-    if (!isLoading && !onboardingCheckedRef.current) {
-      onboardingCheckedRef.current = true;
-      if (auraScore === 0 && !localStorage.getItem('aura-onboarding-complete')) {
-        setShowSeedlingOnboarding(true);
-      }
+    // Only trigger onboarding once profile is fully loaded and onboarding hasn't been shown this session
+    if (isProfileLoaded && !onboardingShownRef.current && !hasCompletedOnboarding) {
+      onboardingShownRef.current = true;
+      setShowSeedlingOnboarding(true);
     }
-  }, [isLoading, auraScore]);
+  }, [isProfileLoaded, hasCompletedOnboarding]);
+
+  // Handle onboarding complete - update database immediately
+  const handleOnboardingComplete = useCallback(() => {
+    completeOnboarding();
+    setShowSeedlingOnboarding(false);
+  }, [completeOnboarding]);
 
   // Check if we should show morning briefing on first load of the day - runs only once
   const morningBriefingCheckedRef = useRef(false);
   useEffect(() => {
-    if (!isLoading && !morningBriefingCheckedRef.current) {
+    if (isProfileLoaded && !morningBriefingCheckedRef.current && hasCompletedOnboarding) {
       morningBriefingCheckedRef.current = true;
       const briefingKey = getMorningBriefingKey();
       const wasShown = localStorage.getItem(briefingKey);
-      if (!wasShown && !showSeedlingOnboarding) {
+      if (!wasShown) {
         setShowMorningBriefing(true);
       }
     }
-  }, [isLoading, showSeedlingOnboarding]);
+  }, [isProfileLoaded, hasCompletedOnboarding]);
 
   // Check for guided tour separately (after tasks are loaded)
   const guidedTourCheckedRef = useRef(false);
   useEffect(() => {
-    if (!isLoading && tasks.length > 0 && !guidedTourCheckedRef.current) {
+    if (isProfileLoaded && tasks.length > 0 && !guidedTourCheckedRef.current && hasCompletedOnboarding) {
       guidedTourCheckedRef.current = true;
       if (shouldShowTour()) {
         setShowGuidedTour(true);
       }
     }
-  }, [isLoading, tasks.length]);
+  }, [isProfileLoaded, tasks.length, hasCompletedOnboarding]);
 
   // Load tasks when selected date changes
   const handleSelectDate = useCallback((date: Date) => {
@@ -434,8 +443,8 @@ const Index = () => {
     ? tasks.find((t) => t.id === focusTask.id) || focusTask 
     : null;
 
-  // Show loading screen while fetching data
-  if (isLoading) {
+  // Show loading screen until profile is fully loaded
+  if (isLoading || !isProfileLoaded) {
     return <LoadingScreen />;
   }
 
@@ -444,10 +453,7 @@ const Index = () => {
       {/* Seedling Onboarding for new users */}
       {showSeedlingOnboarding && (
         <SeedlingOnboarding
-          onComplete={() => {
-            localStorage.setItem('aura-onboarding-complete', 'true');
-            setShowSeedlingOnboarding(false);
-          }}
+          onComplete={handleOnboardingComplete}
           onHighlightWell={() => {
             setHighlightWell(true);
             setTimeout(() => setHighlightWell(false), 5000);
