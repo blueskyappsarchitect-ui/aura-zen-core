@@ -187,6 +187,7 @@ export type Database = {
           current_theme: string
           daily_streak: number
           glimmer_until: string | null
+          has_completed_onboarding: boolean
           id: string
           last_active_date: string | null
           last_watered_date: string | null
@@ -203,6 +204,7 @@ export type Database = {
           current_theme?: string
           daily_streak?: number
           glimmer_until?: string | null
+          has_completed_onboarding?: boolean
           id?: string
           last_active_date?: string | null
           last_watered_date?: string | null
@@ -219,6 +221,7 @@ export type Database = {
           current_theme?: string
           daily_streak?: number
           glimmer_until?: string | null
+          has_completed_onboarding?: boolean
           id?: string
           last_active_date?: string | null
           last_watered_date?: string | null
