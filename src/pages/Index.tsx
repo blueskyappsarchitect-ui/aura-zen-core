@@ -50,6 +50,10 @@ const getSavedIntention = (): string => {
 const Index = () => {
   const { user } = useAuth();
   
+  // EMERGENCY CIRCUIT BREAKER: Founder bypass - hardcoded ID gets instant access
+  const FOUNDER_ID = 'c469468a-287a-49e5-a1ee-e033bc97daf0';
+  const isFounder = user?.id === FOUNDER_ID;
+  
   // Supabase sync hook
   const {
     tasks,
@@ -79,10 +83,14 @@ const Index = () => {
     incrementSunshineNudges,
     showSuperBloom,
     clearSuperBloom,
-    hasCompletedOnboarding,
-    isProfileLoaded,
+    hasCompletedOnboarding: rawHasCompletedOnboarding,
+    isProfileLoaded: rawIsProfileLoaded,
     completeOnboarding,
   } = useSupabaseSync();
+
+  // FOUNDER BYPASS: Override loading and onboarding state for founder
+  const isProfileLoaded = isFounder ? true : rawIsProfileLoaded;
+  const hasCompletedOnboarding = isFounder ? true : rawHasCompletedOnboarding;
 
   // Grove sync hook
   const { postActivity, incrementGlobalOxygen } = useGroveSync(user?.id || null);

@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Sparkles, Mail, Lock, ArrowRight } from "lucide-react";
+import Index from "./Index";
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -13,15 +13,12 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { user, signUp, signIn } = useAuth();
-  const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Redirect if already logged in
-  useEffect(() => {
-    if (user) {
-      navigate("/");
-    }
-  }, [user, navigate]);
+  // KILLED NAVIGATION: If logged in, render Index directly - no navigation/redirect
+  if (user) {
+    return <Index />;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,7 +65,7 @@ const Auth = () => {
             title: "Welcome to Aura Evolution! ✨",
             description: "Your account has been created successfully.",
           });
-          navigate("/");
+          // Auth state change will trigger re-render with Index
         }
       } else {
         const { error } = await signIn(email, password);
@@ -78,9 +75,8 @@ const Auth = () => {
             description: "Invalid email or password",
             variant: "destructive",
           });
-        } else {
-          navigate("/");
         }
+        // Auth state change will trigger re-render with Index
       }
     } finally {
       setIsLoading(false);
