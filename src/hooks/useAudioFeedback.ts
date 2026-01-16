@@ -1,9 +1,31 @@
 import { useCallback, useRef } from "react";
 
+// EMERGENCY: Global audio mute flag - set to true to silence all audio during stabilization
+declare global {
+  interface Window {
+    isFlickering?: boolean;
+  }
+}
+
+// Set emergency mute for 5 minutes from first load
+if (typeof window !== 'undefined' && window.isFlickering === undefined) {
+  window.isFlickering = true;
+  console.log('[Emergency] Audio muted for 5 minutes');
+  setTimeout(() => {
+    window.isFlickering = false;
+    console.log('[Emergency] Audio unmuted');
+  }, 5 * 60 * 1000);
+}
+
 export const useAudioFeedback = () => {
   const audioContextRef = useRef<AudioContext | null>(null);
 
   const getAudioContext = useCallback(() => {
+    // EMERGENCY: Check global mute flag
+    if (window.isFlickering) {
+      return null;
+    }
+    
     // Only create AudioContext when called (on user interaction) to comply with browser autoplay policies
     if (!audioContextRef.current && typeof window !== 'undefined') {
       try {
