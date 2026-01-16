@@ -115,22 +115,9 @@ const Index = () => {
   const timeTheme = useTimeOfDay();
   const habitatLevel = getAuraLevel(auraScore).level;
 
-  // Check for first-time onboarding based on database flag - only show once per session
-  const onboardingShownRef = useRef(false);
-  const [showSeedlingOnboarding, setShowSeedlingOnboarding] = useState(false);
-  
-  useEffect(() => {
-    // Only trigger onboarding once profile is fully loaded and onboarding hasn't been shown this session
-    if (isProfileLoaded && !onboardingShownRef.current && !hasCompletedOnboarding) {
-      onboardingShownRef.current = true;
-      setShowSeedlingOnboarding(true);
-    }
-  }, [isProfileLoaded, hasCompletedOnboarding]);
-
   // Handle onboarding complete - update database immediately
   const handleOnboardingComplete = useCallback(() => {
     completeOnboarding();
-    setShowSeedlingOnboarding(false);
   }, [completeOnboarding]);
 
   // Check if we should show morning briefing on first load of the day - runs only once
@@ -443,23 +430,30 @@ const Index = () => {
     ? tasks.find((t) => t.id === focusTask.id) || focusTask 
     : null;
 
-  // Show loading screen until profile is fully loaded
+  // LOADING GATE: Return static loading screen until profile is fully loaded
+  // Do NOT render anything else until we know the user's onboarding status
   if (isLoading || !isProfileLoaded) {
     return <LoadingScreen />;
   }
 
+  // SINGLE DECISION POINT: Once profile is loaded, determine which view to show
+  const showOnboarding = !hasCompletedOnboarding;
+
+  // Render EITHER onboarding OR dashboard - never both, never switch without user action
+  if (showOnboarding) {
+    return (
+      <SeedlingOnboarding
+        onComplete={handleOnboardingComplete}
+        onHighlightWell={() => {
+          setHighlightWell(true);
+          setTimeout(() => setHighlightWell(false), 5000);
+        }}
+      />
+    );
+  }
+
   return (
     <div className={`min-h-screen transition-colors duration-1000 ${timeTheme.gradientClass}`}>
-      {/* Seedling Onboarding for new users */}
-      {showSeedlingOnboarding && (
-        <SeedlingOnboarding
-          onComplete={handleOnboardingComplete}
-          onHighlightWell={() => {
-            setHighlightWell(true);
-            setTimeout(() => setHighlightWell(false), 5000);
-          }}
-        />
-      )}
 
       {/* Morning Briefing Modal */}
       {showMorningBriefing && (

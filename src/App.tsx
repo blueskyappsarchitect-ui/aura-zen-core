@@ -12,34 +12,30 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-// Protected route wrapper
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+// Simple auth-based routing - no redirects, just conditional rendering
+const AppRoutes = () => {
   const { user, loading } = useAuth();
 
+  // Show loading screen while checking auth state
   if (loading) {
     return <LoadingScreen />;
   }
 
-  if (!user) {
-    return <Navigate to="/auth" replace />;
-  }
-
-  return <>{children}</>;
-};
-
-const AppRoutes = () => {
+  // No session = show Auth, session exists = show Index
+  // No Navigate components, no redirect loops
   return (
     <Routes>
-      <Route path="/auth" element={<Auth />} />
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <Index />
-          </ProtectedRoute>
-        }
-      />
-      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+      {user ? (
+        <>
+          <Route path="/" element={<Index />} />
+          <Route path="/auth" element={<Index />} />
+        </>
+      ) : (
+        <>
+          <Route path="/" element={<Auth />} />
+          <Route path="/auth" element={<Auth />} />
+        </>
+      )}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
