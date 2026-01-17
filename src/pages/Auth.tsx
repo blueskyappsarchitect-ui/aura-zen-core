@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Sparkles, Mail, Lock, ArrowRight } from "lucide-react";
+import { Mail, Lock, ArrowRight } from "lucide-react";
 import Index from "./Index";
+import auraFlowLogo from "@/assets/aura-flow-logo.png";
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -62,7 +63,7 @@ const Auth = () => {
           }
         } else {
           toast({
-            title: "Welcome to Aura Evolution! ✨",
+            title: "Welcome to Aura Flow! ✨",
             description: "Your account has been created successfully.",
           });
           // Auth state change will trigger re-render with Index
@@ -95,13 +96,21 @@ const Auth = () => {
       <div className="relative w-full max-w-md">
         {/* Glassmorphic card */}
         <div className="bg-white/60 backdrop-blur-xl rounded-3xl border border-white/40 shadow-2xl shadow-purple-500/10 p-8">
-          {/* Logo */}
+          {/* Logo with glow */}
           <div className="flex flex-col items-center mb-8">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30 mb-4">
-              <Sparkles className="w-8 h-8 text-white" />
+            <div className="relative mb-4">
+              {/* Outer glow */}
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full blur-xl opacity-50" />
+              {/* Inner glow */}
+              <div className="absolute inset-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full blur-md opacity-40" />
+              <img 
+                src={auraFlowLogo} 
+                alt="Aura Flow" 
+                className="relative w-24 h-24 object-contain drop-shadow-lg"
+              />
             </div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Aura Evolution
+              Aura Flow
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
               {isSignUp ? "Start your growth journey" : "Welcome back, creator"}
