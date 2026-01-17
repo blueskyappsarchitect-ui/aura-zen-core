@@ -3,6 +3,7 @@ import { useState } from "react";
 import SettingsDrawer from "./SettingsDrawer";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import auraFlowLogo from "@/assets/aura-flow-logo.png";
 
 interface HeaderProps {
   onProfileOpen?: () => void;
@@ -24,11 +25,22 @@ const Header = ({ onProfileOpen }: HeaderProps) => {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
-        <div className="flex items-center justify-between px-6 py-4 max-w-4xl mx-auto">
+        <div className="flex items-center justify-between px-6 py-3 max-w-4xl mx-auto">
           {/* Logo / Brand */}
-          <h1 className="text-xl font-semibold tracking-tight text-foreground">
-            Aura<span className="text-primary font-light">Flow</span>
-          </h1>
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              {/* Glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full blur-md opacity-40" />
+              <img 
+                src={auraFlowLogo} 
+                alt="Aura Flow" 
+                className="relative w-10 h-10 object-contain"
+              />
+            </div>
+            <span className="text-lg font-semibold tracking-tight text-foreground hidden sm:block">
+              Aura<span className="text-primary font-light">Flow</span>
+            </span>
+          </div>
 
           {/* Actions */}
           <div className="flex items-center gap-3">

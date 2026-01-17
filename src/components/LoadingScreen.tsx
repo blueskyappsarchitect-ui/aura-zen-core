@@ -1,4 +1,4 @@
-import { Sparkles } from "lucide-react";
+import auraFlowLogo from "@/assets/aura-flow-logo.png";
 
 const LoadingScreen = () => {
   return (
@@ -12,23 +12,27 @@ const LoadingScreen = () => {
       {/* Logo with pulse animation */}
       <div className="relative flex flex-col items-center gap-6">
         {/* Outer glow ring */}
-        <div className="absolute w-32 h-32 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full blur-2xl opacity-40 animate-pulse" />
+        <div className="absolute w-40 h-40 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full blur-3xl opacity-50 animate-pulse" />
         
         {/* Inner glow ring */}
-        <div className="absolute w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full blur-xl opacity-30 animate-pulse" style={{ animationDelay: "0.5s" }} />
+        <div className="absolute w-32 h-32 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full blur-2xl opacity-40 animate-pulse" style={{ animationDelay: "0.5s" }} />
         
-        {/* Logo container */}
-        <div className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-2xl shadow-purple-500/40 animate-aura-pulse">
-          <Sparkles className="w-10 h-10 text-white" />
+        {/* Logo */}
+        <div className="relative animate-aura-pulse">
+          <img 
+            src={auraFlowLogo} 
+            alt="Aura Flow" 
+            className="w-28 h-28 sm:w-32 sm:h-32 object-contain drop-shadow-2xl"
+          />
         </div>
 
         {/* Brand name */}
         <div className="text-center">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Aura Evolution
+            Aura Flow
           </h1>
           <p className="text-sm text-muted-foreground mt-1 animate-pulse">
-            Growing your digital ecosystem...
+            Loading your sanctuary...
           </p>
         </div>
 
