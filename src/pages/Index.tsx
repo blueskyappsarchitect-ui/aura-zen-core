@@ -438,33 +438,9 @@ const Index = () => {
     ? tasks.find((t) => t.id === focusTask.id) || focusTask 
     : null;
 
-  // LOADING GATE: Return static loading screen until profile is fully loaded
-  // Do NOT render anything else until we know the user's onboarding status
-  if (isLoading || !isProfileLoaded) {
-    return <LoadingScreen />;
-  }
-
-  // SINGLE DECISION POINT: Once profile is loaded, determine which view to show
-  const showOnboarding = !hasCompletedOnboarding;
-
-  // KILLED ONBOARDING: Replace with simple loading div to test if onboarding causes flicker
-  if (showOnboarding) {
-    console.log('[Emergency] Onboarding would show here - KILLED for stability test');
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50">
-        <div className="text-center space-y-4">
-          <div className="text-2xl font-bold text-purple-600">Loading Sanctuary...</div>
-          <div className="text-sm text-muted-foreground">Setting up your environment</div>
-          <button 
-            onClick={handleOnboardingComplete}
-            className="px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
-          >
-            Enter Dashboard
-          </button>
-        </div>
-      </div>
-    );
-  }
+  // HARD STATE FREEZE: Skip ALL loading gates for 10 minutes
+  // Go directly to dashboard - no profile checks, no onboarding checks
+  // This will confirm if the loading/profile logic is causing flicker
 
   return (
     <div className={`min-h-screen transition-colors duration-1000 ${timeTheme.gradientClass}`}>
