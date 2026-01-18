@@ -18,6 +18,7 @@ import DeepWorkForecast from "@/components/DeepWorkForecast";
 import EmptyTimelineState from "@/components/EmptyTimelineState";
 import GuidedTour, { shouldShowTour } from "@/components/GuidedTour";
 import LoadingScreen from "@/components/LoadingScreen";
+import LoadingSanctuary from "@/components/LoadingSanctuary";
 import LevelUpCelebration from "@/components/LevelUpCelebration";
 import BadgeCelebration from "@/components/BadgeCelebration";
 import ProfileDrawer from "@/components/ProfileDrawer";
@@ -438,9 +439,17 @@ const Index = () => {
     ? tasks.find((t) => t.id === focusTask.id) || focusTask 
     : null;
 
-  // HARD STATE FREEZE: Skip ALL loading gates for 10 minutes
-  // Go directly to dashboard - no profile checks, no onboarding checks
-  // This will confirm if the loading/profile logic is causing flicker
+  // SAFE SYNC: Loading gate - wait for profile to load before rendering
+  if (isLoading || !isProfileLoaded) {
+    return <LoadingScreen />;
+  }
+
+  // ONBOARDING GATE: Show Loading Sanctuary if user hasn't completed onboarding
+  if (!hasCompletedOnboarding) {
+    return (
+      <LoadingSanctuary onBeginJourney={handleOnboardingComplete} />
+    );
+  }
 
   return (
     <div className={`min-h-screen transition-colors duration-1000 ${timeTheme.gradientClass}`}>
