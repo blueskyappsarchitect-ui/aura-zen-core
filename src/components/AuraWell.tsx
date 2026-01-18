@@ -11,8 +11,21 @@ interface AuraWellProps {
 
 const AuraWell = ({ hasWateredToday, onWater, isWithered }: AuraWellProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isThirstyPulse, setIsThirstyPulse] = useState(false);
   const wellRef = useRef<HTMLButtonElement>(null);
   const { playWaterSplash } = useAudioFeedback();
+
+  // Thirsty pulse effect every 5 seconds when vine is withered or not watered
+  useEffect(() => {
+    if (hasWateredToday || isAnimating) return;
+    
+    const interval = setInterval(() => {
+      setIsThirstyPulse(true);
+      setTimeout(() => setIsThirstyPulse(false), 600);
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, [hasWateredToday, isAnimating]);
 
   const handleWater = () => {
     if (hasWateredToday || isAnimating) return;
@@ -70,7 +83,9 @@ const AuraWell = ({ hasWateredToday, onWater, isWithered }: AuraWellProps) => {
             ? "bg-gradient-to-br from-slate-300 to-slate-400 cursor-not-allowed opacity-60"
             : isWithered
             ? "bg-gradient-to-br from-amber-600 to-orange-700 animate-well-glow-thirsty hover:scale-110 cursor-pointer"
-            : "bg-gradient-to-br from-cyan-400 to-blue-500 animate-well-glow hover:scale-110 cursor-pointer"
+            : "bg-gradient-to-br from-cyan-400 to-blue-500 animate-well-glow hover:scale-110 cursor-pointer",
+          // Thirsty pulse animation - gentle scale bump every 5 seconds
+          isThirstyPulse && !hasWateredToday && "scale-110"
         )}
       >
         {/* Inner glow ring */}
