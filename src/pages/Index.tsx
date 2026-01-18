@@ -84,14 +84,12 @@ const Index = () => {
     incrementSunshineNudges,
     showSuperBloom,
     clearSuperBloom,
-    hasCompletedOnboarding: rawHasCompletedOnboarding,
-    isProfileLoaded: rawIsProfileLoaded,
     completeOnboarding,
   } = useSupabaseSync();
 
-  // FOUNDER BYPASS: Override loading and onboarding state for founder
-  const isProfileLoaded = isFounder ? true : rawIsProfileLoaded;
-  const hasCompletedOnboarding = isFounder ? true : rawHasCompletedOnboarding;
+  // IRON CURTAIN: Hard-coded profile state - NO Supabase fetch for this version
+  const isProfileLoaded = true;
+  const hasCompletedOnboarding = true;
 
   // Grove sync hook
   const { postActivity, incrementGlobalOxygen } = useGroveSync(user?.id || null);
@@ -439,17 +437,8 @@ const Index = () => {
     ? tasks.find((t) => t.id === focusTask.id) || focusTask 
     : null;
 
-  // SAFE SYNC: Loading gate - wait for profile to load before rendering
-  if (isLoading || !isProfileLoaded) {
-    return <LoadingScreen />;
-  }
-
-  // ONBOARDING GATE: Show Loading Sanctuary if user hasn't completed onboarding
-  if (!hasCompletedOnboarding) {
-    return (
-      <LoadingSanctuary onBeginJourney={handleOnboardingComplete} />
-    );
-  }
+  // IRON CURTAIN: Skip all loading gates - hard-coded to true above
+  // No profile checks, no onboarding checks - go straight to dashboard
 
   return (
     <div className={`min-h-screen transition-colors duration-1000 ${timeTheme.gradientClass}`}>
