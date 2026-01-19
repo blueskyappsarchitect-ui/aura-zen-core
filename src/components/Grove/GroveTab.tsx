@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import GroveFeed from "./GroveFeed";
 import GlobalOxygenBar from "./GlobalOxygenBar";
+import ActiveGardeners from "./ActiveGardeners";
 import { Leaf, Users } from "lucide-react";
 
 interface GroveTabProps {
@@ -100,6 +101,9 @@ const GroveTab = ({
       </div>
 
       <div className="max-w-2xl mx-auto px-4 space-y-6">
+        {/* Active Gardeners - Body Doubling */}
+        <ActiveGardeners />
+
         {/* Global Oxygen Bar */}
         <GlobalOxygenBar />
 

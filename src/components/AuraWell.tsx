@@ -7,9 +7,10 @@ interface AuraWellProps {
   hasWateredToday: boolean;
   onWater: () => void;
   isWithered: boolean;
+  hasOverdueTask?: boolean;
 }
 
-const AuraWell = ({ hasWateredToday, onWater, isWithered }: AuraWellProps) => {
+const AuraWell = ({ hasWateredToday, onWater, isWithered, hasOverdueTask = false }: AuraWellProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isThirstyPulse, setIsThirstyPulse] = useState(false);
   const wellRef = useRef<HTMLButtonElement>(null);
@@ -26,6 +27,9 @@ const AuraWell = ({ hasWateredToday, onWater, isWithered }: AuraWellProps) => {
     
     return () => clearInterval(interval);
   }, [hasWateredToday, isAnimating]);
+
+  // Determine the button state - overdue task takes priority for visual urgency
+  const showOverdueGlow = hasOverdueTask && !hasWateredToday;
 
   const handleWater = () => {
     if (hasWateredToday || isAnimating) return;
@@ -81,6 +85,8 @@ const AuraWell = ({ hasWateredToday, onWater, isWithered }: AuraWellProps) => {
           "shadow-lg",
           hasWateredToday
             ? "bg-gradient-to-br from-slate-300 to-slate-400 cursor-not-allowed opacity-60"
+            : showOverdueGlow
+            ? "bg-gradient-to-br from-rose-500 to-purple-600 hover:scale-110 cursor-pointer animate-overdue-pulse"
             : isWithered
             ? "bg-gradient-to-br from-amber-600 to-orange-700 animate-well-glow-thirsty hover:scale-110 cursor-pointer"
             : "bg-gradient-to-br from-cyan-400 to-blue-500 animate-well-glow hover:scale-110 cursor-pointer",
@@ -93,7 +99,9 @@ const AuraWell = ({ hasWateredToday, onWater, isWithered }: AuraWellProps) => {
           <div 
             className={cn(
               "absolute inset-1 rounded-full opacity-50",
-              isWithered
+              showOverdueGlow
+                ? "bg-gradient-to-br from-rose-300 to-purple-400 animate-pulse"
+                : isWithered
                 ? "bg-gradient-to-br from-amber-300 to-orange-400 animate-pulse"
                 : "bg-gradient-to-br from-cyan-200 to-blue-300 animate-pulse"
             )}
@@ -127,9 +135,15 @@ const AuraWell = ({ hasWateredToday, onWater, isWithered }: AuraWellProps) => {
       {/* Label */}
       <p className={cn(
         "text-xs font-medium text-center mt-2 transition-colors",
-        hasWateredToday ? "text-muted-foreground" : isWithered ? "text-amber-600" : "text-cyan-600"
+        hasWateredToday 
+          ? "text-muted-foreground" 
+          : showOverdueGlow 
+          ? "text-rose-500" 
+          : isWithered 
+          ? "text-amber-600" 
+          : "text-cyan-600"
       )}>
-        {hasWateredToday ? "Watered ✓" : isWithered ? "Thirsty!" : "Water"}
+        {hasWateredToday ? "Watered ✓" : showOverdueGlow ? "Overdue!" : isWithered ? "Thirsty!" : "Water"}
       </p>
     </div>
   );
