@@ -28,6 +28,7 @@ import SeedlingOnboarding from "@/components/SeedlingOnboarding";
 import NatureSoundscape from "@/components/NatureSoundscape";
 import AdminPanel from "@/components/AdminPanel";
 import SuperBloomCelebration from "@/components/SuperBloomCelebration";
+import TaskBloomCelebration from "@/components/TaskBloomCelebration";
 import { useTimeOfDay } from "@/hooks/useTimeOfDay";
 import { useSupabaseSync } from "@/hooks/useSupabaseSync";
 import { useGroveSync } from "@/hooks/useGroveSync";
@@ -117,6 +118,7 @@ const Index = () => {
   const [dailyIntention, setDailyIntention] = useState(getSavedIntention);
   const [showGuidedTour, setShowGuidedTour] = useState(false);
   const [highlightWell, setHighlightWell] = useState(false);
+  const [triggerTaskBloom, setTriggerTaskBloom] = useState(false);
   
   const timelineRef = useRef<TimelineRef>(null);
   const timeTheme = useTimeOfDay();
@@ -295,6 +297,8 @@ const Index = () => {
     if (wasCompleting) {
       if (isLastSubTask) {
         setGoldenPulseTaskId(taskId);
+        // Trigger Super Bloom celebration for task completion
+        setTriggerTaskBloom(true);
         // Sync chime with vine pulse animation peak (400ms into 800ms animation)
         setTimeout(() => playChime(), 400);
         setTimeout(() => setGoldenPulseTaskId(null), 1000);
@@ -612,6 +616,12 @@ const Index = () => {
       <SuperBloomCelebration
         open={showSuperBloom}
         onClose={clearSuperBloom}
+      />
+
+      {/* Task Bloom Celebration - flowers & golden particles on task complete */}
+      <TaskBloomCelebration
+        trigger={triggerTaskBloom}
+        onComplete={() => setTriggerTaskBloom(false)}
       />
 
       {/* Admin Panel (only visible to admins) */}

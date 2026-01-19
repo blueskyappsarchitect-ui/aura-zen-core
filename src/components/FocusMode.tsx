@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import confetti from "canvas-confetti";
 import FocusSoundscape from "./FocusSoundscape";
+import { useAudioState } from "@/contexts/AudioContext";
 
 // Category gradient backgrounds for lava lamp effect
 const CATEGORY_GRADIENTS: Record<TaskCategory, string> = {
@@ -28,8 +29,20 @@ const FocusMode = ({ task, onClose, onComplete, onToggleSubTask }: FocusModeProp
   const [showReward, setShowReward] = useState(false);
   const [isTimerComplete, setIsTimerComplete] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { isAudioEnabled, startAmbient, stopAmbient } = useAudioState();
 
   const config = CATEGORY_CONFIG[task.category];
+
+  // Start ambient audio when entering Focus mode (if audio enabled)
+  useEffect(() => {
+    if (isAudioEnabled) {
+      startAmbient();
+    }
+    
+    return () => {
+      stopAmbient();
+    };
+  }, [isAudioEnabled, startAmbient, stopAmbient]);
 
   // Get current active subtask (first uncompleted one)
   const currentSubTask = task.subTasks?.find((st) => !st.completed);
