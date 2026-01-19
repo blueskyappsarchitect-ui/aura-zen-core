@@ -5,6 +5,7 @@ import GroveFeed from "./GroveFeed";
 import GlobalOxygenBar from "./GlobalOxygenBar";
 import ActiveGardeners from "./ActiveGardeners";
 import { Leaf, Users } from "lucide-react";
+import { useAudioState } from "@/contexts/AudioContext";
 
 interface GroveTabProps {
   userId: string | null;
@@ -22,6 +23,18 @@ const GroveTab = ({
   onSunshineSent 
 }: GroveTabProps) => {
   const [sentSunshineIds, setSentSunshineIds] = useState<string[]>([]);
+  const { isAudioEnabled, startAmbient, stopAmbient } = useAudioState();
+
+  // Start ambient audio when entering Grove (if audio enabled)
+  useEffect(() => {
+    if (isAudioEnabled) {
+      startAmbient();
+    }
+    
+    return () => {
+      stopAmbient();
+    };
+  }, [isAudioEnabled, startAmbient, stopAmbient]);
 
   // Fetch already sent sunshine nudges
   useEffect(() => {
