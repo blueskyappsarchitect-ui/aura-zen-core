@@ -182,14 +182,17 @@ export type Database = {
       user_profiles: {
         Row: {
           aura_score: number
+          avatar_url: string | null
           badges: Json | null
           created_at: string
           current_theme: string
           daily_streak: number
+          display_name: string | null
           glimmer_until: string | null
           has_completed_onboarding: boolean
           id: string
           last_active_date: string | null
+          last_seen: string | null
           last_watered_date: string | null
           streak_frozen: boolean | null
           sunshine_nudges_sent: number
@@ -199,14 +202,17 @@ export type Database = {
         }
         Insert: {
           aura_score?: number
+          avatar_url?: string | null
           badges?: Json | null
           created_at?: string
           current_theme?: string
           daily_streak?: number
+          display_name?: string | null
           glimmer_until?: string | null
           has_completed_onboarding?: boolean
           id?: string
           last_active_date?: string | null
+          last_seen?: string | null
           last_watered_date?: string | null
           streak_frozen?: boolean | null
           sunshine_nudges_sent?: number
@@ -216,14 +222,17 @@ export type Database = {
         }
         Update: {
           aura_score?: number
+          avatar_url?: string | null
           badges?: Json | null
           created_at?: string
           current_theme?: string
           daily_streak?: number
+          display_name?: string | null
           glimmer_until?: string | null
           has_completed_onboarding?: boolean
           id?: string
           last_active_date?: string | null
+          last_seen?: string | null
           last_watered_date?: string | null
           streak_frozen?: boolean | null
           sunshine_nudges_sent?: number
@@ -256,12 +265,46 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      user_profiles_public: {
+        Row: {
+          avatar_url: string | null
+          display_name: string | null
+          last_seen: string | null
+          user_id: string | null
+          vine_species: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          display_name?: string | null
+          last_seen?: string | null
+          user_id?: string | null
+          vine_species?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          display_name?: string | null
+          last_seen?: string | null
+          user_id?: string | null
+          vine_species?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      get_active_gardeners_count: { Args: never; Returns: number }
+      get_online_founders: {
+        Args: never
+        Returns: {
+          avatar_url: string
+          display_name: string
+          user_id: string
+          vine_species: string
+        }[]
+      }
       has_watered_today: { Args: never; Returns: boolean }
       increment_global_oxygen: { Args: never; Returns: Json }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      update_last_seen: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
