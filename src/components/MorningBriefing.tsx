@@ -131,13 +131,12 @@ const MorningBriefing = ({ onComplete }: MorningBriefingProps) => {
               />
             </div>
 
-            {/* Start Button */}
+            {/* Start Buttons */}
             <Button
               onClick={handleStartDay}
-              disabled={!intention.trim()}
-              className="w-full h-14 rounded-2xl text-lg font-semibold bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg shadow-amber-500/30 transition-all duration-300 disabled:opacity-50"
+              className="w-full h-14 rounded-2xl text-lg font-semibold bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg shadow-amber-500/30 transition-all duration-300"
             >
-              Start My Day ✨
+              {intention.trim() ? "Start My Day ✨" : "Let's Begin →"}
             </Button>
 
             <button
