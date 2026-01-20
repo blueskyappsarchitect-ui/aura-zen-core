@@ -39,9 +39,14 @@ const Header = ({ onProfileOpen }: HeaderProps) => {
                 className="relative w-10 h-10 object-contain"
               />
             </div>
-            <span className="text-lg font-semibold tracking-tight text-foreground hidden sm:block">
-              Aura<span className="text-primary font-light">Flow</span>
-            </span>
+            <div className="hidden sm:flex flex-col">
+              <span className="text-lg font-semibold tracking-tight text-foreground leading-tight">
+                Aura<span className="text-primary font-light">Flow</span>
+              </span>
+              <span className="text-[10px] font-medium text-amber-600 tracking-widest uppercase leading-none">
+                Founder Edition
+              </span>
+            </div>
           </div>
 
           {/* Actions */}
