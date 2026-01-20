@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 interface SeedlingOnboardingProps {
   onComplete: () => void;
-  onHighlightWell: () => void;
+  onHighlightWell?: () => void;
 }
 
 const steps = [
@@ -55,9 +55,11 @@ const SeedlingOnboarding = ({ onComplete, onHighlightWell }: SeedlingOnboardingP
     setTimeout(() => {
       onComplete();
       // Delay well highlight to ensure UI renders first, then trigger spotlight
-      setTimeout(() => {
-        onHighlightWell();
-      }, 300);
+      if (onHighlightWell) {
+        setTimeout(() => {
+          onHighlightWell();
+        }, 300);
+      }
     }, 500);
   };
 

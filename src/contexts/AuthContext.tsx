@@ -27,30 +27,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // HARD STATE FREEZE: Only check session ONCE on mount - no listener
-    // The onAuthStateChange listener was causing re-render loops
-    let mounted = true;
-    
+    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (mounted) {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
       }
-    });
-
-    // DISABLED: Auth state listener - suspected cause of flicker loop
-    // const { data: { subscription } } = supabase.auth.onAuthStateChange(
-    //   (event, session) => {
-    //     setSession(session);
-    //     setUser(session?.user ?? null);
-    //     setLoading(false);
-    //   }
-    // );
+    );
 
     return () => {
-      mounted = false;
-      // subscription.unsubscribe();
+      subscription.unsubscribe();
     };
   }, []);
 

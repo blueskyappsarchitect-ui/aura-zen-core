@@ -17,8 +17,6 @@ import WeeklyDayPicker from "@/components/WeeklyDayPicker";
 import DeepWorkForecast from "@/components/DeepWorkForecast";
 import EmptyTimelineState from "@/components/EmptyTimelineState";
 import GuidedTour, { shouldShowTour } from "@/components/GuidedTour";
-import LoadingScreen from "@/components/LoadingScreen";
-import LoadingSanctuary from "@/components/LoadingSanctuary";
 import LevelUpCelebration from "@/components/LevelUpCelebration";
 import BadgeCelebration from "@/components/BadgeCelebration";
 import ProfileDrawer from "@/components/ProfileDrawer";
@@ -52,10 +50,6 @@ const getSavedIntention = (): string => {
 const Index = () => {
   const { user } = useAuth();
   
-  // EMERGENCY CIRCUIT BREAKER: Founder bypass - hardcoded ID gets instant access
-  const FOUNDER_ID = 'c469468a-287a-49e5-a1ee-e033bc97daf0';
-  const isFounder = user?.id === FOUNDER_ID;
-  
   // Supabase sync hook
   const {
     tasks,
@@ -86,11 +80,9 @@ const Index = () => {
     showSuperBloom,
     clearSuperBloom,
     completeOnboarding,
+    hasCompletedOnboarding,
+    isProfileLoaded,
   } = useSupabaseSync();
-
-  // IRON CURTAIN: Hard-coded profile state - NO Supabase fetch for this version
-  const isProfileLoaded = true;
-  const hasCompletedOnboarding = true;
 
   // Grove sync hook
   const { postActivity, incrementGlobalOxygen } = useGroveSync(user?.id || null);
@@ -164,7 +156,6 @@ const Index = () => {
 
   // Calculate unfinished tasks from yesterday (from local storage for migration)
   const unfinishedTasksFromYesterday = useMemo(() => {
-    // For migration logic, we use localStorage as a fallback
     const yesterday = subDays(new Date(), 1);
     const key = `aura-tasks-${format(yesterday, "yyyy-MM-dd")}`;
     const saved = localStorage.getItem(key);
@@ -259,14 +250,12 @@ const Index = () => {
   }, [addTask]);
 
   const handleGenerateSubTasks = useCallback((taskId: string) => {
-    // Set loading state locally
     setTasks((prev) =>
       prev.map((task) =>
         task.id === taskId ? { ...task, isGeneratingSubTasks: true } : task
       )
     );
 
-    // Simulate AI thinking for 1.5 seconds
     setTimeout(() => {
       const task = tasks.find((t) => t.id === taskId);
       if (task) {
@@ -276,7 +265,6 @@ const Index = () => {
     }, 1500);
   }, [tasks, updateTask, setTasks]);
 
-  // Play chime uses shared audio context for zero latency
   const playChime = playTaskComplete;
 
   const handleToggleSubTask = useCallback((taskId: string, subTaskId: string) => {
@@ -297,23 +285,18 @@ const Index = () => {
     if (wasCompleting) {
       if (isLastSubTask) {
         setGoldenPulseTaskId(taskId);
-        // Trigger Super Bloom celebration for task completion
         setTriggerTaskBloom(true);
-        // Sync chime with vine pulse animation peak (400ms into 800ms animation)
         setTimeout(() => playChime(), 400);
         setTimeout(() => setGoldenPulseTaskId(null), 1000);
         
-        // Check for "Early Bird" badge (task completed before 9 AM)
         const now = new Date();
         if (now.getHours() < 9) {
           unlockBadge("early_bird");
         }
         
-        // Check for "First Bloom" badge (first task completed)
         unlockBadge("first_bloom");
       } else {
         setPoppingTaskId(taskId);
-        // Play task complete chime synced with card pop animation (150ms into 300ms)
         setTimeout(() => playTaskComplete(), 150);
         setTimeout(() => setPoppingTaskId(null), 300);
       }
@@ -323,7 +306,6 @@ const Index = () => {
       setTimeout(() => setShouldAnimateScore(false), 100);
     }
 
-    // Also update focusTask if it's the one being modified
     if (focusTask && focusTask.id === taskId) {
       setFocusTask((prev) => {
         if (!prev || !prev.subTasks) return prev;
@@ -363,7 +345,6 @@ const Index = () => {
     timelineRef.current?.scrollToTask(taskId);
   }, []);
 
-  // Find next task for "Done Early" dialog
   const nextTask = useMemo(() => {
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
@@ -399,7 +380,6 @@ const Index = () => {
     setShowAuraReset(false);
   }, []);
 
-  // Drag and drop handlers
   const handleTaskMove = useCallback((taskId: string, newStartTime: string) => {
     updateTask(taskId, { startTime: newStartTime });
   }, [updateTask]);
@@ -436,13 +416,16 @@ const Index = () => {
     setPendingMoveTime(null);
   }, [pendingMoveTaskId, pendingMoveTime, handleTaskMove]);
 
-  // Keep focusTask in sync with tasks state
   const currentFocusTask = focusTask 
     ? tasks.find((t) => t.id === focusTask.id) || focusTask 
     : null;
 
-  // IRON CURTAIN: Skip all loading gates - hard-coded to true above
-  // No profile checks, no onboarding checks - go straight to dashboard
+  // Show seedling onboarding for new users
+  if (isProfileLoaded && !hasCompletedOnboarding) {
+    return (
+      <SeedlingOnboarding onComplete={handleOnboardingComplete} />
+    );
+  }
 
   return (
     <div className={`min-h-screen transition-colors duration-1000 ${timeTheme.gradientClass}`}>
