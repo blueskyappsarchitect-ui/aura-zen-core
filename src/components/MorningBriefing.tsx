@@ -42,10 +42,8 @@ const MorningBriefing = ({ onComplete }: MorningBriefingProps) => {
   const [isExiting, setIsExiting] = useState(false);
 
   const handleStartDay = () => {
-    setIsExiting(true);
-    setTimeout(() => {
-      onComplete(selectedEnergy, intention);
-    }, 500);
+    // Immediately call onComplete to close the modal
+    onComplete(selectedEnergy, intention);
   };
 
   const selectedOption = energyOptions.find((o) => o.level === selectedEnergy);
