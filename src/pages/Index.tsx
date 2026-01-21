@@ -11,7 +11,7 @@ import TransitionBridge from "@/components/TransitionBridge";
 import DoneEarlyDialog from "@/components/DoneEarlyDialog";
 import AuraResetTimer from "@/components/AuraResetTimer";
 import StartNowDialog from "@/components/StartNowDialog";
-import MorningBriefing from "@/components/MorningBriefing";
+
 import NorthStar from "@/components/NorthStar";
 import WeeklyDayPicker from "@/components/WeeklyDayPicker";
 import DeepWorkForecast from "@/components/DeepWorkForecast";
@@ -34,12 +34,6 @@ import { useAudioFeedback } from "@/hooks/useAudioFeedback";
 import { Task, generateMicroSteps } from "@/types/task";
 import { useAuth } from "@/contexts/AuthContext";
 import { getAuraLevel } from "@/types/aura";
-
-// Check if morning briefing was shown today
-const getMorningBriefingKey = () => {
-  const today = new Date().toDateString();
-  return `aura-morning-briefing-${today}`;
-};
 
 const getSavedIntention = (): string => {
   const today = new Date().toDateString();
@@ -106,8 +100,7 @@ const Index = () => {
   const [startNowTask, setStartNowTask] = useState<Task | null>(null);
   const [pendingMoveTaskId, setPendingMoveTaskId] = useState<string | null>(null);
   const [pendingMoveTime, setPendingMoveTime] = useState<string | null>(null);
-  const [showMorningBriefing, setShowMorningBriefing] = useState(false);
-  const [dailyIntention, setDailyIntention] = useState(getSavedIntention);
+  const [dailyIntention] = useState(getSavedIntention);
   const [showGuidedTour, setShowGuidedTour] = useState(false);
   const [highlightWell, setHighlightWell] = useState(false);
   const [triggerTaskBloom, setTriggerTaskBloom] = useState(false);
@@ -121,18 +114,6 @@ const Index = () => {
     completeOnboarding();
   }, [completeOnboarding]);
 
-  // Check if we should show morning briefing on first load of the day - runs only once
-  const morningBriefingCheckedRef = useRef(false);
-  useEffect(() => {
-    if (isProfileLoaded && !morningBriefingCheckedRef.current && hasCompletedOnboarding) {
-      morningBriefingCheckedRef.current = true;
-      const briefingKey = getMorningBriefingKey();
-      const wasShown = localStorage.getItem(briefingKey);
-      if (!wasShown) {
-        setShowMorningBriefing(true);
-      }
-    }
-  }, [isProfileLoaded, hasCompletedOnboarding]);
 
   // Check for guided tour separately (after tasks are loaded)
   const guidedTourCheckedRef = useRef(false);
@@ -213,16 +194,6 @@ const Index = () => {
     }
   }, [unfinishedTasksFromYesterday, tasks, addTask]);
 
-  const handleMorningBriefingComplete = useCallback((energy: "high" | "medium" | "low" | null, intention: string) => {
-    const briefingKey = getMorningBriefingKey();
-    localStorage.setItem(briefingKey, "true");
-    
-    const today = new Date().toDateString();
-    localStorage.setItem(`aura-intention-${today}`, intention);
-    setDailyIntention(intention);
-    
-    setShowMorningBriefing(false);
-  }, []);
 
   // Calculate completed tasks count
   const { completedCount, totalSubTasks } = useMemo(() => {
@@ -430,10 +401,6 @@ const Index = () => {
   return (
     <div className={`min-h-screen transition-colors duration-1000 ${timeTheme.gradientClass}`}>
 
-      {/* Morning Briefing Modal */}
-      {showMorningBriefing && (
-        <MorningBriefing onComplete={handleMorningBriefingComplete} />
-      )}
 
       {/* Nature Soundscape Toggle */}
       <div className="fixed top-20 right-4 z-40">
@@ -444,7 +411,7 @@ const Index = () => {
       <Header onProfileOpen={() => setProfileOpen(true)} />
 
       {/* Main scrollable content */}
-      <main className="pt-24 pb-32 hide-scrollbar">
+      <main className="pt-24 pb-32 overflow-y-auto hide-scrollbar">
         {activeTab === 'my-vine' ? (
           <>
             {/* Subtle top gradient */}

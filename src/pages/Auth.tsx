@@ -118,7 +118,7 @@ const Auth = () => {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5" autoComplete="on">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium text-muted-foreground">
                 Email
@@ -129,11 +129,13 @@ const Auth = () => {
                   id="email"
                   name="email"
                   type="email"
-                  autoComplete="username email"
+                  autoComplete="email"
                   placeholder="your@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10 h-12 bg-white/50 border-white/30 rounded-xl focus:ring-2 focus:ring-purple-500/20"
+                  aria-label="Email address"
+                  required
                 />
               </div>
             </div>
@@ -143,7 +145,7 @@ const Auth = () => {
                 Password
               </Label>
               <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/50" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/50" />
                 <Input
                   id="password"
                   name="password"
@@ -153,6 +155,9 @@ const Auth = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="pl-10 h-12 bg-white/50 border-white/30 rounded-xl focus:ring-2 focus:ring-purple-500/20"
+                  aria-label="Password"
+                  required
+                  minLength={6}
                 />
               </div>
             </div>
