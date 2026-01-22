@@ -15,6 +15,11 @@ import {
 } from "@/components/ui/sheet";
 import { toast } from "sonner";
 
+// Input validation constants
+const MAX_MESSAGE_LENGTH = 500;
+const MAX_BROADCAST_DURATION = 168; // 1 week in hours
+const MIN_BROADCAST_DURATION = 1;
+
 const AdminPanel = () => {
   const { 
     isAdmin, 
@@ -43,11 +48,25 @@ const AdminPanel = () => {
   };
 
   const handleSendBroadcast = async () => {
-    if (!broadcastMessage.trim()) {
+    const trimmedMessage = broadcastMessage.trim();
+    
+    if (!trimmedMessage) {
       toast.error("Please enter a message");
       return;
     }
-    const success = await sendGlobalBroadcast(broadcastMessage, parseInt(broadcastDuration) || 24);
+    
+    if (trimmedMessage.length > MAX_MESSAGE_LENGTH) {
+      toast.error(`Message must be less than ${MAX_MESSAGE_LENGTH} characters`);
+      return;
+    }
+    
+    const duration = parseInt(broadcastDuration) || 24;
+    const validDuration = Math.max(MIN_BROADCAST_DURATION, Math.min(MAX_BROADCAST_DURATION, duration));
+    
+    const success = await sendGlobalBroadcast(
+      trimmedMessage.slice(0, MAX_MESSAGE_LENGTH), 
+      validDuration
+    );
     if (success) {
       toast.success("Broadcast sent to all users!");
       setBroadcastMessage("");
@@ -102,10 +121,14 @@ const AdminPanel = () => {
             <Textarea
               placeholder="Maintenance message for users..."
               value={maintenanceMessage}
-              onChange={(e) => setMaintenanceMessage(e.target.value)}
+              onChange={(e) => setMaintenanceMessage(e.target.value.slice(0, MAX_MESSAGE_LENGTH))}
+              maxLength={MAX_MESSAGE_LENGTH}
               className="text-sm"
               rows={2}
             />
+            <span className="text-xs text-muted-foreground mt-1">
+              {maintenanceMessage.length}/{MAX_MESSAGE_LENGTH}
+            </span>
           </div>
 
           {/* Global Broadcast */}
@@ -132,18 +155,27 @@ const AdminPanel = () => {
             <Textarea
               placeholder="Broadcast message to all users..."
               value={broadcastMessage}
-              onChange={(e) => setBroadcastMessage(e.target.value)}
+              onChange={(e) => setBroadcastMessage(e.target.value.slice(0, MAX_MESSAGE_LENGTH))}
+              maxLength={MAX_MESSAGE_LENGTH}
               className="text-sm mb-2"
               rows={2}
             />
+            <span className="text-xs text-muted-foreground mb-2">
+              {broadcastMessage.length}/{MAX_MESSAGE_LENGTH}
+            </span>
 
             <div className="flex items-center gap-2 mb-3">
               <Label htmlFor="duration" className="text-xs">Duration (hours):</Label>
               <Input
                 id="duration"
                 type="number"
+                min={MIN_BROADCAST_DURATION}
+                max={MAX_BROADCAST_DURATION}
                 value={broadcastDuration}
-                onChange={(e) => setBroadcastDuration(e.target.value)}
+                onChange={(e) => {
+                  const val = parseInt(e.target.value) || MIN_BROADCAST_DURATION;
+                  setBroadcastDuration(String(Math.max(MIN_BROADCAST_DURATION, Math.min(MAX_BROADCAST_DURATION, val))));
+                }}
                 className="w-20 text-sm"
               />
             </div>

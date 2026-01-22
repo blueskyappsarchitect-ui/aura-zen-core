@@ -40,7 +40,18 @@ Deno.serve(async (req) => {
       );
     }
 
-    console.log(`Authenticated user ${user.id} calling reset-global-oxygen`);
+    // Verify user is admin
+    const { data: isAdmin } = await supabaseAuth.rpc('is_admin', { _user_id: user.id });
+    
+    if (!isAdmin) {
+      console.error(`User ${user.id} attempted to call reset-global-oxygen without admin privileges`);
+      return new Response(
+        JSON.stringify({ success: false, error: "Forbidden - Admin access required" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    console.log(`Admin ${user.id} calling reset-global-oxygen`);
 
     // Use service role for database operations
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
