@@ -13,6 +13,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Task, TaskCategory, CATEGORY_CONFIG } from "@/types/task";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+
+// Input validation constants
+const MAX_TASK_NAME_LENGTH = 200;
 
 interface AddTaskDrawerProps {
   open: boolean;
@@ -42,10 +46,21 @@ const AddTaskDrawer = ({ open, onOpenChange, onAddTask }: AddTaskDrawerProps) =>
   const [duration, setDuration] = useState(60);
 
   const handleSubmit = () => {
-    if (!name.trim()) return;
+    const trimmedName = name.trim();
+    
+    // Validate task name
+    if (!trimmedName) {
+      toast.error("Please enter a task name");
+      return;
+    }
+    
+    if (trimmedName.length > MAX_TASK_NAME_LENGTH) {
+      toast.error(`Task name must be less than ${MAX_TASK_NAME_LENGTH} characters`);
+      return;
+    }
 
     onAddTask({
-      name: name.trim(),
+      name: trimmedName.slice(0, MAX_TASK_NAME_LENGTH),
       category,
       startTime,
       duration,
@@ -118,9 +133,15 @@ const AddTaskDrawer = ({ open, onOpenChange, onAddTask }: AddTaskDrawerProps) =>
               id="task-name"
               placeholder="e.g., Study for exam, Read book..."
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => setName(e.target.value.slice(0, MAX_TASK_NAME_LENGTH))}
+              maxLength={MAX_TASK_NAME_LENGTH}
               className="h-12 text-base bg-secondary/50 border-0 rounded-xl placeholder:text-muted-foreground/50 focus-visible:ring-primary/30"
             />
+            {name.length > MAX_TASK_NAME_LENGTH - 20 && (
+              <span className="text-xs text-muted-foreground mt-1">
+                {name.length}/{MAX_TASK_NAME_LENGTH}
+              </span>
+            )}
           </div>
 
           {/* Category Selection */}
