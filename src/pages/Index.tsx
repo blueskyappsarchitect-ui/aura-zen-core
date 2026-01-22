@@ -12,7 +12,7 @@ import DoneEarlyDialog from "@/components/DoneEarlyDialog";
 import AuraResetTimer from "@/components/AuraResetTimer";
 import StartNowDialog from "@/components/StartNowDialog";
 
-import NorthStar from "@/components/NorthStar";
+
 import WeeklyDayPicker from "@/components/WeeklyDayPicker";
 import DeepWorkForecast from "@/components/DeepWorkForecast";
 import EmptyTimelineState from "@/components/EmptyTimelineState";
@@ -35,11 +35,6 @@ import { Task, generateMicroSteps } from "@/types/task";
 import { useAuth } from "@/contexts/AuthContext";
 import { getAuraLevel } from "@/types/aura";
 
-const getSavedIntention = (): string => {
-  const today = new Date().toDateString();
-  const saved = localStorage.getItem(`aura-intention-${today}`);
-  return saved || "";
-};
 
 const Index = () => {
   const { user } = useAuth();
@@ -100,7 +95,7 @@ const Index = () => {
   const [startNowTask, setStartNowTask] = useState<Task | null>(null);
   const [pendingMoveTaskId, setPendingMoveTaskId] = useState<string | null>(null);
   const [pendingMoveTime, setPendingMoveTime] = useState<string | null>(null);
-  const [dailyIntention] = useState(getSavedIntention);
+  
   const [showGuidedTour, setShowGuidedTour] = useState(false);
   const [highlightWell, setHighlightWell] = useState(false);
   const [triggerTaskBloom, setTriggerTaskBloom] = useState(false);
@@ -417,8 +412,6 @@ const Index = () => {
             {/* Subtle top gradient */}
             <div className="fixed top-16 left-0 right-0 h-16 bg-gradient-to-b from-background to-transparent pointer-events-none z-10" />
 
-            {/* North Star Intention */}
-            {dailyIntention && isToday(selectedDate) && <NorthStar intention={dailyIntention} />}
 
             {/* Aura Dashboard */}
             <AuraDashboard
