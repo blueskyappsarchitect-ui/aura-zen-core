@@ -304,6 +304,10 @@ export type Database = {
       has_watered_today: { Args: never; Returns: boolean }
       increment_global_oxygen: { Args: never; Returns: Json }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      sanitize_text: {
+        Args: { input_text: string; max_length?: number }
+        Returns: string
+      }
       update_last_seen: { Args: never; Returns: undefined }
     }
     Enums: {
