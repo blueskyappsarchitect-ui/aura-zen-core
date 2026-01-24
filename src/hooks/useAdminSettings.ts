@@ -13,6 +13,14 @@ interface GlobalBroadcast {
   expires_at: string | null;
 }
 
+// Sanitize message by stripping HTML tags and limiting length
+const sanitizeMessage = (msg: string, maxLength: number = 500): string => {
+  // Remove HTML tags to prevent XSS
+  const stripped = msg.replace(/<[^>]*>/g, '');
+  // Trim whitespace and limit length
+  return stripped.trim().slice(0, maxLength);
+};
+
 export const useAdminSettings = () => {
   const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
@@ -96,10 +104,13 @@ export const useAdminSettings = () => {
   const toggleMaintenanceMode = useCallback(async (enabled: boolean, message: string = "") => {
     if (!isAdmin) return false;
 
+    // Sanitize the message to prevent XSS
+    const sanitizedMessage = sanitizeMessage(message);
+
     const { error } = await supabase
       .from('admin_settings')
       .update({ 
-        setting_value: { enabled, message },
+        setting_value: { enabled, message: sanitizedMessage },
         updated_by: user?.id 
       })
       .eq('setting_key', 'maintenance_mode');
@@ -109,13 +120,21 @@ export const useAdminSettings = () => {
       return false;
     }
 
-    setMaintenanceMode({ enabled, message });
+    setMaintenanceMode({ enabled, message: sanitizedMessage });
     return true;
   }, [isAdmin, user]);
 
   // Send global broadcast (admin only)
   const sendGlobalBroadcast = useCallback(async (message: string, durationHours: number = 24) => {
     if (!isAdmin) return false;
+
+    // Sanitize the message to prevent XSS
+    const sanitizedMessage = sanitizeMessage(message);
+    
+    if (!sanitizedMessage) {
+      console.error('Empty message after sanitization');
+      return false;
+    }
 
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + durationHours);
@@ -125,7 +144,7 @@ export const useAdminSettings = () => {
       .update({ 
         setting_value: { 
           active: true, 
-          message, 
+          message: sanitizedMessage, 
           expires_at: expiresAt.toISOString() 
         },
         updated_by: user?.id 
@@ -137,19 +156,19 @@ export const useAdminSettings = () => {
       return false;
     }
 
-    // Also post to grove feed as system message
+    // Also post to grove feed as system message with sanitized content
     await supabase
       .from('grove_activities')
       .insert({
         user_id: user?.id || '00000000-0000-0000-0000-000000000000',
         display_name: 'Aura Evolution',
         activity_type: 'global_broadcast',
-        activity_data: { message },
+        activity_data: { message: sanitizedMessage },
         vine_species: null,
         is_withered: false
       });
 
-    setGlobalBroadcast({ active: true, message, expires_at: expiresAt.toISOString() });
+    setGlobalBroadcast({ active: true, message: sanitizedMessage, expires_at: expiresAt.toISOString() });
     return true;
   }, [isAdmin, user]);
 
