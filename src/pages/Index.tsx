@@ -394,7 +394,7 @@ const Index = () => {
   }
 
   return (
-    <div className={`min-h-screen transition-colors duration-1000 ${timeTheme.gradientClass}`}>
+    <div className={`min-h-screen w-full max-w-full overflow-x-hidden transition-colors duration-1000 ${timeTheme.gradientClass}`}>
 
 
       {/* Nature Soundscape Toggle */}
@@ -406,7 +406,7 @@ const Index = () => {
       <Header onProfileOpen={() => setProfileOpen(true)} />
 
       {/* Main scrollable content */}
-      <main className="pt-24 pb-32 overflow-y-auto hide-scrollbar">
+      <main className="pt-24 pb-32 overflow-y-auto overflow-x-hidden hide-scrollbar w-full max-w-full">
         {activeTab === 'my-vine' ? (
           <>
             {/* Subtle top gradient */}

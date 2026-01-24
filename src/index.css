@@ -603,13 +603,35 @@
 }
 
 @layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
   * {
     @apply border-border;
+  }
+
+  html {
+    overflow-x: hidden;
+    max-width: 100%;
   }
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    max-width: 100%;
+    width: 100%;
+    min-height: 100vh;
+    position: relative;
+  }
+
+  #root {
+    overflow-x: hidden;
+    max-width: 100%;
+    width: 100%;
   }
 }
 
