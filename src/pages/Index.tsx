@@ -584,6 +584,9 @@ const Index = () => {
         hasWateredToday={hasWateredToday}
         unlockBadge={unlockBadge}
       />
+
+      {/* AdMob Banner - anchored to very bottom */}
+      <AdMobBanner />
     </div>
   );
 };
