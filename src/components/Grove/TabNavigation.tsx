@@ -1,4 +1,5 @@
 import { Leaf, Users } from "lucide-react";
+import { BANNER_HEIGHT } from "@/components/AdMobBanner";
 
 type TabType = 'my-vine' | 'grove';
 
@@ -9,7 +10,7 @@ interface TabNavigationProps {
 
 const TabNavigation = ({ activeTab, onTabChange }: TabNavigationProps) => {
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 pb-safe">
+    <div className="fixed left-0 right-0 z-50 pb-safe" style={{ bottom: BANNER_HEIGHT }}>
       <div className="max-w-md mx-auto px-4 pb-4">
         <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-white/40 p-1 flex" style={{ backdropFilter: 'blur(12px)' }}>
           <button

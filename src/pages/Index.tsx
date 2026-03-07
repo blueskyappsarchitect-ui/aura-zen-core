@@ -27,6 +27,7 @@ import NatureSoundscape from "@/components/NatureSoundscape";
 import AdminPanel from "@/components/AdminPanel";
 import SuperBloomCelebration from "@/components/SuperBloomCelebration";
 import TaskBloomCelebration from "@/components/TaskBloomCelebration";
+import AdMobBanner, { BANNER_HEIGHT } from "@/components/AdMobBanner";
 import { useTimeOfDay } from "@/hooks/useTimeOfDay";
 import { useSupabaseSync } from "@/hooks/useSupabaseSync";
 import { useGroveSync } from "@/hooks/useGroveSync";
@@ -406,7 +407,7 @@ const Index = () => {
       <Header onProfileOpen={() => setProfileOpen(true)} />
 
       {/* Main scrollable content */}
-      <main className="pt-24 pb-32 overflow-y-auto overflow-x-hidden hide-scrollbar w-full max-w-full">
+      <main className="pt-24 overflow-y-auto overflow-x-hidden hide-scrollbar w-full max-w-full" style={{ paddingBottom: `calc(8rem + ${BANNER_HEIGHT}px)` }}>
         {activeTab === 'my-vine' ? (
           <>
             {/* Subtle top gradient */}
@@ -462,8 +463,8 @@ const Index = () => {
               )}
             </div>
 
-            {/* Subtle bottom gradient */}
-            <div className="fixed bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none z-10" />
+            {/* Subtle bottom gradient - above ad banner */}
+            <div className="fixed left-0 right-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none z-10" style={{ bottom: BANNER_HEIGHT }} />
           </>
         ) : (
           <GroveTab
@@ -583,6 +584,9 @@ const Index = () => {
         hasWateredToday={hasWateredToday}
         unlockBadge={unlockBadge}
       />
+
+      {/* AdMob Banner - anchored to very bottom */}
+      <AdMobBanner />
     </div>
   );
 };
