@@ -28,6 +28,7 @@ import AdminPanel from "@/components/AdminPanel";
 import SuperBloomCelebration from "@/components/SuperBloomCelebration";
 import TaskBloomCelebration from "@/components/TaskBloomCelebration";
 import AdMobBanner, { BANNER_HEIGHT } from "@/components/AdMobBanner";
+import SponsoredNode from "@/components/SponsoredNode";
 import { useTimeOfDay } from "@/hooks/useTimeOfDay";
 import { useSupabaseSync } from "@/hooks/useSupabaseSync";
 import { useGroveSync } from "@/hooks/useGroveSync";
