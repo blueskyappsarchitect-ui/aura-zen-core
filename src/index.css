@@ -329,6 +329,12 @@
 
 @layer base {
   :root {
+    /* Sponsored node - dark academia gold */
+    --gold: 42 72% 55%;
+    --gold-glow: 45 90% 68%;
+    --gold-muted: 40 30% 62%;
+    --obsidian: 240 16% 7%;
+
     /* Core palette - calm, minimal */
     --background: 220 50% 99%;
     --foreground: 230 25% 18%;
@@ -400,6 +406,11 @@
   }
 
   .dark {
+    --gold: 42 78% 60%;
+    --gold-glow: 45 95% 72%;
+    --gold-muted: 40 25% 70%;
+    --obsidian: 240 18% 5%;
+
     --background: 230 25% 8%;
     --foreground: 220 30% 95%;
 

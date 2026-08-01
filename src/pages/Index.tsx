@@ -28,6 +28,7 @@ import AdminPanel from "@/components/AdminPanel";
 import SuperBloomCelebration from "@/components/SuperBloomCelebration";
 import TaskBloomCelebration from "@/components/TaskBloomCelebration";
 import AdMobBanner, { BANNER_HEIGHT } from "@/components/AdMobBanner";
+import SponsoredNode from "@/components/SponsoredNode";
 import { useTimeOfDay } from "@/hooks/useTimeOfDay";
 import { useSupabaseSync } from "@/hooks/useSupabaseSync";
 import { useGroveSync } from "@/hooks/useGroveSync";
@@ -439,6 +440,11 @@ const Index = () => {
 
             {/* Deep Work Forecast for future days */}
             <DeepWorkForecast tasks={tasks} selectedDate={selectedDate} />
+
+            {/* Sponsored Node - ad placement */}
+            <SponsoredNode />
+
+
 
             {/* The Aura Timeline or Empty State */}
             <div className={`transition-opacity duration-300 ${timelineFading ? "opacity-0" : "opacity-100"}`}>
