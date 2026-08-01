@@ -6,8 +6,10 @@ import { Capacitor } from "@capacitor/core";
  * Shows a native AdMob banner on mobile (Capacitor) and a subtle placeholder on web.
  * The banner is anchored to the very bottom of the viewport, below the tab navigation.
  */
-const AD_UNIT_ID = "ca-app-pub-3425036653232986/5583461449";
+const AD_UNIT_ID = "ca-app-pub-1738990657158019/5477094474";
 const BANNER_HEIGHT = 50; // Standard banner height
+// Keep true while testing; set to false for the official production/store release.
+const IS_TESTING = true;
 
 const AdMobBanner = () => {
   const [isNative, setIsNative] = useState(false);
@@ -35,7 +37,7 @@ const AdMobBanner = () => {
       );
 
       await AdMob.initialize({
-        initializeForTesting: false,
+        initializeForTesting: IS_TESTING,
       });
 
       await AdMob.showBanner({
@@ -43,7 +45,7 @@ const AdMobBanner = () => {
         adSize: BannerAdSize.BANNER,
         position: BannerAdPosition.BOTTOM_CENTER,
         margin: 0,
-        isTesting: false,
+        isTesting: IS_TESTING,
       });
 
       setBannerVisible(true);
@@ -68,9 +70,7 @@ const AdMobBanner = () => {
         className="fixed bottom-0 left-0 right-0 z-[60]"
         style={{ height: BANNER_HEIGHT }}
       >
-        {/* Subtle divider line */}
         <div className="h-px w-full bg-border/30" />
-        {/* Spacer — the native banner renders behind this */}
         <div
           className="w-full bg-background/80 backdrop-blur-sm"
           style={{ height: BANNER_HEIGHT }}
@@ -79,18 +79,17 @@ const AdMobBanner = () => {
     );
   }
 
-  // On web, show a subtle placeholder to preserve layout consistency during development
+  // On web, show a subtle placeholder so the ad slot position stays visible
   if (!isNative) {
     return (
       <div className="fixed bottom-0 left-0 right-0 z-[60]">
-        {/* Subtle divider */}
         <div className="h-px w-full bg-border/20" />
         <div
           className="w-full flex items-center justify-center bg-muted/40 backdrop-blur-sm"
           style={{ height: BANNER_HEIGHT }}
         >
           <span className="text-[10px] text-muted-foreground/40 tracking-wider uppercase">
-            Ad Space
+            AdMob Banner Placeholder — Android Preview
           </span>
         </div>
       </div>
