@@ -441,6 +441,11 @@ const Index = () => {
             {/* Deep Work Forecast for future days */}
             <DeepWorkForecast tasks={tasks} selectedDate={selectedDate} />
 
+            {/* Sponsored Node - ad placement */}
+            <SponsoredNode />
+
+
+
             {/* The Aura Timeline or Empty State */}
             <div className={`transition-opacity duration-300 ${timelineFading ? "opacity-0" : "opacity-100"}`}>
               {tasks.length === 0 ? (
