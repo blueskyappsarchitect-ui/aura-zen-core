@@ -51,7 +51,7 @@ const DraggableTaskCard = ({
   const [isExpanded, setIsExpanded] = useState(false);
   const [isPopping, setIsPopping] = useState(false);
   const [isGoldenPulsing, setIsGoldenPulsing] = useState(false);
-  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const config = CATEGORY_CONFIG[task.category];
   const Icon = iconMap[config.icon as keyof typeof iconMap];
   
