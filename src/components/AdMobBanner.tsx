@@ -37,7 +37,7 @@ const AdMobBanner = () => {
       );
 
       await AdMob.initialize({
-        requestTrackingAuthorization: true,
+        initializeForTesting: IS_TESTING,
       });
 
       await AdMob.showBanner({
