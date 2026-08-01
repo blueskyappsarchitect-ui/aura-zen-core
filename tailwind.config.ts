@@ -53,6 +53,12 @@ export default {
         },
         timeline: "hsl(var(--timeline))",
         "timeline-marker": "hsl(var(--timeline-marker))",
+        gold: {
+          DEFAULT: "hsl(var(--gold))",
+          glow: "hsl(var(--gold-glow))",
+          muted: "hsl(var(--gold-muted))",
+        },
+        obsidian: "hsl(var(--obsidian))",
         glass: {
           bg: "hsl(var(--glass-bg))",
           border: "hsl(var(--glass-border))",
