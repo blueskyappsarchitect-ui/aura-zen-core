@@ -301,6 +301,7 @@ export type Database = {
           vine_species: string
         }[]
       }
+      get_public_app_settings: { Args: never; Returns: Json }
       has_watered_today: { Args: never; Returns: boolean }
       increment_global_oxygen: { Args: never; Returns: Json }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
