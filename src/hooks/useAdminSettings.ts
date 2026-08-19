@@ -45,29 +45,28 @@ export const useAdminSettings = () => {
     }
   }, [user]);
 
-  // Fetch settings
+  // Fetch settings via the admin-safe read-only accessor
   const fetchSettings = useCallback(async () => {
     try {
-      const { data, error } = await supabase
-        .from('admin_settings')
-        .select('setting_key, setting_value');
+      const { data, error } = await supabase.rpc('get_public_app_settings');
 
       if (error) throw error;
 
-      data?.forEach(setting => {
-        if (setting.setting_key === 'maintenance_mode') {
-          const value = setting.setting_value as unknown as MaintenanceMode;
-          setMaintenanceMode(value);
-        } else if (setting.setting_key === 'global_broadcast') {
-          const value = setting.setting_value as unknown as GlobalBroadcast;
-          // Check if broadcast is still active (not expired)
-          if (value.expires_at && new Date(value.expires_at) < new Date()) {
-            setGlobalBroadcast({ ...value, active: false });
-          } else {
-            setGlobalBroadcast(value);
-          }
+      const settings = (data ?? {}) as Record<string, unknown>;
+
+      const maintenance = settings['maintenance_mode'] as MaintenanceMode | undefined;
+      if (maintenance) {
+        setMaintenanceMode(maintenance);
+      }
+
+      const broadcast = settings['global_broadcast'] as GlobalBroadcast | undefined;
+      if (broadcast) {
+        if (broadcast.expires_at && new Date(broadcast.expires_at) < new Date()) {
+          setGlobalBroadcast({ ...broadcast, active: false });
+        } else {
+          setGlobalBroadcast(broadcast);
         }
-      });
+      }
     } catch (error) {
       console.error('Error fetching admin settings:', error);
     } finally {
@@ -75,30 +74,15 @@ export const useAdminSettings = () => {
     }
   }, []);
 
-  // Subscribe to realtime updates
+  // Poll for updates (admin_settings is no longer broadcast over realtime)
   useEffect(() => {
     fetchSettings();
     checkAdminStatus();
 
-    const channel = supabase
-      .channel('admin-settings-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'admin_settings'
-        },
-        () => {
-          fetchSettings();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    const interval = setInterval(fetchSettings, 60000);
+    return () => clearInterval(interval);
   }, [fetchSettings, checkAdminStatus]);
+
 
   // Toggle maintenance mode (admin only)
   const toggleMaintenanceMode = useCallback(async (enabled: boolean, message: string = "") => {
