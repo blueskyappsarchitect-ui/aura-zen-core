@@ -1,0 +1,51 @@
+{
+  "language": { "label": "Language", "select": "Select language" },
+  "header": {
+    "profile": "Profile",
+    "calendar": "Calendar",
+    "settings": "Settings",
+    "signOut": "Sign out",
+    "mute": "Mute audio",
+    "unmute": "Unmute audio",
+    "founderEdition": "Founder Edition",
+    "signedOut": "Signed out",
+    "signedOutDesc": "See you next time! ✨"
+  },
+  "tabs": { "myVine": "My Vine", "grove": "The Grove" },
+  "dashboard": {
+    "auraScore": "Aura Score",
+    "dailyStreak": "Daily Streak",
+    "streakFrozen": "Streak Frozen",
+    "days": "Days",
+    "auraInsight": "Aura Insight",
+    "weeklyRhythm": "Weekly Rhythm",
+    "unfinished": "{{count}} Unfinished",
+    "moveToToday": "Move to today",
+    "insightWithered": "Your vine is thirsty! Tap the Aura Well to water it and restore vibrance. 💧",
+    "insightStart": "Great start! Let's pick one small thing to do next. Every step counts. ✨",
+    "insightFlow": "You're in the flow! Keep that momentum going—your Aura is growing beautifully. 🌟",
+    "insightSeedling": "Seedling stage mastered! Keep nurturing your growth. 🌱",
+    "insightSprout": "Your Sprout is flourishing! You're building amazing habits. 🌿",
+    "insightLegend": "Aura Legend status! You've reached Bloom—your dedication is inspiring. 🌸"
+  },
+  "settings": {
+    "title": "Aura Settings",
+    "vibe": "The Vibe",
+    "zen": "Zen",
+    "zenDesc": "Lavender, Mint & Peach",
+    "midnight": "Midnight",
+    "midnightDesc": "Navy, Charcoal & Cyan",
+    "forest": "Forest",
+    "forestDesc": "Moss, Earth & Cream",
+    "accessibility": "Accessibility",
+    "highContrast": "High Contrast",
+    "highContrastDesc": "Sharper borders for visibility",
+    "reducedMotion": "Reduced Motion",
+    "reducedMotionDesc": "Stops animations & gradients",
+    "sound": "Sound Profile",
+    "focusEndSound": "Focus End Sound",
+    "zenBell": "Zen Bell",
+    "birdsong": "Soft Birdsong",
+    "digitalBeep": "Digital Beep"
+  }
+}
