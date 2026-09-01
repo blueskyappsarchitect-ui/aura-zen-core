@@ -1,0 +1,51 @@
+{
+  "language": { "label": "Jazyk", "select": "Vyberte jazyk" },
+  "header": {
+    "profile": "Profil",
+    "calendar": "Kalendář",
+    "settings": "Nastavení",
+    "signOut": "Odhlásit se",
+    "mute": "Ztlumit zvuk",
+    "unmute": "Zapnout zvuk",
+    "founderEdition": "Zakladatelská edice",
+    "signedOut": "Odhlášeno",
+    "signedOutDesc": "Uvidíme se příště! ✨"
+  },
+  "tabs": { "myVine": "Moje réva", "grove": "Háj" },
+  "dashboard": {
+    "auraScore": "Skóre Aury",
+    "dailyStreak": "Denní série",
+    "streakFrozen": "Série zmrazena",
+    "days": "dní",
+    "auraInsight": "Vhled Aury",
+    "weeklyRhythm": "Týdenní rytmus",
+    "unfinished": "{{count}} nedokončených",
+    "moveToToday": "Přesunout na dnes",
+    "insightWithered": "Tvá réva má žízeň! Klepni na Studnu Aury, zalij ji a vrať jí svěžest. 💧",
+    "insightStart": "Skvělý začátek! Vyber si jednu malou věc, kterou uděláš dál. Každý krok se počítá. ✨",
+    "insightFlow": "Jsi v proudu! Udrž tempo – tvá Aura krásně roste. 🌟",
+    "insightSeedling": "Fáze semenáčku zvládnuta! Pečuj dál o svůj růst. 🌱",
+    "insightSprout": "Tvůj výhonek vzkvétá! Budujete skvělé návyky. 🌿",
+    "insightLegend": "Status Legendy Aury! Dosáhl jsi Rozkvětu – tvé odhodlání inspiruje. 🌸"
+  },
+  "settings": {
+    "title": "Nastavení Aury",
+    "vibe": "Nálada",
+    "zen": "Zen",
+    "zenDesc": "Levandule, máta a broskev",
+    "midnight": "Půlnoc",
+    "midnightDesc": "Námořnická, uhlová a azurová",
+    "forest": "Les",
+    "forestDesc": "Mech, hlína a krémová",
+    "accessibility": "Přístupnost",
+    "highContrast": "Vysoký kontrast",
+    "highContrastDesc": "Ostřejší okraje pro lepší viditelnost",
+    "reducedMotion": "Omezený pohyb",
+    "reducedMotionDesc": "Zastaví animace a přechody",
+    "sound": "Zvukový profil",
+    "focusEndSound": "Zvuk konce soustředění",
+    "zenBell": "Zenový zvonek",
+    "birdsong": "Jemný zpěv ptáků",
+    "digitalBeep": "Digitální pípnutí"
+  }
+}
