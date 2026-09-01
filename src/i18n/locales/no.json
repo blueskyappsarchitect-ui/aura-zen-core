@@ -1,0 +1,51 @@
+{
+  "language": { "label": "Språk", "select": "Velg språk" },
+  "header": {
+    "profile": "Profil",
+    "calendar": "Kalender",
+    "settings": "Innstillinger",
+    "signOut": "Logg ut",
+    "mute": "Slå av lyd",
+    "unmute": "Slå på lyd",
+    "founderEdition": "Grunnleggerutgave",
+    "signedOut": "Logget ut",
+    "signedOutDesc": "Vi ses neste gang! ✨"
+  },
+  "tabs": { "myVine": "Min ranke", "grove": "Lunden" },
+  "dashboard": {
+    "auraScore": "Aura-poeng",
+    "dailyStreak": "Daglig rekke",
+    "streakFrozen": "Rekken er fryst",
+    "days": "dager",
+    "auraInsight": "Aura-innsikt",
+    "weeklyRhythm": "Ukerytme",
+    "unfinished": "{{count}} uferdige",
+    "moveToToday": "Flytt til i dag",
+    "insightWithered": "Ranken din er tørst! Trykk på Aura-brønnen for å vanne den og gi den glød igjen. 💧",
+    "insightStart": "God start! La oss velge én liten ting å gjøre nå. Hvert steg teller. ✨",
+    "insightFlow": "Du er i flyt! Hold på farten – Auraen din vokser vakkert. 🌟",
+    "insightSeedling": "Frøplantestadiet er mestret! Fortsett å pleie veksten din. 🌱",
+    "insightSprout": "Spiren din blomstrer! Du bygger fantastiske vaner. 🌿",
+    "insightLegend": "Aura-legende! Du har nådd Blomstring – innsatsen din inspirerer. 🌸"
+  },
+  "settings": {
+    "title": "Aura-innstillinger",
+    "vibe": "Stemningen",
+    "zen": "Zen",
+    "zenDesc": "Lavendel, mynte og fersken",
+    "midnight": "Midnatt",
+    "midnightDesc": "Marine, koks og cyan",
+    "forest": "Skog",
+    "forestDesc": "Mose, jord og krem",
+    "accessibility": "Tilgjengelighet",
+    "highContrast": "Høy kontrast",
+    "highContrastDesc": "Skarpere kanter for bedre synlighet",
+    "reducedMotion": "Redusert bevegelse",
+    "reducedMotionDesc": "Stopper animasjoner og gradienter",
+    "sound": "Lydprofil",
+    "focusEndSound": "Lyd ved fokusslutt",
+    "zenBell": "Zen-bjelle",
+    "birdsong": "Mild fuglesang",
+    "digitalBeep": "Digital pipetone"
+  }
+}
