@@ -1,0 +1,51 @@
+{
+  "language": { "label": "Lingua", "select": "Seleziona lingua" },
+  "header": {
+    "profile": "Profilo",
+    "calendar": "Calendario",
+    "settings": "Impostazioni",
+    "signOut": "Esci",
+    "mute": "Disattiva audio",
+    "unmute": "Attiva audio",
+    "founderEdition": "Edizione Fondatore",
+    "signedOut": "Disconnesso",
+    "signedOutDesc": "Alla prossima! ✨"
+  },
+  "tabs": { "myVine": "La mia vite", "grove": "Il Boschetto" },
+  "dashboard": {
+    "auraScore": "Punteggio Aura",
+    "dailyStreak": "Serie giornaliera",
+    "streakFrozen": "Serie congelata",
+    "days": "Giorni",
+    "auraInsight": "Intuizione Aura",
+    "weeklyRhythm": "Ritmo settimanale",
+    "unfinished": "{{count}} non completate",
+    "moveToToday": "Sposta a oggi",
+    "insightWithered": "La tua vite ha sete! Tocca il Pozzo d'Aura per innaffiarla e ridarle vitalità. 💧",
+    "insightStart": "Ottimo inizio! Scegliamo una piccola cosa da fare ora. Ogni passo conta. ✨",
+    "insightFlow": "Sei nel flusso! Mantieni lo slancio: la tua Aura sta crescendo splendidamente. 🌟",
+    "insightSeedling": "Fase germoglio superata! Continua a coltivare la tua crescita. 🌱",
+    "insightSprout": "Il tuo germoglio sta fiorendo! Stai costruendo abitudini fantastiche. 🌿",
+    "insightLegend": "Stato di Leggenda dell'Aura! Hai raggiunto la Fioritura: la tua dedizione ispira. 🌸"
+  },
+  "settings": {
+    "title": "Impostazioni Aura",
+    "vibe": "L'Atmosfera",
+    "zen": "Zen",
+    "zenDesc": "Lavanda, menta e pesca",
+    "midnight": "Mezzanotte",
+    "midnightDesc": "Blu notte, antracite e ciano",
+    "forest": "Foresta",
+    "forestDesc": "Muschio, terra e crema",
+    "accessibility": "Accessibilità",
+    "highContrast": "Contrasto elevato",
+    "highContrastDesc": "Bordi più nitidi per la visibilità",
+    "reducedMotion": "Movimento ridotto",
+    "reducedMotionDesc": "Disattiva animazioni e gradienti",
+    "sound": "Profilo sonoro",
+    "focusEndSound": "Suono di fine focus",
+    "zenBell": "Campana zen",
+    "birdsong": "Canto di uccelli",
+    "digitalBeep": "Bip digitale"
+  }
+}
