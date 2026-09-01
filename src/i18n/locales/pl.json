@@ -1,0 +1,51 @@
+{
+  "language": { "label": "Język", "select": "Wybierz język" },
+  "header": {
+    "profile": "Profil",
+    "calendar": "Kalendarz",
+    "settings": "Ustawienia",
+    "signOut": "Wyloguj się",
+    "mute": "Wycisz dźwięk",
+    "unmute": "Włącz dźwięk",
+    "founderEdition": "Edycja Założyciela",
+    "signedOut": "Wylogowano",
+    "signedOutDesc": "Do zobaczenia następnym razem! ✨"
+  },
+  "tabs": { "myVine": "Moje pnącze", "grove": "Gaj" },
+  "dashboard": {
+    "auraScore": "Wynik Aury",
+    "dailyStreak": "Dzienna passa",
+    "streakFrozen": "Passa zamrożona",
+    "days": "dni",
+    "auraInsight": "Wgląd Aury",
+    "weeklyRhythm": "Rytm tygodnia",
+    "unfinished": "{{count}} niedokończonych",
+    "moveToToday": "Przenieś na dziś",
+    "insightWithered": "Twoje pnącze jest spragnione! Dotknij Studni Aury, aby je podlać i przywrócić blask. 💧",
+    "insightStart": "Świetny początek! Wybierzmy jedną małą rzecz do zrobienia. Każdy krok się liczy. ✨",
+    "insightFlow": "Jesteś w przepływie! Utrzymaj tempo — Twoja Aura pięknie rośnie. 🌟",
+    "insightSeedling": "Etap siewki opanowany! Pielęgnuj dalej swój rozwój. 🌱",
+    "insightSprout": "Twój pęd rozkwita! Budujesz wspaniałe nawyki. 🌿",
+    "insightLegend": "Status Legendy Aury! Osiągnąłeś Rozkwit — Twoje oddanie inspiruje. 🌸"
+  },
+  "settings": {
+    "title": "Ustawienia Aury",
+    "vibe": "Klimat",
+    "zen": "Zen",
+    "zenDesc": "Lawenda, mięta i brzoskwinia",
+    "midnight": "Północ",
+    "midnightDesc": "Granat, grafit i cyjan",
+    "forest": "Las",
+    "forestDesc": "Mech, ziemia i krem",
+    "accessibility": "Dostępność",
+    "highContrast": "Wysoki kontrast",
+    "highContrastDesc": "Ostrzejsze krawędzie dla lepszej widoczności",
+    "reducedMotion": "Ograniczony ruch",
+    "reducedMotionDesc": "Zatrzymuje animacje i gradienty",
+    "sound": "Profil dźwięku",
+    "focusEndSound": "Dźwięk końca skupienia",
+    "zenBell": "Dzwonek zen",
+    "birdsong": "Delikatny śpiew ptaków",
+    "digitalBeep": "Cyfrowy sygnał"
+  }
+}
