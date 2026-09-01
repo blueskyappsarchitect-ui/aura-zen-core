@@ -1,0 +1,51 @@
+{
+  "language": { "label": "言語", "select": "言語を選択" },
+  "header": {
+    "profile": "プロフィール",
+    "calendar": "カレンダー",
+    "settings": "設定",
+    "signOut": "ログアウト",
+    "mute": "音声をミュート",
+    "unmute": "音声をオンにする",
+    "founderEdition": "ファウンダーエディション",
+    "signedOut": "ログアウトしました",
+    "signedOutDesc": "また会いましょう！✨"
+  },
+  "tabs": { "myVine": "マイヴァイン", "grove": "グローブ" },
+  "dashboard": {
+    "auraScore": "オーラスコア",
+    "dailyStreak": "デイリーストリーク",
+    "streakFrozen": "ストリーク凍結中",
+    "days": "日",
+    "auraInsight": "オーラインサイト",
+    "weeklyRhythm": "週間リズム",
+    "unfinished": "未完了 {{count}} 件",
+    "moveToToday": "今日に移動",
+    "insightWithered": "ツルが渇いています！オーラの泉をタップして水をやり、輝きを取り戻しましょう。💧",
+    "insightStart": "良いスタートです！次にやる小さなことを一つ選びましょう。一歩一歩が大切です。✨",
+    "insightFlow": "フロー状態です！この勢いを保ちましょう — オーラが美しく育っています。🌟",
+    "insightSeedling": "苗の段階をマスターしました！成長を育て続けましょう。🌱",
+    "insightSprout": "芽が生き生きと育っています！素晴らしい習慣を築いていますね。🌿",
+    "insightLegend": "オーラレジェンドの称号！開花に到達しました — あなたの献身は刺激的です。🌸"
+  },
+  "settings": {
+    "title": "オーラ設定",
+    "vibe": "ムード",
+    "zen": "禅",
+    "zenDesc": "ラベンダー、ミント、ピーチ",
+    "midnight": "ミッドナイト",
+    "midnightDesc": "ネイビー、チャコール、シアン",
+    "forest": "フォレスト",
+    "forestDesc": "モス、アース、クリーム",
+    "accessibility": "アクセシビリティ",
+    "highContrast": "ハイコントラスト",
+    "highContrastDesc": "境界を強調して見やすく",
+    "reducedMotion": "モーションを減らす",
+    "reducedMotionDesc": "アニメーションとグラデーションを停止",
+    "sound": "サウンドプロファイル",
+    "focusEndSound": "集中終了サウンド",
+    "zenBell": "禅ベル",
+    "birdsong": "やさしい鳥のさえずり",
+    "digitalBeep": "デジタルビープ"
+  }
+}

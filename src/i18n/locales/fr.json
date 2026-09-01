@@ -1,0 +1,51 @@
+{
+  "language": { "label": "Langue", "select": "Choisir la langue" },
+  "header": {
+    "profile": "Profil",
+    "calendar": "Calendrier",
+    "settings": "Paramètres",
+    "signOut": "Se déconnecter",
+    "mute": "Couper le son",
+    "unmute": "Activer le son",
+    "founderEdition": "Édition Fondateur",
+    "signedOut": "Déconnecté",
+    "signedOutDesc": "À bientôt ! ✨"
+  },
+  "tabs": { "myVine": "Ma Vigne", "grove": "Le Bosquet" },
+  "dashboard": {
+    "auraScore": "Score d'Aura",
+    "dailyStreak": "Série quotidienne",
+    "streakFrozen": "Série gelée",
+    "days": "Jours",
+    "auraInsight": "Aperçu d'Aura",
+    "weeklyRhythm": "Rythme hebdomadaire",
+    "unfinished": "{{count}} inachevées",
+    "moveToToday": "Déplacer à aujourd'hui",
+    "insightWithered": "Votre vigne a soif ! Touchez le Puits d'Aura pour l'arroser et lui redonner de l'éclat. 💧",
+    "insightStart": "Excellent début ! Choisissons une petite chose à faire ensuite. Chaque pas compte. ✨",
+    "insightFlow": "Vous êtes dans le flux ! Gardez cet élan, votre Aura grandit magnifiquement. 🌟",
+    "insightSeedling": "Étape de la pousse maîtrisée ! Continuez à nourrir votre croissance. 🌱",
+    "insightSprout": "Votre pousse s'épanouit ! Vous construisez d'excellentes habitudes. 🌿",
+    "insightLegend": "Statut de Légende d'Aura ! Vous avez atteint la Floraison, votre dévouement inspire. 🌸"
+  },
+  "settings": {
+    "title": "Paramètres Aura",
+    "vibe": "L'Ambiance",
+    "zen": "Zen",
+    "zenDesc": "Lavande, menthe et pêche",
+    "midnight": "Minuit",
+    "midnightDesc": "Marine, anthracite et cyan",
+    "forest": "Forêt",
+    "forestDesc": "Mousse, terre et crème",
+    "accessibility": "Accessibilité",
+    "highContrast": "Contraste élevé",
+    "highContrastDesc": "Bordures plus nettes pour la visibilité",
+    "reducedMotion": "Animations réduites",
+    "reducedMotionDesc": "Arrête les animations et dégradés",
+    "sound": "Profil sonore",
+    "focusEndSound": "Son de fin de focus",
+    "zenBell": "Cloche zen",
+    "birdsong": "Chant d'oiseaux doux",
+    "digitalBeep": "Bip numérique"
+  }
+}

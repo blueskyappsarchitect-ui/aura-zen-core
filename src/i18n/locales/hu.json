@@ -1,0 +1,51 @@
+{
+  "language": { "label": "Nyelv", "select": "Nyelv kiválasztása" },
+  "header": {
+    "profile": "Profil",
+    "calendar": "Naptár",
+    "settings": "Beállítások",
+    "signOut": "Kijelentkezés",
+    "mute": "Hang némítása",
+    "unmute": "Hang bekapcsolása",
+    "founderEdition": "Alapító Kiadás",
+    "signedOut": "Kijelentkezve",
+    "signedOutDesc": "Viszlát legközelebb! ✨"
+  },
+  "tabs": { "myVine": "Indám", "grove": "A Liget" },
+  "dashboard": {
+    "auraScore": "Aura pontszám",
+    "dailyStreak": "Napi sorozat",
+    "streakFrozen": "Sorozat befagyasztva",
+    "days": "nap",
+    "auraInsight": "Aura betekintés",
+    "weeklyRhythm": "Heti ritmus",
+    "unfinished": "{{count}} befejezetlen",
+    "moveToToday": "Áthelyezés mára",
+    "insightWithered": "Az indád szomjas! Érintsd meg az Aura Kutat, hogy megöntözd és visszanyerje ragyogását. 💧",
+    "insightStart": "Remek kezdés! Válasszunk egy apró teendőt következőnek. Minden lépés számít. ✨",
+    "insightFlow": "Áramlatban vagy! Tartsd a lendületet – az Aurád gyönyörűen növekszik. 🌟",
+    "insightSeedling": "A csíranövény szakasz teljesítve! Táplálj tovább a fejlődésed. 🌱",
+    "insightSprout": "A hajtásod virágzik! Csodálatos szokásokat építesz. 🌿",
+    "insightLegend": "Aura Legenda státusz! Elérted a Virágzást – az elkötelezettséged inspiráló. 🌸"
+  },
+  "settings": {
+    "title": "Aura beállítások",
+    "vibe": "A Hangulat",
+    "zen": "Zen",
+    "zenDesc": "Levendula, menta és barack",
+    "midnight": "Éjfél",
+    "midnightDesc": "Tengerkék, szén és cián",
+    "forest": "Erdő",
+    "forestDesc": "Moha, föld és krém",
+    "accessibility": "Akadálymentesítés",
+    "highContrast": "Nagy kontraszt",
+    "highContrastDesc": "Élesebb szegélyek a jobb láthatóságért",
+    "reducedMotion": "Csökkentett mozgás",
+    "reducedMotionDesc": "Leállítja az animációkat és színátmeneteket",
+    "sound": "Hangprofil",
+    "focusEndSound": "Fókusz végi hang",
+    "zenBell": "Zen harang",
+    "birdsong": "Lágy madárdal",
+    "digitalBeep": "Digitális sípszó"
+  }
+}

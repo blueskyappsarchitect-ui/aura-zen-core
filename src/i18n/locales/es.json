@@ -1,0 +1,51 @@
+{
+  "language": { "label": "Idioma", "select": "Seleccionar idioma" },
+  "header": {
+    "profile": "Perfil",
+    "calendar": "Calendario",
+    "settings": "Ajustes",
+    "signOut": "Cerrar sesión",
+    "mute": "Silenciar audio",
+    "unmute": "Activar audio",
+    "founderEdition": "Edición Fundador",
+    "signedOut": "Sesión cerrada",
+    "signedOutDesc": "¡Hasta la próxima! ✨"
+  },
+  "tabs": { "myVine": "Mi Vid", "grove": "La Arboleda" },
+  "dashboard": {
+    "auraScore": "Puntuación de Aura",
+    "dailyStreak": "Racha diaria",
+    "streakFrozen": "Racha congelada",
+    "days": "Días",
+    "auraInsight": "Perspectiva de Aura",
+    "weeklyRhythm": "Ritmo semanal",
+    "unfinished": "{{count}} sin terminar",
+    "moveToToday": "Mover a hoy",
+    "insightWithered": "¡Tu vid tiene sed! Toca el Pozo de Aura para regarla y devolverle vitalidad. 💧",
+    "insightStart": "¡Gran comienzo! Elijamos una cosa pequeña para hacer ahora. Cada paso cuenta. ✨",
+    "insightFlow": "¡Estás en flujo! Mantén ese impulso: tu Aura crece maravillosamente. 🌟",
+    "insightSeedling": "¡Etapa de plántula dominada! Sigue nutriendo tu crecimiento. 🌱",
+    "insightSprout": "¡Tu brote florece! Estás creando hábitos increíbles. 🌿",
+    "insightLegend": "¡Estado de Leyenda del Aura! Has alcanzado la Floración: tu dedicación inspira. 🌸"
+  },
+  "settings": {
+    "title": "Ajustes de Aura",
+    "vibe": "El Ambiente",
+    "zen": "Zen",
+    "zenDesc": "Lavanda, menta y melocotón",
+    "midnight": "Medianoche",
+    "midnightDesc": "Azul marino, carbón y cian",
+    "forest": "Bosque",
+    "forestDesc": "Musgo, tierra y crema",
+    "accessibility": "Accesibilidad",
+    "highContrast": "Alto contraste",
+    "highContrastDesc": "Bordes más nítidos para mejor visibilidad",
+    "reducedMotion": "Movimiento reducido",
+    "reducedMotionDesc": "Detiene animaciones y degradados",
+    "sound": "Perfil de sonido",
+    "focusEndSound": "Sonido de fin de enfoque",
+    "zenBell": "Campana zen",
+    "birdsong": "Canto de aves suave",
+    "digitalBeep": "Pitido digital"
+  }
+}
