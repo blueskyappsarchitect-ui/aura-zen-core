@@ -1,0 +1,51 @@
+{
+  "language": { "label": "언어", "select": "언어 선택" },
+  "header": {
+    "profile": "프로필",
+    "calendar": "캘린더",
+    "settings": "설정",
+    "signOut": "로그아웃",
+    "mute": "소리 끄기",
+    "unmute": "소리 켜기",
+    "founderEdition": "파운더 에디션",
+    "signedOut": "로그아웃됨",
+    "signedOutDesc": "다음에 또 만나요! ✨"
+  },
+  "tabs": { "myVine": "내 덩굴", "grove": "숲" },
+  "dashboard": {
+    "auraScore": "아우라 점수",
+    "dailyStreak": "일일 연속 기록",
+    "streakFrozen": "연속 기록 동결",
+    "days": "일",
+    "auraInsight": "아우라 인사이트",
+    "weeklyRhythm": "주간 리듬",
+    "unfinished": "미완료 {{count}}개",
+    "moveToToday": "오늘로 이동",
+    "insightWithered": "덩굴이 목말라해요! 아우라 우물을 눌러 물을 주고 생기를 되찾아 주세요. 💧",
+    "insightStart": "좋은 시작이에요! 다음에 할 작은 일 하나를 골라볼까요. 모든 걸음이 소중해요. ✨",
+    "insightFlow": "몰입 중이에요! 이 흐름을 유지하세요 — 아우라가 아름답게 자라고 있어요. 🌟",
+    "insightSeedling": "새싹 단계를 완성했어요! 계속 성장을 돌봐주세요. 🌱",
+    "insightSprout": "새싹이 무성해지고 있어요! 멋진 습관을 만들고 있네요. 🌿",
+    "insightLegend": "아우라 레전드 등급! 만개에 도달했어요 — 당신의 헌신이 영감을 줍니다. 🌸"
+  },
+  "settings": {
+    "title": "아우라 설정",
+    "vibe": "분위기",
+    "zen": "젠",
+    "zenDesc": "라벤더, 민트 & 피치",
+    "midnight": "미드나잇",
+    "midnightDesc": "네이비, 차콜 & 시안",
+    "forest": "포레스트",
+    "forestDesc": "이끼, 흙 & 크림",
+    "accessibility": "접근성",
+    "highContrast": "고대비",
+    "highContrastDesc": "더 선명한 테두리로 가독성 향상",
+    "reducedMotion": "모션 줄이기",
+    "reducedMotionDesc": "애니메이션과 그라데이션 중지",
+    "sound": "사운드 프로필",
+    "focusEndSound": "집중 종료 소리",
+    "zenBell": "젠 벨",
+    "birdsong": "부드러운 새소리",
+    "digitalBeep": "디지털 비프음"
+  }
+}
