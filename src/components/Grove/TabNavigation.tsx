@@ -1,4 +1,5 @@
 import { Leaf, Users } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { BANNER_HEIGHT } from "@/components/AdMobBanner";
 
 type TabType = 'my-vine' | 'grove';
