@@ -47,13 +47,14 @@ const Header = ({ onProfileOpen }: HeaderProps) => {
                 Aura<span className="text-primary font-light">Flow</span>
               </span>
               <span className="text-[10px] font-medium text-amber-600 tracking-widest uppercase leading-none">
-                Founder Edition
+                {t("header.founderEdition")}
               </span>
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 min-w-0">
+            <LanguageSwitcher />
             {/* Audio Toggle - Mute/Unmute */}
             <button
               onClick={toggleAudio}
