@@ -3,6 +3,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Palette, Eye, Zap, Volume2, Check } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useSettings, ThemePreset, SoundProfile } from "@/contexts/SettingsContext";
 
 interface SettingsDrawerProps {
