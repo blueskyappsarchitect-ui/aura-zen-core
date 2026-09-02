@@ -17,25 +17,25 @@ const TabNavigation = ({ activeTab, onTabChange }: TabNavigationProps) => {
         <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-white/40 p-1 flex" style={{ backdropFilter: 'blur(12px)' }}>
           <button
             onClick={() => onTabChange('my-vine')}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium text-sm transition-all duration-300 ease-in-out touch-manipulation min-h-[48px] ${
+            className={`flex-1 flex items-center justify-center gap-2 py-3 px-2 rounded-xl font-medium text-sm text-center leading-tight transition-all duration-300 ease-in-out touch-manipulation min-h-[48px] ${
               activeTab === 'my-vine'
                 ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-md'
                 : 'text-muted-foreground hover:bg-muted/50 active:bg-muted/70'
             }`}
           >
-            <Leaf className="w-4 h-4" />
-            My Vine
+            <Leaf className="w-4 h-4 shrink-0" />
+            <span className="truncate">{t("tabs.myVine")}</span>
           </button>
           <button
             onClick={() => onTabChange('grove')}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium text-sm transition-all duration-300 ease-in-out touch-manipulation min-h-[48px] ${
+            className={`flex-1 flex items-center justify-center gap-2 py-3 px-2 rounded-xl font-medium text-sm text-center leading-tight transition-all duration-300 ease-in-out touch-manipulation min-h-[48px] ${
               activeTab === 'grove'
                 ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md'
                 : 'text-muted-foreground hover:bg-muted/50 active:bg-muted/70'
             }`}
           >
-            <Users className="w-4 h-4" />
-            The Grove
+            <Users className="w-4 h-4 shrink-0" />
+            <span className="truncate">{t("tabs.grove")}</span>
           </button>
         </div>
       </div>
