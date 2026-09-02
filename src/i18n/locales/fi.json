@@ -1,0 +1,51 @@
+{
+  "language": { "label": "Kieli", "select": "Valitse kieli" },
+  "header": {
+    "profile": "Profiili",
+    "calendar": "Kalenteri",
+    "settings": "Asetukset",
+    "signOut": "Kirjaudu ulos",
+    "mute": "Mykistä ääni",
+    "unmute": "Poista mykistys",
+    "founderEdition": "Perustajaversio",
+    "signedOut": "Kirjauduttu ulos",
+    "signedOutDesc": "Nähdään taas! ✨"
+  },
+  "tabs": { "myVine": "Oma köynnös", "grove": "Lehto" },
+  "dashboard": {
+    "auraScore": "Aura-pisteet",
+    "dailyStreak": "Päivittäinen putki",
+    "streakFrozen": "Putki jäädytetty",
+    "days": "Päivää",
+    "auraInsight": "Aura-oivallus",
+    "weeklyRhythm": "Viikkorytmi",
+    "unfinished": "{{count}} kesken",
+    "moveToToday": "Siirrä tähän päivään",
+    "insightWithered": "Köynnöksesi janoaa! Kosketa Aura-kaivoa kastellaksesi sen. 💧",
+    "insightStart": "Hieno alku! Valitaan seuraavaksi yksi pieni asia. ✨",
+    "insightFlow": "Olet flow-tilassa! Pidä vauhti yllä – Aurasi kasvaa kauniisti. 🌟",
+    "insightSeedling": "Taimivaihe hallussa! Jatka kasvun vaalimista. 🌱",
+    "insightSprout": "Versosi kukoistaa! Rakennat mahtavia tapoja. 🌿",
+    "insightLegend": "Aura-legenda! Saavutit kukinnan – omistautumisesi inspiroi. 🌸"
+  },
+  "settings": {
+    "title": "Aura-asetukset",
+    "vibe": "Tunnelma",
+    "zen": "Zen",
+    "zenDesc": "Laventeli, minttu ja persikka",
+    "midnight": "Keskiyö",
+    "midnightDesc": "Laivastonsininen, hiili ja syaani",
+    "forest": "Metsä",
+    "forestDesc": "Sammal, maa ja kerma",
+    "accessibility": "Saavutettavuus",
+    "highContrast": "Suuri kontrasti",
+    "highContrastDesc": "Terävämmät reunat näkyvyyteen",
+    "reducedMotion": "Vähennetty liike",
+    "reducedMotionDesc": "Pysäyttää animaatiot ja liukuvärit",
+    "sound": "Ääniprofiili",
+    "focusEndSound": "Fokuksen loppuääni",
+    "zenBell": "Zen-kello",
+    "birdsong": "Pehmeä linnunlaulu",
+    "digitalBeep": "Digitaalinen piippaus"
+  }
+}
