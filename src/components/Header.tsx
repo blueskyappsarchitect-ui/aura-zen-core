@@ -17,12 +17,13 @@ const Header = ({ onProfileOpen }: HeaderProps) => {
   const { signOut } = useAuth();
   const { toast } = useToast();
   const { isAudioEnabled, isPlaying, toggleAudio } = useAudioState();
+  const { t } = useTranslation();
 
   const handleSignOut = async () => {
     await signOut();
     toast({
-      title: "Signed out",
-      description: "See you next time! ✨",
+      title: t("header.signedOut"),
+      description: t("header.signedOutDesc"),
     });
   };
 
