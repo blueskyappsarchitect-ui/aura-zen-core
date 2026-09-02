@@ -11,31 +11,31 @@ interface SettingsDrawerProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const themes: { id: ThemePreset; name: string; description: string; colors: string[] }[] = [
+const themes: { id: ThemePreset; nameKey: string; descKey: string; colors: string[] }[] = [
   {
     id: "zen",
-    name: "Zen",
-    description: "Lavender, Mint & Peach",
+    nameKey: "settings.zen",
+    descKey: "settings.zenDesc",
     colors: ["hsl(262, 83%, 58%)", "hsl(160, 50%, 85%)", "hsl(25, 90%, 88%)"],
   },
   {
     id: "midnight",
-    name: "Midnight",
-    description: "Navy, Charcoal & Cyan",
+    nameKey: "settings.midnight",
+    descKey: "settings.midnightDesc",
     colors: ["hsl(220, 60%, 20%)", "hsl(220, 20%, 25%)", "hsl(180, 90%, 50%)"],
   },
   {
     id: "forest",
-    name: "Forest",
-    description: "Moss, Earth & Cream",
+    nameKey: "settings.forest",
+    descKey: "settings.forestDesc",
     colors: ["hsl(120, 30%, 35%)", "hsl(30, 40%, 30%)", "hsl(45, 40%, 90%)"],
   },
 ];
 
-const sounds: { id: SoundProfile; name: string }[] = [
-  { id: "zen-bell", name: "Zen Bell" },
-  { id: "birdsong", name: "Soft Birdsong" },
-  { id: "digital-beep", name: "Digital Beep" },
+const sounds: { id: SoundProfile; nameKey: string }[] = [
+  { id: "zen-bell", nameKey: "settings.zenBell" },
+  { id: "birdsong", nameKey: "settings.birdsong" },
+  { id: "digital-beep", nameKey: "settings.digitalBeep" },
 ];
 
 const SettingsDrawer = ({ open, onOpenChange }: SettingsDrawerProps) => {
