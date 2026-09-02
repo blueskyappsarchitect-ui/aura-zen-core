@@ -8,7 +8,7 @@ const STORAGE_CLEAN_KEY = 'aura_storage_cleaned_v1';
 if (!sessionStorage.getItem(STORAGE_CLEAN_KEY)) {
   console.log('[Emergency] Cleaning storage to prevent flicker...');
   // Clear potentially stale auth/UI state
-  const keysToPreserve = ['sb-uwubmmbpvyqfbbglfwql-auth-token']; // Preserve Supabase auth
+  const keysToPreserve = ['sb-uwubmmbpvyqfbbglfwql-auth-token', 'aura-language']; // Preserve Supabase auth + language
   const localKeys = Object.keys(localStorage);
   const sessionKeys = Object.keys(sessionStorage);
   
