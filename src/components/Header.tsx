@@ -5,6 +5,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { useAudioState } from "@/contexts/AudioContext";
 import auraFlowLogo from "@/assets/aura-flow-logo.png";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 interface HeaderProps {
   onProfileOpen?: () => void;
