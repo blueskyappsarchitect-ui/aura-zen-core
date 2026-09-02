@@ -40,6 +40,7 @@ const sounds: { id: SoundProfile; nameKey: string }[] = [
 
 const SettingsDrawer = ({ open, onOpenChange }: SettingsDrawerProps) => {
   const { settings, setTheme, setHighContrast, setReducedMotion, setSoundProfile, playSound } = useSettings();
+  const { t } = useTranslation();
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
