@@ -77,28 +77,28 @@ const Header = ({ onProfileOpen }: HeaderProps) => {
             
             <button
               onClick={onProfileOpen}
-              className="p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-200"
-              aria-label="Profile"
+              className="p-2 sm:p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-200"
+              aria-label={t("header.profile")}
             >
               <User className="w-5 h-5" strokeWidth={1.5} />
             </button>
             <button
-              className="p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-200"
-              aria-label="Calendar"
+              className="hidden sm:inline-flex p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-200"
+              aria-label={t("header.calendar")}
             >
               <Calendar className="w-5 h-5" strokeWidth={1.5} />
             </button>
             <button
               onClick={() => setSettingsOpen(true)}
-              className="p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-200"
-              aria-label="Settings"
+              className="p-2 sm:p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-200"
+              aria-label={t("header.settings")}
             >
               <Settings className="w-5 h-5" strokeWidth={1.5} />
             </button>
             <button
               onClick={handleSignOut}
-              className="p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-200"
-              aria-label="Sign out"
+              className="p-2 sm:p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-200"
+              aria-label={t("header.signOut")}
             >
               <LogOut className="w-5 h-5" strokeWidth={1.5} />
             </button>
