@@ -58,12 +58,12 @@ const Header = ({ onProfileOpen }: HeaderProps) => {
             {/* Audio Toggle - Mute/Unmute */}
             <button
               onClick={toggleAudio}
-              className={`relative p-2.5 rounded-xl transition-all duration-200 ${
+              className={`relative p-2 sm:p-2.5 rounded-xl transition-all duration-200 ${
                 isAudioEnabled 
                   ? 'bg-emerald-100 text-emerald-600 hover:bg-emerald-200' 
                   : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
               }`}
-              aria-label={isAudioEnabled ? "Mute audio" : "Unmute audio"}
+              aria-label={isAudioEnabled ? t("header.mute") : t("header.unmute")}
             >
               {isAudioEnabled ? (
                 <Volume2 className="w-5 h-5" strokeWidth={1.5} />
