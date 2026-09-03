@@ -5,6 +5,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { useAudioState } from "@/contexts/AudioContext";
 import auraFlowLogo from "@/assets/aura-flow-logo.png";
+import LanguageSwitcher from "./LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 
 interface HeaderProps {
   onProfileOpen?: () => void;
@@ -15,12 +17,13 @@ const Header = ({ onProfileOpen }: HeaderProps) => {
   const { signOut } = useAuth();
   const { toast } = useToast();
   const { isAudioEnabled, isPlaying, toggleAudio } = useAudioState();
+  const { t } = useTranslation();
 
   const handleSignOut = async () => {
     await signOut();
     toast({
-      title: "Signed out",
-      description: "See you next time! ✨",
+      title: t("header.signedOut"),
+      description: t("header.signedOutDesc"),
     });
   };
 
@@ -44,13 +47,15 @@ const Header = ({ onProfileOpen }: HeaderProps) => {
                 Aura<span className="text-primary font-light">Flow</span>
               </span>
               <span className="text-[10px] font-medium text-amber-600 tracking-widest uppercase leading-none">
-                Founder Edition
+                {t("header.founderEdition")}
               </span>
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <LanguageSwitcher />
+
             {/* Audio Toggle - Mute/Unmute */}
             <button
               onClick={toggleAudio}
@@ -59,7 +64,7 @@ const Header = ({ onProfileOpen }: HeaderProps) => {
                   ? 'bg-emerald-100 text-emerald-600 hover:bg-emerald-200' 
                   : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
               }`}
-              aria-label={isAudioEnabled ? "Mute audio" : "Unmute audio"}
+              aria-label={isAudioEnabled ? t("header.mute") : t("header.unmute")}
             >
               {isAudioEnabled ? (
                 <Volume2 className="w-5 h-5" strokeWidth={1.5} />
@@ -73,28 +78,28 @@ const Header = ({ onProfileOpen }: HeaderProps) => {
             
             <button
               onClick={onProfileOpen}
-              className="p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-200"
-              aria-label="Profile"
+              className="p-2 sm:p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-200"
+              aria-label={t("header.profile")}
             >
               <User className="w-5 h-5" strokeWidth={1.5} />
             </button>
             <button
-              className="p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-200"
-              aria-label="Calendar"
+              className="p-2 sm:p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-200"
+              aria-label={t("header.calendar")}
             >
               <Calendar className="w-5 h-5" strokeWidth={1.5} />
             </button>
             <button
               onClick={() => setSettingsOpen(true)}
-              className="p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-200"
-              aria-label="Settings"
+              className="p-2 sm:p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-200"
+              aria-label={t("header.settings")}
             >
               <Settings className="w-5 h-5" strokeWidth={1.5} />
             </button>
             <button
               onClick={handleSignOut}
-              className="p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-200"
-              aria-label="Sign out"
+              className="p-2 sm:p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-200"
+              aria-label={t("header.signOut")}
             >
               <LogOut className="w-5 h-5" strokeWidth={1.5} />
             </button>
