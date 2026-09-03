@@ -6,6 +6,7 @@ import GrowthVine from "@/components/GrowthVine";
 import AuraWell from "@/components/AuraWell";
 import { getStreakMultiplier, STREAK_THRESHOLD } from "@/types/aura";
 import { VineSpecies } from "@/types/species";
+import { useTranslation } from "react-i18next";
 
 interface AuraDashboardProps {
   auraScore: number;
@@ -34,6 +35,7 @@ const AuraDashboard = ({
   vineSpecies,
   hasGlimmer,
 }: AuraDashboardProps) => {
+  const { t } = useTranslation();
   const scoreRef = useRef<HTMLDivElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isPulsing, setIsPulsing] = useState(false);
@@ -96,7 +98,7 @@ const AuraDashboard = ({
               </div>
               <div>
                 <p className="text-xs font-medium text-muted-foreground/70 uppercase tracking-wider flex items-center gap-2">
-                  Aura Score
+                  {t("dashboard.auraScore")}
                   <AuraLevelIcon auraScore={auraScore} showLabel />
                 </p>
                 <div className="flex items-center gap-2">
@@ -134,14 +136,14 @@ const AuraDashboard = ({
               </div>
               <div>
                 <p className="text-xs font-medium text-muted-foreground/70 uppercase tracking-wider">
-                  {isStreakFrozen ? 'Streak Frozen' : 'Daily Streak'}
+                  {isStreakFrozen ? t('dashboard.streakFrozen') : t('dashboard.dailyStreak')}
                 </p>
                 <p className={`text-3xl font-bold bg-clip-text text-transparent ${
                   isStreakFrozen 
                     ? 'bg-gradient-to-r from-cyan-500 to-blue-500' 
                     : 'bg-gradient-to-r from-orange-500 to-red-500'
                 }`}>
-                  {isStreakFrozen ? '❄️' : '🔥'} {streak} Days
+                  {isStreakFrozen ? '❄️' : '🔥'} {streak} {t('dashboard.days')}
                 </p>
               </div>
             </div>
@@ -162,20 +164,20 @@ const AuraDashboard = ({
           <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-4 border border-white/30">
             <p className="text-xs font-semibold text-purple-600 uppercase tracking-wider mb-2 flex items-center gap-2">
               <span className="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-pulse" />
-              Aura Insight
+              {t("dashboard.auraInsight")}
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              {isWithered 
-                ? "Your vine is thirsty! Tap the Aura Well to water it and restore vibrance. 💧"
-                : auraScore < 50 
-                ? "Great start! Let's pick one small thing to do next. Every step counts. ✨"
-                : auraScore < 150 
-                ? "You're in the flow! Keep that momentum going—your Aura is growing beautifully. 🌟"
+              {isWithered
+                ? t("dashboard.insightWithered")
+                : auraScore < 50
+                ? t("dashboard.insightStart")
+                : auraScore < 150
+                ? t("dashboard.insightFlow")
                 : auraScore < 500
-                ? "Seedling stage mastered! Keep nurturing your growth. 🌱"
+                ? t("dashboard.insightSeedling")
                 : auraScore < 1500
-                ? "Your Sprout is flourishing! You're building amazing habits. 🌿"
-                : "Aura Legend status! You've reached Bloom—your dedication is inspiring. 🌸"
+                ? t("dashboard.insightSprout")
+                : t("dashboard.insightLegend")
               }
             </p>
           </div>

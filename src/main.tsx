@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import "./i18n";
 
 // Emergency storage clean - runs once to clear any stale flicker data
 const STORAGE_CLEAN_KEY = 'aura_storage_cleaned_v1';

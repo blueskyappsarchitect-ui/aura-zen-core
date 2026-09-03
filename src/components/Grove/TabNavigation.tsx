@@ -1,4 +1,5 @@
 import { Leaf, Users } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { BANNER_HEIGHT } from "@/components/AdMobBanner";
 
 type TabType = 'my-vine' | 'grove';
@@ -9,6 +10,7 @@ interface TabNavigationProps {
 }
 
 const TabNavigation = ({ activeTab, onTabChange }: TabNavigationProps) => {
+  const { t } = useTranslation();
   return (
     <div className="fixed left-0 right-0 z-50 pb-safe" style={{ bottom: BANNER_HEIGHT }}>
       <div className="max-w-md mx-auto px-4 pb-4">
@@ -22,7 +24,7 @@ const TabNavigation = ({ activeTab, onTabChange }: TabNavigationProps) => {
             }`}
           >
             <Leaf className="w-4 h-4" />
-            My Vine
+            {t("tabs.myVine")}
           </button>
           <button
             onClick={() => onTabChange('grove')}
@@ -33,7 +35,7 @@ const TabNavigation = ({ activeTab, onTabChange }: TabNavigationProps) => {
             }`}
           >
             <Users className="w-4 h-4" />
-            The Grove
+            {t("tabs.grove")}
           </button>
         </div>
       </div>

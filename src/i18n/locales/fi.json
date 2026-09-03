@@ -1,0 +1,51 @@
+{
+  "language": { "label": "Kieli", "select": "Valitse kieli" },
+  "header": {
+    "profile": "Profiili",
+    "calendar": "Kalenteri",
+    "settings": "Asetukset",
+    "signOut": "Kirjaudu ulos",
+    "mute": "Mykistä äänet",
+    "unmute": "Poista mykistys",
+    "founderEdition": "Perustajaversio",
+    "signedOut": "Kirjauduttu ulos",
+    "signedOutDesc": "Nähdään ensi kerralla! ✨"
+  },
+  "tabs": { "myVine": "Oma köynnös", "grove": "Lehto" },
+  "dashboard": {
+    "auraScore": "Aura-pisteet",
+    "dailyStreak": "Päivittäinen putki",
+    "streakFrozen": "Putki jäädytetty",
+    "days": "päivää",
+    "auraInsight": "Aura-oivallus",
+    "weeklyRhythm": "Viikkorytmi",
+    "unfinished": "{{count}} kesken",
+    "moveToToday": "Siirrä tähän päivään",
+    "insightWithered": "Köynnöksesi on kuiva! Napauta Aura-lähdettä kastellaksesi sen. 💧",
+    "insightStart": "Hyvä alku! Valitaan yksi pieni asia seuraavaksi. Jokainen askel merkitsee. ✨",
+    "insightFlow": "Olet flow-tilassa! Pidä vauhti yllä – Aurasi kasvaa kauniisti. 🌟",
+    "insightSeedling": "Siementaimen vaihe hallussa! Jatka kasvun vaalimista. 🌱",
+    "insightSprout": "Versosi kukoistaa! Rakennat mahtavia tapoja. 🌿",
+    "insightLegend": "Aura-legenda! Saavutit Kukinnan – omistautumisesi inspiroi. 🌸"
+  },
+  "settings": {
+    "title": "Aura-asetukset",
+    "vibe": "Tunnelma",
+    "zen": "Zen",
+    "zenDesc": "Laventeli, minttu ja persikka",
+    "midnight": "Keskiyö",
+    "midnightDesc": "Laivastonsininen, hiili ja syaani",
+    "forest": "Metsä",
+    "forestDesc": "Sammal, maa ja kreemi",
+    "accessibility": "Saavutettavuus",
+    "highContrast": "Suuri kontrasti",
+    "highContrastDesc": "Terävemmät reunat näkyvyyttä varten",
+    "reducedMotion": "Vähennetty liike",
+    "reducedMotionDesc": "Pysäyttää animaatiot ja liukuvärit",
+    "sound": "Ääniprofiili",
+    "focusEndSound": "Keskittymisen lopetusääni",
+    "zenBell": "Zen-kello",
+    "birdsong": "Pehmeä linnunlaulu",
+    "digitalBeep": "Digitaalinen piippaus"
+  }
+}

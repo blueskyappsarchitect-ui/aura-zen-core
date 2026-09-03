@@ -4,47 +4,49 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Palette, Eye, Zap, Volume2, Check } from "lucide-react";
 import { useSettings, ThemePreset, SoundProfile } from "@/contexts/SettingsContext";
+import { useTranslation } from "react-i18next";
 
 interface SettingsDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const themes: { id: ThemePreset; name: string; description: string; colors: string[] }[] = [
+const themes: { id: ThemePreset; nameKey: string; descKey: string; colors: string[] }[] = [
   {
     id: "zen",
-    name: "Zen",
-    description: "Lavender, Mint & Peach",
+    nameKey: "settings.zen",
+    descKey: "settings.zenDesc",
     colors: ["hsl(262, 83%, 58%)", "hsl(160, 50%, 85%)", "hsl(25, 90%, 88%)"],
   },
   {
     id: "midnight",
-    name: "Midnight",
-    description: "Navy, Charcoal & Cyan",
+    nameKey: "settings.midnight",
+    descKey: "settings.midnightDesc",
     colors: ["hsl(220, 60%, 20%)", "hsl(220, 20%, 25%)", "hsl(180, 90%, 50%)"],
   },
   {
     id: "forest",
-    name: "Forest",
-    description: "Moss, Earth & Cream",
+    nameKey: "settings.forest",
+    descKey: "settings.forestDesc",
     colors: ["hsl(120, 30%, 35%)", "hsl(30, 40%, 30%)", "hsl(45, 40%, 90%)"],
   },
 ];
 
-const sounds: { id: SoundProfile; name: string }[] = [
-  { id: "zen-bell", name: "Zen Bell" },
-  { id: "birdsong", name: "Soft Birdsong" },
-  { id: "digital-beep", name: "Digital Beep" },
+const sounds: { id: SoundProfile; nameKey: string }[] = [
+  { id: "zen-bell", nameKey: "settings.zenBell" },
+  { id: "birdsong", nameKey: "settings.birdsong" },
+  { id: "digital-beep", nameKey: "settings.digitalBeep" },
 ];
 
 const SettingsDrawer = ({ open, onOpenChange }: SettingsDrawerProps) => {
+  const { t } = useTranslation();
   const { settings, setTheme, setHighContrast, setReducedMotion, setSoundProfile, playSound } = useSettings();
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-[340px] sm:w-[400px] glass-drawer border-l border-border/30 overflow-y-auto">
         <SheetHeader className="mb-6">
-          <SheetTitle className="text-xl font-semibold">Aura Settings</SheetTitle>
+          <SheetTitle className="text-xl font-semibold">{t("settings.title")}</SheetTitle>
         </SheetHeader>
 
         <div className="space-y-8">
@@ -52,7 +54,7 @@ const SettingsDrawer = ({ open, onOpenChange }: SettingsDrawerProps) => {
           <section>
             <div className="flex items-center gap-2 mb-4">
               <Palette className="w-5 h-5 text-primary" />
-              <h3 className="font-medium text-foreground">The Vibe</h3>
+              <h3 className="font-medium text-foreground">{t("settings.vibe")}</h3>
             </div>
             <div className="space-y-3">
               {themes.map((theme) => (
@@ -67,8 +69,8 @@ const SettingsDrawer = ({ open, onOpenChange }: SettingsDrawerProps) => {
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-foreground">{theme.name}</p>
-                      <p className="text-sm text-muted-foreground">{theme.description}</p>
+                      <p className="font-medium text-foreground">{t(theme.nameKey)}</p>
+                      <p className="text-sm text-muted-foreground">{t(theme.descKey)}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="flex -space-x-1">
@@ -94,13 +96,13 @@ const SettingsDrawer = ({ open, onOpenChange }: SettingsDrawerProps) => {
           <section>
             <div className="flex items-center gap-2 mb-4">
               <Eye className="w-5 h-5 text-primary" />
-              <h3 className="font-medium text-foreground">Accessibility</h3>
+              <h3 className="font-medium text-foreground">{t("settings.accessibility")}</h3>
             </div>
             <div className="space-y-4">
               <div className="flex items-center justify-between p-4 rounded-xl bg-secondary/30 border border-border/30">
                 <div>
-                  <p className="font-medium text-foreground">High Contrast</p>
-                  <p className="text-sm text-muted-foreground">Sharper borders for visibility</p>
+                  <p className="font-medium text-foreground">{t("settings.highContrast")}</p>
+                  <p className="text-sm text-muted-foreground">{t("settings.highContrastDesc")}</p>
                 </div>
                 <Switch
                   checked={settings.highContrast}
@@ -109,8 +111,8 @@ const SettingsDrawer = ({ open, onOpenChange }: SettingsDrawerProps) => {
               </div>
               <div className="flex items-center justify-between p-4 rounded-xl bg-secondary/30 border border-border/30">
                 <div>
-                  <p className="font-medium text-foreground">Reduced Motion</p>
-                  <p className="text-sm text-muted-foreground">Stops animations & gradients</p>
+                  <p className="font-medium text-foreground">{t("settings.reducedMotion")}</p>
+                  <p className="text-sm text-muted-foreground">{t("settings.reducedMotionDesc")}</p>
                 </div>
                 <Switch
                   checked={settings.reducedMotion}
@@ -124,10 +126,10 @@ const SettingsDrawer = ({ open, onOpenChange }: SettingsDrawerProps) => {
           <section>
             <div className="flex items-center gap-2 mb-4">
               <Volume2 className="w-5 h-5 text-primary" />
-              <h3 className="font-medium text-foreground">Sound Profile</h3>
+              <h3 className="font-medium text-foreground">{t("settings.sound")}</h3>
             </div>
             <div className="p-4 rounded-xl bg-secondary/30 border border-border/30">
-              <p className="text-sm text-muted-foreground mb-3">Focus End Sound</p>
+              <p className="text-sm text-muted-foreground mb-3">{t("settings.focusEndSound")}</p>
               <div className="flex gap-2">
                 <Select
                   value={settings.soundProfile}
@@ -139,7 +141,7 @@ const SettingsDrawer = ({ open, onOpenChange }: SettingsDrawerProps) => {
                   <SelectContent>
                     {sounds.map((sound) => (
                       <SelectItem key={sound.id} value={sound.id}>
-                        {sound.name}
+                        {t(sound.nameKey)}
                       </SelectItem>
                     ))}
                   </SelectContent>
