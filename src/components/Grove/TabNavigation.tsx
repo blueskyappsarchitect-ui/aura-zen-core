@@ -10,6 +10,7 @@ interface TabNavigationProps {
 }
 
 const TabNavigation = ({ activeTab, onTabChange }: TabNavigationProps) => {
+  const { t } = useTranslation();
   return (
     <div className="fixed left-0 right-0 z-50 pb-safe" style={{ bottom: BANNER_HEIGHT }}>
       <div className="max-w-md mx-auto px-4 pb-4">
