@@ -24,7 +24,7 @@ const TabNavigation = ({ activeTab, onTabChange }: TabNavigationProps) => {
             }`}
           >
             <Leaf className="w-4 h-4" />
-            My Vine
+            {t("tabs.myVine")}
           </button>
           <button
             onClick={() => onTabChange('grove')}
@@ -35,7 +35,7 @@ const TabNavigation = ({ activeTab, onTabChange }: TabNavigationProps) => {
             }`}
           >
             <Users className="w-4 h-4" />
-            The Grove
+            {t("tabs.grove")}
           </button>
         </div>
       </div>
