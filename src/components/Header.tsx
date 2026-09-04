@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAudioState } from "@/contexts/AudioContext";
 import auraFlowLogo from "@/assets/aura-flow-logo.png";
 import LanguageSwitcher from "./LanguageSwitcher";
+import CopyrightModal from "./CopyrightModal";
 import { useTranslation } from "react-i18next";
 
 interface HeaderProps {
