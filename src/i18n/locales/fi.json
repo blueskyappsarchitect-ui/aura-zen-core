@@ -47,5 +47,16 @@
     "zenBell": "Zen-kello",
     "birdsong": "Pehmeä linnunlaulu",
     "digitalBeep": "Digitaalinen piippaus"
+  },
+  "copyright": {
+    "open": "Tekijänoikeudet ja ehdot",
+    "close": "Sulje",
+    "disclaimer": "Oikeudellinen Vastuuvapauslauseke",
+    "title": "Tekijänoikeudet ja Ehdot",
+    "description": "Oikeudellinen vastuuvapauslauseke ja tekijänoikeusilmoitus",
+    "line": "Copyright © 2026 Ar. Kaikki oikeudet pidätetään.",
+    "body1": "Kaikki tämän sovelluksen sisältö, käyttöliittymäsuunnitelmat, tilalliset asettelut, koodiarkkitehtuurit ja visuaaliset elementit ovat tekijän ja luojan yksinomaista immateriaaliomaisuutta. Tämän ohjelmiston minkään komponentin luvaton jäljentäminen, jakelu, käänteinen suunnittelu tai kaupallinen hyödyntäminen ilman nimenomaista kirjallista lupaa on ehdottomasti kielletty.",
+    "body2": "Suojattu kansainvälisillä tekijänoikeuslaeilla ja digitaalisen suvereniteetin pöytäkirjoilla.",
+    "acknowledge": "Ymmärrän"
   }
 }

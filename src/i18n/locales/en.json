@@ -47,5 +47,16 @@
     "zenBell": "Zen Bell",
     "birdsong": "Soft Birdsong",
     "digitalBeep": "Digital Beep"
+  },
+  "copyright": {
+    "open": "Copyright and terms",
+    "close": "Close",
+    "disclaimer": "Legal Disclaimer",
+    "title": "Copyright & Terms",
+    "description": "Legal disclaimer and copyright notice",
+    "line": "Copyright © 2026 Ar. All Rights Reserved.",
+    "body1": "All content, interface designs, spatial layouts, code architectures, and visual elements within this application are the exclusive intellectual property of the author and creator. Unauthorized reproduction, distribution, reverse engineering, or commercial exploitation of any component from this software without explicit written permission is strictly prohibited.",
+    "body2": "Protected under international copyright laws and digital sovereignty protocols.",
+    "acknowledge": "Acknowledge"
   }
 }

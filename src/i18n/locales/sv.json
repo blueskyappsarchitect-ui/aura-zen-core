@@ -47,5 +47,16 @@
     "zenBell": "Zen-klocka",
     "birdsong": "Mjuk fågelsång",
     "digitalBeep": "Digitalt pip"
+  },
+  "copyright": {
+    "open": "Upphovsrätt och villkor",
+    "close": "Stäng",
+    "disclaimer": "Juridiskt Meddelande",
+    "title": "Upphovsrätt och Villkor",
+    "description": "Juridiskt meddelande och upphovsrättsinformation",
+    "line": "Copyright © 2026 Ar. Alla rättigheter förbehållna.",
+    "body1": "Allt innehåll, gränssnittsdesigner, rumsliga layouter, kodarkitekturer och visuella element i denna applikation är den exklusiva intellektuella egendomen till författaren och skaparen. Obehörig reproduktion, distribution, reverse engineering eller kommersiell exploatering av någon komponent från denna programvara utan uttryckligt skriftligt tillstånd är strängt förbjudet.",
+    "body2": "Skyddat enligt internationella upphovsrättslagar och digitala suveränitetsprotokoll.",
+    "acknowledge": "Bekräfta"
   }
 }

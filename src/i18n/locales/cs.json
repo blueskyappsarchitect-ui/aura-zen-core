@@ -47,5 +47,16 @@
     "zenBell": "Zenový zvonek",
     "birdsong": "Jemný zpěv ptáků",
     "digitalBeep": "Digitální pípnutí"
+  },
+  "copyright": {
+    "open": "Autorská práva a podmínky",
+    "close": "Zavřít",
+    "disclaimer": "Právní Zřeknutí",
+    "title": "Autorská Práva a Podmínky",
+    "description": "Právní zřeknutí a oznámení o autorských právech",
+    "line": "Copyright © 2026 Ar. Všechna práva vyhrazena.",
+    "body1": "Veškerý obsah, návrhy rozhraní, prostorové uspořádání, architektury kódu a vizuální prvky v této aplikaci jsou výhradním duševním vlastnictvím autora a tvůrce. Bez výslovného písemného souhlasu je přísně zakázána reprodukce, distribuce, zpětná analýza nebo komerční využití jakékoli součásti tohoto softwaru.",
+    "body2": "Chráněno mezinárodními autorskými zákony a protokoly digitální suverenity.",
+    "acknowledge": "Beru na vědomí"
   }
 }

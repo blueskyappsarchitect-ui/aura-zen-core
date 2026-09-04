@@ -47,5 +47,16 @@
     "zenBell": "Campana zen",
     "birdsong": "Canto de aves suave",
     "digitalBeep": "Pitido digital"
+  },
+  "copyright": {
+    "open": "Derechos de autor y términos",
+    "close": "Cerrar",
+    "disclaimer": "Aviso Legal",
+    "title": "Derechos de Autor y Términos",
+    "description": "Aviso legal y notificación de derechos de autor",
+    "line": "Copyright © 2026 Ar. Todos los derechos reservados.",
+    "body1": "Todo el contenido, diseños de interfaz, distribuciones espaciales, arquitecturas de código y elementos visuales de esta aplicación son propiedad intelectual exclusiva del autor y creador. Queda estrictamente prohibida la reproducción, distribución, ingeniería inversa o explotación comercial de cualquier componente de este software sin permiso expreso por escrito.",
+    "body2": "Protegido por las leyes internacionales de derechos de autor y los protocolos de soberanía digital.",
+    "acknowledge": "Aceptar"
   }
 }
