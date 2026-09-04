@@ -47,5 +47,16 @@
     "zenBell": "Zen harang",
     "birdsong": "Lágy madárdal",
     "digitalBeep": "Digitális sípszó"
+  },
+  "copyright": {
+    "open": "Szerzői jog és feltételek",
+    "close": "Bezárás",
+    "disclaimer": "Jogi Nyilatkozat",
+    "title": "Szerzői Jog és Feltételek",
+    "description": "Jogi nyilatkozat és szerzői jogi közlemény",
+    "line": "Copyright © 2026 Ar. Minden jog fenntartva.",
+    "body1": "Az alkalmazásban szereplő összes tartalom, felületterv, térrendezés, kódarchitektúra és vizuális elem kizárólagos szellemi tulajdonát képezi a szerzőnek és alkotónak. A szoftver bármely összetevőjének engedély nélküli reprodukálása, terjesztése, visszafejtése vagy kereskedelmi kihasználása szigorúan tilos.",
+    "body2": "Nemzetközi szerzői jogi törvények és digitális szuverenitási protokollok védelme alatt áll.",
+    "acknowledge": "Elfogadom"
   }
 }

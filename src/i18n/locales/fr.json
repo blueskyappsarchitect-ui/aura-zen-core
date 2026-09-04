@@ -47,5 +47,16 @@
     "zenBell": "Cloche zen",
     "birdsong": "Chant d'oiseaux doux",
     "digitalBeep": "Bip numérique"
+  },
+  "copyright": {
+    "open": "Copyright et conditions",
+    "close": "Fermer",
+    "disclaimer": "Avis Juridique",
+    "title": "Droits d'Auteur et Conditions",
+    "description": "Avis juridique et mentions de copyright",
+    "line": "Copyright © 2026 Ar. Tous droits réservés.",
+    "body1": "Tout le contenu, les conceptions d'interface, les dispositions spatiales, les architectures de code et les éléments visuels de cette application sont la propriété intellectuelle exclusive de l'auteur et du créateur. Toute reproduction, distribution, ingénierie inverse ou exploitation commerciale de quelque composante de ce logiciel que ce soit sans autorisation écrite expresse est strictement interdite.",
+    "body2": "Protégé par les lois internationales sur le droit d'auteur et les protocoles de souveraineté numérique.",
+    "acknowledge": "Reconnaître"
   }
 }

@@ -47,5 +47,16 @@
     "zenBell": "Dzwonek zen",
     "birdsong": "Delikatny śpiew ptaków",
     "digitalBeep": "Cyfrowy sygnał"
+  },
+  "copyright": {
+    "open": "Prawa autorskie i warunki",
+    "close": "Zamknij",
+    "disclaimer": "Zastrzeżenie Prawne",
+    "title": "Prawa Autorskie i Warunki",
+    "description": "Zastrzeżenie prawne i informacja o prawach autorskich",
+    "line": "Copyright © 2026 Ar. Wszelkie prawa zastrzeżone.",
+    "body1": "Cała zawartość, projekty interfejsów, układy przestrzenne, architektury kodu oraz elementy wizualne zawarte w tej aplikacji są wyłączną własnością intelektualną autora i twórcy. Bez zgody pisemnej zabrania się reprodukowania, dystrybucji, inżynierii wstecznej lub komercyjnego wykorzystywania jakiejkolwiek części tego oprogramowania.",
+    "body2": "Chronione międzynarodowymi prawami autorskimi i protokołami cyfrowej suwerenności.",
+    "acknowledge": "Akceptuję"
   }
 }

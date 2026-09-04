@@ -47,5 +47,16 @@
     "zenBell": "Zen-bjelle",
     "birdsong": "Mild fuglesang",
     "digitalBeep": "Digital pipetone"
+  },
+  "copyright": {
+    "open": "Opphavsrett og vilkår",
+    "close": "Lukk",
+    "disclaimer": "Juridisk Ansvarsfraskrivelse",
+    "title": "Opphavsrett og Vilkår",
+    "description": "Juridisk ansvarsfraskrivelse og opphavsrettsvarsel",
+    "line": "Copyright © 2026 Ar. Alle rettigheter reservert.",
+    "body1": "Alt innhold, grensesnittdesign, romlige oppsett, kodearkitekturer og visuelle elementer i denne applikasjonen er den eksklusive intellektuelle eiendommen til forfatteren og skaperen. Uautorisert reproduksjon, distribusjon, reverse engineering eller kommersiell utnytting av enhver komponent fra denne programvaren uten uttrykkelig skriftlig tillatelse er strengt forbudt.",
+    "body2": "Beskyttet under internasjonale opphavsrettslover og digitale suverenitetsprotokoller.",
+    "acknowledge": "Bekrefte"
   }
 }
