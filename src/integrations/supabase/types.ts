@@ -56,6 +56,33 @@ export type Database = {
         }
         Relationships: []
       }
+      aura_award_log: {
+        Row: {
+          action: string
+          awarded_on: string
+          created_at: string
+          id: string
+          points: number
+          user_id: string
+        }
+        Insert: {
+          action: string
+          awarded_on?: string
+          created_at?: string
+          id?: string
+          points: number
+          user_id: string
+        }
+        Update: {
+          action?: string
+          awarded_on?: string
+          created_at?: string
+          id?: string
+          points?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       global_oxygen: {
         Row: {
           bonus_active_until: string | null
@@ -291,6 +318,7 @@ export type Database = {
       }
     }
     Functions: {
+      award_aura_points: { Args: { _action: string }; Returns: number }
       get_active_gardeners_count: { Args: never; Returns: number }
       get_online_founders: {
         Args: never

@@ -347,34 +347,26 @@ export const useSupabaseSync = () => {
   }, []);
 
   // Update aura score with streak multiplier
+  // Points are decided server-side; the amount only selects the action.
   const incrementAuraScore = useCallback(async (amount: number) => {
     if (!user) return;
+    const action = amount === 25 ? "water" : "task_complete";
 
-    // Apply streak multiplier
-    const multiplier = getStreakMultiplier(streak);
-    const adjustedAmount = Math.round(amount * multiplier);
-    
-    const newScore = auraScore + adjustedAmount;
+    const { data, error } = await supabase.rpc("award_aura_points", { _action: action });
+    if (error || typeof data !== "number") {
+      console.error("Error updating aura score:", error);
+      return;
+    }
+
+    const newScore = data;
     const previousLevel = previousLevelRef.current;
     const newLevel = getAuraLevel(newScore);
-    
-    // Check for level up
     if (previousLevel && previousLevel.level !== newLevel.level) {
       setLevelUpInfo(newLevel);
     }
-    
     setAuraScore(newScore);
     previousLevelRef.current = newLevel;
-
-    const { error } = await supabase
-      .from("user_profiles")
-      .update({ aura_score: newScore })
-      .eq("user_id", user.id);
-
-    if (error) {
-      console.error("Error updating aura score:", error);
-    }
-  }, [user, auraScore, streak]);
+  }, [user]);
 
   // Check for Consistent Cultivator badge when streak changes
   useEffect(() => {

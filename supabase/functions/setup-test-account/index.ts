@@ -60,7 +60,13 @@ Deno.serve(async (req) => {
     });
 
     const testEmail = "tester@auraflow.com";
-    const testPassword = "AuraTest2026!";
+    const testPassword = Deno.env.get("TEST_ACCOUNT_PASSWORD");
+    if (!testPassword || testPassword.length < 12) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Test account password is not configured" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     // Check if user already exists
     const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
@@ -70,7 +76,9 @@ Deno.serve(async (req) => {
     
     if (existingUser) {
       userId = existingUser.id;
-      console.log("Test user already exists:", userId);
+      // Rotate to the configured password so any previously published password stops working
+      const { error: pwError } = await supabaseAdmin.auth.admin.updateUserById(userId, { password: testPassword });
+      if (pwError) throw new Error(`Failed to update password: ${pwError.message}`);
     } else {
       // Create the test user
       const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
